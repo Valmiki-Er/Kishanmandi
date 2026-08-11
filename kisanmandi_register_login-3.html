@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KisanMandi - Register & Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f9f5;color:#17351f}
+header{background:#146b35;color:#fff}
+.nav{max-width:1100px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:23px;font-weight:800}.logo span{color:#dff5a6}
+.lang{background:#fff;color:#146b35;border:0;border-radius:8px;padding:9px 11px;font-weight:700}
+.container{max-width:900px;margin:auto;padding:35px 18px}
+.switch{display:flex;background:#e7f2e9;border-radius:12px;padding:5px;margin-bottom:22px}
+.switch button{flex:1;border:0;background:transparent;padding:13px;border-radius:9px;font-size:15px;font-weight:700;color:#45614c}
+.switch button.active{background:#146b35;color:#fff}
+.card{background:#fff;border:1px solid #dfe9e1;border-radius:18px;padding:25px;box-shadow:0 8px 25px rgba(20,70,35,.07)}
+h1{font-size:28px;margin-bottom:7px}.subtitle{color:#68766b;font-size:14px;margin-bottom:22px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{display:flex;flex-direction:column;gap:7px}.full{grid-column:1/-1}
+label{font-size:13px;font-weight:700}
+input,select{width:100%;padding:12px;border:1px solid #ccdace;border-radius:9px;background:#fff;font-size:14px;outline:none}
+input:focus,select:focus{border-color:#168044;box-shadow:0 0 0 3px #e7f5ea}
+button.submit{width:100%;margin-top:20px;border:0;background:#168044;color:#fff;padding:13px;border-radius:9px;font-size:15px;font-weight:700}
+.note{margin-top:13px;background:#f0f8f1;padding:12px;border-radius:9px;color:#4f6755;font-size:12px}
+.login-extra{display:none}
+footer{text-align:center;background:#0c4723;color:#cfe3d3;padding:20px;font-size:12px;margin-top:20px}
+@media(max-width:650px){.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.container{padding:25px 14px}h1{font-size:24px}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="nav">
+  <div class="logo">🌾 Kisan<span>Mandi</span></div>
+  <select class="lang" id="language" onchange="changeLanguage()">
+    <option value="en">English</option>
+    <option value="hi">हिन्दी</option>
+    <option value="ta">தமிழ்</option>
+  </select>
+</div>
+</header>
+
+<main class="container">
+  <div class="switch">
+    <button id="farmerBtn" class="active" onclick="setRole('farmer')" data-i18n="farmer">👨‍🌾 Farmer</button>
+    <button id="buyerBtn" onclick="setRole('buyer')" data-i18n="buyer">🏪 Buyer / Trader</button>
+  </div>
+
+  <div class="card">
+    <div id="registerView">
+      <h1 data-i18n="registerTitle">Create your KisanMandi account</h1>
+      <p class="subtitle" data-i18n="registerSub">Join the agricultural marketplace and connect directly with buyers or farmers.</p>
+
+      <div class="formgrid">
+        <div class="field">
+          <label data-i18n="name">Full Name</label>
+          <input id="name" type="text" data-placeholder="namePh" placeholder="Enter your full name">
+        </div>
+
+        <div class="field">
+          <label data-i18n="mobile">Mobile Number</label>
+          <input id="mobile" type="tel" maxlength="10" data-placeholder="mobilePh" placeholder="10-digit mobile number">
+        </div>
+
+        <div class="field">
+          <label data-i18n="state">State</label>
+          <select id="state">
+            <option value="">Select State</option>
+            <option>Uttar Pradesh</option><option>Tamil Nadu</option><option>Maharashtra</option>
+            <option>Punjab</option><option>Haryana</option><option>Bihar</option>
+            <option>West Bengal</option><option>Karnataka</option><option>Gujarat</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label data-i18n="district">District</label>
+          <input id="district" type="text" data-placeholder="districtPh" placeholder="Enter district">
+        </div>
+
+        <div class="field">
+          <label data-i18n="village">Village / Town</label>
+          <input id="village" type="text" data-placeholder="villagePh" placeholder="Enter village or town">
+        </div>
+
+        <div class="field" id="cropField">
+          <label data-i18n="crops">Main Crops</label>
+          <input id="crops" type="text" data-placeholder="cropsPh" placeholder="e.g. Wheat, Rice, Potato">
+        </div>
+
+        <div class="field" id="businessField" style="display:none">
+          <label data-i18n="business">Business Type</label>
+          <select id="business">
+            <option>Trader</option><option>Wholesaler</option><option>Retailer</option>
+            <option>Food Processor</option><option>Restaurant / Hotel</option><option>Other</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label data-i18n="password">Password</label>
+          <input id="password" type="password" data-placeholder="passwordPh" placeholder="Create a password">
+        </div>
+      </div>
+
+      <button class="submit" onclick="register()" data-i18n="registerBtn">Create Account</button>
+      <div class="note" data-i18n="otpNote">For the real version, we'll use mobile OTP verification instead of relying only on passwords.</div>
+    </div>
+
+    <div id="loginView" class="login-extra">
+      <h1 data-i18n="loginTitle">Welcome back</h1>
+      <p class="subtitle" data-i18n="loginSub">Login to manage your products, orders and mandi price alerts.</p>
+      <div class="formgrid">
+        <div class="field full">
+          <label data-i18n="mobile">Mobile Number</label>
+          <input type="tel" maxlength="10" placeholder="10-digit mobile number">
+        </div>
+        <div class="field full">
+          <label data-i18n="password">Password</label>
+          <input type="password" placeholder="Enter your password">
+        </div>
+      </div>
+      <button class="submit" onclick="login()" data-i18n="loginBtn">Login</button>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:18px">
+    <button onclick="toggleLogin()" id="toggleBtn" style="border:0;background:transparent;color:#146b35;font-weight:700" data-i18n="already">Already have an account? Login</button>
+  </div>
+</main>
+
+<footer>© 2026 KisanMandi — Agricultural marketplace prototype</footer>
+
+<script>
+let role='farmer', mode='register';
+
+const text={
+en:{
+farmer:"👨‍🌾 Farmer",buyer:"🏪 Buyer / Trader",registerTitle:"Create your KisanMandi account",
+registerSub:"Join the agricultural marketplace and connect directly with buyers or farmers.",
+name:"Full Name",namePh:"Enter your full name",mobile:"Mobile Number",mobilePh:"10-digit mobile number",
+state:"State",district:"District",districtPh:"Enter district",village:"Village / Town",villagePh:"Enter village or town",
+crops:"Main Crops",cropsPh:"e.g. Wheat, Rice, Potato",business:"Business Type",password:"Password",passwordPh:"Create a password",
+registerBtn:"Create Account",otpNote:"For the real version, we'll use mobile OTP verification instead of relying only on passwords.",
+loginTitle:"Welcome back",loginSub:"Login to manage your products, orders and mandi price alerts.",loginBtn:"Login",
+already:"Already have an account? Login",create:"Don't have an account? Create one"
+},
+hi:{
+farmer:"👨‍🌾 किसान",buyer:"🏪 खरीदार / व्यापारी",registerTitle:"अपना KisanMandi खाता बनाएं",
+registerSub:"कृषि बाजार से जुड़ें और किसानों या खरीदारों से सीधे संपर्क करें।",name:"पूरा नाम",namePh:"अपना पूरा नाम दर्ज करें",
+mobile:"मोबाइल नंबर",mobilePh:"10 अंकों का मोबाइल नंबर",state:"राज्य",district:"जिला",districtPh:"जिला दर्ज करें",
+village:"गांव / शहर",villagePh:"गांव या शहर दर्ज करें",crops:"मुख्य फसलें",cropsPh:"जैसे गेहूं, चावल, आलू",
+business:"व्यवसाय का प्रकार",password:"पासवर्ड",passwordPh:"पासवर्ड बनाएं",registerBtn:"खाता बनाएं",
+otpNote:"वास्तविक संस्करण में हम पासवर्ड के साथ मोबाइल OTP सत्यापन का उपयोग करेंगे।",loginTitle:"वापसी पर स्वागत है",
+loginSub:"अपने उत्पाद, ऑर्डर और मंडी मूल्य अलर्ट देखने के लिए लॉगिन करें।",loginBtn:"लॉगिन करें",
+already:"पहले से खाता है? लॉगिन करें",create:"खाता नहीं है? बनाएं"
+},
+ta:{
+farmer:"👨‍🌾 விவசாயி",buyer:"🏪 வாங்குபவர் / வியாபாரி",registerTitle:"KisanMandi கணக்கை உருவாக்குங்கள்",
+registerSub:"விவசாய சந்தையில் இணைந்து விவசாயிகள் மற்றும் வாங்குபவர்களுடன் நேரடியாக தொடர்பு கொள்ளுங்கள்.",
+name:"முழுப் பெயர்",namePh:"உங்கள் முழுப் பெயரை உள்ளிடவும்",mobile:"மொபைல் எண்",mobilePh:"10 இலக்க மொபைல் எண்",
+state:"மாநிலம்",district:"மாவட்டம்",districtPh:"மாவட்டத்தை உள்ளிடவும்",village:"கிராமம் / நகரம்",villagePh:"கிராமம் அல்லது நகரத்தை உள்ளிடவும்",
+crops:"முக்கிய பயிர்கள்",cropsPh:"எ.கா. கோதுமை, அரிசி, உருளைக்கிழங்கு",business:"வணிக வகை",
+password:"கடவுச்சொல்",passwordPh:"கடவுச்சொல்லை உருவாக்கவும்",registerBtn:"கணக்கை உருவாக்கு",
+otpNote:"உண்மையான பதிப்பில் கடவுச்சொல்லுடன் மொபைல் OTP சரிபார்ப்பையும் பயன்படுத்துவோம்.",loginTitle:"மீண்டும் வரவேற்கிறோம்",
+loginSub:"உங்கள் பொருட்கள், ஆர்டர்கள் மற்றும் சந்தை விலை எச்சரிக்கைகளை நிர்வகிக்க உள்நுழையுங்கள்.",loginBtn:"உள்நுழை",
+already:"ஏற்கனவே கணக்கு உள்ளதா? உள்நுழைக",create:"கணக்கு இல்லையா? உருவாக்குங்கள்"
+}};
+
+function setRole(r){
+ role=r;
+ farmerBtn.classList.toggle('active',r==='farmer'); buyerBtn.classList.toggle('active',r==='buyer');
+ cropField.style.display=r==='farmer'?'flex':'none'; businessField.style.display=r==='buyer'?'flex':'none';
+}
+function changeLanguage(){
+ const l=text[language.value];
+ document.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=l[e.dataset.i18n]||e.textContent);
+ document.querySelectorAll('[data-placeholder]').forEach(e=>e.placeholder=l[e.dataset.placeholder]||e.placeholder);
+}
+function toggleLogin(){
+ mode=mode==='register'?'login':'register';
+ registerView.style.display=mode==='register'?'block':'none';
+ loginView.style.display=mode==='login'?'block':'none';
+ toggleBtn.textContent=text[language.value][mode==='register'?'already':'create'];
+}
+function register(){
+ const name=document.getElementById('name').value.trim(), mobile=document.getElementById('mobile').value.trim();
+ if(!name || mobile.length!==10){alert(language.value==='hi'?'कृपया नाम और सही 10 अंकों का मोबाइल नंबर दर्ज करें।':language.value==='ta'?'பெயர் மற்றும் சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.':'Please enter your name and a valid 10-digit mobile number.');return}
+ alert((language.value==='hi'?'पंजीकरण सफल — अगले चरण में OTP जोड़ा जाएगा।':language.value==='ta'?'பதிவு வெற்றி — அடுத்த கட்டத்தில் OTP சேர்க்கப்படும்.':'Registration captured — OTP verification will be added in the next stage.'));
+}
+function login(){alert(language.value==='hi'?'लॉगिन सिस्टम अगले चरण में डेटाबेस से जोड़ा जाएगा।':language.value==='ta'?'உள்நுழைவு அடுத்த கட்டத்தில் தரவுத்தளத்துடன் இணைக்கப்படும்.':'Login will be connected to the database in the next stage.');}
+</script>
+</body>
+</html>

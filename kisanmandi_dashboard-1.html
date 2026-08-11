@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KisanMandi - Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f8f5;color:#18371f}
+header{background:#146b35;color:#fff;position:sticky;top:0;z-index:10}
+.nav{max-width:1180px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.logo{font-size:23px;font-weight:800}.logo span{color:#dff5a6}
+.nav-right{display:flex;gap:10px;align-items:center}
+.lang{border:0;border-radius:8px;padding:9px;background:#fff;color:#146b35;font-weight:700}
+.profile{background:rgba(255,255,255,.14);padding:9px 12px;border-radius:8px;font-size:13px}
+.layout{max-width:1180px;margin:auto;display:grid;grid-template-columns:235px 1fr;min-height:calc(100vh - 55px)}
+.sidebar{background:#fff;border-right:1px solid #e0e8e1;padding:22px 12px}
+.sidebar h3{font-size:12px;text-transform:uppercase;color:#7b887e;padding:0 12px 10px}
+.side-btn{width:100%;text-align:left;border:0;background:transparent;padding:12px;border-radius:9px;margin-bottom:4px;font-size:14px;color:#405c47;font-weight:600;cursor:pointer}
+.side-btn.active,.side-btn:hover{background:#eaf6ec;color:#146b35}
+.main{padding:28px 24px}
+.welcome{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:15px}
+.welcome h1{font-size:28px}.welcome p{color:#6b786e;font-size:14px;margin-top:4px}
+.role{background:#eaf6ec;color:#146b35;border-radius:20px;padding:8px 12px;font-size:12px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat{background:#fff;border:1px solid #e0e9e1;border-radius:13px;padding:18px}
+.stat .ico{font-size:24px}.stat b{display:block;font-size:24px;margin:7px 0 2px}.stat span{font-size:12px;color:#718076}
+.card{background:#fff;border:1px solid #e0e9e1;border-radius:15px;padding:20px;margin-bottom:20px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.card h2{font-size:19px}.small-btn{border:0;background:#edf7ef;color:#146b35;padding:8px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #edf1ed;font-size:13px}
+th{background:#f4f8f4;color:#506653}
+.status{display:inline-block;padding:5px 8px;border-radius:15px;background:#e7f6ea;color:#16723a;font-size:11px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.action{border:1px solid #dfe9e1;border-radius:12px;padding:18px;background:#fbfdfb}
+.action .big{font-size:27px}.action h3{margin:8px 0 5px;font-size:16px}.action p{font-size:12px;color:#718076;margin-bottom:13px}
+.primary{border:0;background:#168044;color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.mandi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.market{background:#f6faf6;border-radius:10px;padding:13px}.market b{display:block;font-size:14px}.market span{display:block;color:#68756b;font-size:11px;margin:4px 0}.market strong{font-size:15px}
+#buyerDash{display:none}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
+label{font-size:12px;font-weight:700}input,select,textarea{padding:11px;border:1px solid #ccdace;border-radius:8px;font:inherit;font-size:13px;background:#fff}textarea{min-height:80px;resize:vertical}
+footer{text-align:center;color:#78857b;padding:20px;font-size:11px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid #e0e8e1;display:flex;overflow:auto;padding:10px}.sidebar h3{display:none}.side-btn{min-width:max-content;margin:0 3px}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.mandi{grid-template-columns:1fr 1fr}}
+@media(max-width:550px){.main{padding:20px 14px}.welcome{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.grid,.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.mandi{grid-template-columns:1fr}.profile{display:none}.welcome h1{font-size:24px}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="nav">
+  <div class="logo">🌾 Kisan<span>Mandi</span></div>
+  <div class="nav-right">
+    <select class="lang" id="language" onchange="changeLanguage()">
+      <option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option>
+    </select>
+    <div class="profile">👤 <span id="userName">Demo User</span></div>
+  </div>
+</div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <h3 data-i18n="menu">Dashboard Menu</h3>
+  <button class="side-btn active" onclick="showSection('overview',this)" data-i18n="overview">🏠 Overview</button>
+  <button class="side-btn" onclick="showSection('sell',this)" data-i18n="sellCrop">🌾 Sell Crop</button>
+  <button class="side-btn" onclick="showSection('listings',this)" data-i18n="listings">📦 My Listings</button>
+  <button class="side-btn" onclick="showSection('enquiries',this)" data-i18n="enquiries">💬 Enquiries</button>
+  <button class="side-btn" onclick="showSection('mandi',this)" data-i18n="mandi">📊 Mandi Prices</button>
+  <button class="side-btn" onclick="showBuyer()" data-i18n="switchBuyer">🏪 Buyer View</button>
+</aside>
+
+<main class="main">
+
+<section id="overview">
+<div class="welcome">
+  <div><h1 data-i18n="welcome">Welcome to KisanMandi</h1><p data-i18n="overviewSub">Manage your agricultural marketplace activity from one place.</p></div>
+  <div class="role" id="roleBadge">👨‍🌾 Farmer Dashboard</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="ico">🌾</div><b>4</b><span data-i18n="activeListings">Active Listings</span></div>
+  <div class="stat"><div class="ico">💬</div><b>12</b><span data-i18n="enquiries">Buyer Enquiries</span></div>
+  <div class="stat"><div class="ico">👁️</div><b>186</b><span data-i18n="views">Product Views</span></div>
+  <div class="stat"><div class="ico">🔔</div><b>3</b><span data-i18n="alerts">Price Alerts</span></div>
+</div>
+
+<div class="card">
+<div class="card-head"><h2 data-i18n="quickActions">Quick Actions</h2></div>
+<div class="grid">
+  <div class="action"><div class="big">🌾</div><h3 data-i18n="sellCrop">Sell Crop</h3><p data-i18n="sellDesc">Publish a new crop listing for buyers.</p><button class="primary" onclick="showSection('sell')" data-i18n="start">Start</button></div>
+  <div class="action"><div class="big">📦</div><h3 data-i18n="listings">My Listings</h3><p data-i18n="listingDesc">Manage your products currently for sale.</p><button class="primary" onclick="showSection('listings')" data-i18n="view">View</button></div>
+  <div class="action"><div class="big">📊</div><h3 data-i18n="mandi">Mandi Prices</h3><p data-i18n="mandiDesc">Compare today's market prices.</p><button class="primary" onclick="showSection('mandi')" data-i18n="check">Check</button></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-head"><h2 data-i18n="todayPrices">Today's Mandi Prices</h2><button class="small-btn" onclick="showSection('mandi')" data-i18n="viewAll">View All</button></div>
+<div class="mandi">
+  <div class="market"><b>Wheat</b><span>Gorakhpur</span><strong>₹2,450/qtl</strong></div>
+  <div class="market"><b>Rice</b><span>Maharajganj</span><strong>₹3,100/qtl</strong></div>
+  <div class="market"><b>Potato</b><span>Gorakhpur</span><strong>₹1,450/qtl</strong></div>
+  <div class="market"><b>Onion</b><span>Lucknow</span><strong>₹2,100/qtl</strong></div>
+</div>
+</div>
+</section>
+
+<section id="sell" style="display:none">
+<div class="welcome"><div><h1 data-i18n="sellTitle">Sell Your Crop</h1><p data-i18n="sellSub">Create a listing that buyers can find.</p></div></div>
+<div class="card">
+<div class="formgrid">
+<div class="field"><label data-i18n="crop">Crop</label><select><option>Wheat</option><option>Rice</option><option>Potato</option><option>Onion</option><option>Tomato</option><option>Other</option></select></div>
+<div class="field"><label data-i18n="variety">Variety</label><input placeholder="e.g. HD-2967"></div>
+<div class="field"><label data-i18n="quantity">Quantity</label><input placeholder="e.g. 50"></div>
+<div class="field"><label data-i18n="unit">Unit</label><select><option>Quintal</option><option>Kg</option><option>Ton</option></select></div>
+<div class="field"><label data-i18n="price">Expected Price (₹)</label><input placeholder="e.g. 2500"></div>
+<div class="field"><label data-i18n="harvest">Harvest Date</label><input type="date"></div>
+<div class="field"><label data-i18n="district">District</label><input placeholder="Maharajganj"></div>
+<div class="field"><label data-i18n="village">Village / Town</label><input placeholder="Enter location"></div>
+<div class="field full"><label data-i18n="photos">Product Photos</label><input type="file" accept="image/*" multiple></div>
+<div class="field full"><label data-i18n="description">Description</label><textarea placeholder="Tell buyers about your crop..."></textarea></div>
+</div>
+<button class="primary" style="margin-top:18px" onclick="publish()" data-i18n="publish">Publish for Buyers</button>
+</div>
+</section>
+
+<section id="listings" style="display:none">
+<div class="welcome"><div><h1 data-i18n="myListings">My Listings</h1><p data-i18n="listingSub">Products currently listed for buyers.</p></div><button class="primary" onclick="showSection('sell')" data-i18n="addNew">+ Add New</button></div>
+<div class="card table-wrap">
+<table><thead><tr><th>Crop</th><th>Quantity</th><th>Expected Price</th><th>Location</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>🌾 Wheat</td><td>50 Qtl</td><td>₹2,500</td><td>Maharajganj</td><td><span class="status">Active</span></td></tr>
+<tr><td>🥔 Potato</td><td>100 Qtl</td><td>₹1,500</td><td>Gorakhpur</td><td><span class="status">Active</span></td></tr>
+<tr><td>🌾 Rice</td><td>30 Qtl</td><td>₹3,100</td><td>Maharajganj</td><td><span class="status">Active</span></td></tr>
+</tbody></table>
+</div>
+</section>
+
+<section id="enquiries" style="display:none">
+<div class="welcome"><div><h1 data-i18n="enquiriesTitle">Buyer Enquiries</h1><p data-i18n="enquiriesSub">People interested in your products.</p></div></div>
+<div class="card table-wrap">
+<table><thead><tr><th>Buyer</th><th>Product</th><th>Quantity</th><th>Offer</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Sharma Traders</td><td>Wheat</td><td>20 Qtl</td><td>₹2,480/Qtl</td><td><span class="status">New</span></td></tr>
+<tr><td>Fresh Foods</td><td>Potato</td><td>50 Qtl</td><td>₹1,450/Qtl</td><td><span class="status">New</span></td></tr>
+</tbody></table>
+</div>
+</section>
+
+<section id="mandi" style="display:none">
+<div class="welcome"><div><h1 data-i18n="mandiTitle">Mandi Price Tracker</h1><p data-i18n="mandiSub">Compare market prices. Live data will be connected later.</p></div></div>
+<div class="card">
+<div class="formgrid">
+<div class="field"><label data-i18n="state">State</label><select><option>Uttar Pradesh</option><option>Tamil Nadu</option><option>Maharashtra</option></select></div>
+<div class="field"><label data-i18n="district">District</label><select><option>Gorakhpur</option><option>Maharajganj</option><option>Lucknow</option></select></div>
+<div class="field"><label data-i18n="market">Mandi</label><select><option>Gorakhpur Mandi</option><option>Maharajganj Mandi</option><option>Lucknow Mandi</option></select></div>
+<div class="field"><label data-i18n="crop">Crop</label><select><option>Wheat</option><option>Rice</option><option>Potato</option><option>Onion</option></select></div>
+</div>
+</div>
+<div class="card table-wrap">
+<table><thead><tr><th>Crop</th><th>Mandi</th><th>Min</th><th>Max</th><th>Modal</th><th>Trend</th></tr></thead>
+<tbody>
+<tr><td>Wheat</td><td>Gorakhpur</td><td>₹2,300</td><td>₹2,550</td><td><b>₹2,450</b></td><td style="color:#168044">↑ 3.2%</td></tr>
+<tr><td>Rice</td><td>Maharajganj</td><td>₹2,850</td><td>₹3,250</td><td><b>₹3,100</b></td><td style="color:#168044">↑ 1.8%</td></tr>
+<tr><td>Potato</td><td>Gorakhpur</td><td>₹1,200</td><td>₹1,600</td><td><b>₹1,450</b></td><td style="color:#168044">↑ 5.1%</td></tr>
+</tbody></table>
+</div>
+</section>
+
+<section id="buyerDash" style="display:none">
+<div class="welcome"><div><h1 data-i18n="buyerTitle">Buyer Marketplace</h1><p data-i18n="buyerSub">Find agricultural products listed by farmers.</p></div><div class="role">🏪 Buyer Dashboard</div></div>
+<div class="card">
+<div class="formgrid">
+<div class="field"><label data-i18n="searchCrop">Search Crop</label><input placeholder="Wheat, Rice, Potato..."></div>
+<div class="field"><label data-i18n="location">Location</label><input placeholder="District or State"></div>
+<div class="field"><label data-i18n="minQty">Minimum Quantity</label><input placeholder="e.g. 10 Qtl"></div>
+<div class="field"><label data-i18n="maxPrice">Maximum Price</label><input placeholder="₹ per quintal"></div>
+</div>
+<button class="primary" style="margin-top:15px" onclick="alert('Product search will connect to the marketplace database next.')" data-i18n="search">Search Products</button>
+</div>
+<div class="grid">
+<div class="action"><div class="big">🌾</div><h3>Wheat — 50 Qtl</h3><p>Maharajganj • ₹2,500/Qtl</p><button class="primary" onclick="alert('Farmer contact will be connected next.')">View Farmer</button></div>
+<div class="action"><div class="big">🥔</div><h3>Potato — 100 Qtl</h3><p>Gorakhpur • ₹1,500/Qtl</p><button class="primary" onclick="alert('Farmer contact will be connected next.')">View Farmer</button></div>
+<div class="action"><div class="big">🌾</div><h3>Rice — 30 Qtl</h3><p>Maharajganj • ₹3,100/Qtl</p><button class="primary" onclick="alert('Farmer contact will be connected next.')">View Farmer</button></div>
+</div>
+</section>
+
+</main>
+</div>
+<footer>© 2026 KisanMandi — Prototype. Sample prices are not live market data.</footer>
+
+<script>
+const T={
+en:{menu:"Dashboard Menu",overview:"🏠 Overview",sellCrop:"🌾 Sell Crop",listings:"📦 My Listings",enquiries:"💬 Enquiries",mandi:"📊 Mandi Prices",switchBuyer:"🏪 Buyer View",welcome:"Welcome to KisanMandi",overviewSub:"Manage your agricultural marketplace activity from one place.",activeListings:"Active Listings",views:"Product Views",alerts:"Price Alerts",quickActions:"Quick Actions",sellDesc:"Publish a new crop listing for buyers.",listingDesc:"Manage your products currently for sale.",mandiDesc:"Compare today's market prices.",start:"Start",view:"View",check:"Check",todayPrices:"Today's Mandi Prices",viewAll:"View All",sellTitle:"Sell Your Crop",sellSub:"Create a listing that buyers can find.",crop:"Crop",variety:"Variety",quantity:"Quantity",unit:"Unit",price:"Expected Price (₹)",harvest:"Harvest Date",district:"District",village:"Village / Town",photos:"Product Photos",description:"Description",publish:"Publish for Buyers",myListings:"My Listings",listingSub:"Products currently listed for buyers.",addNew:"+ Add New",enquiriesTitle:"Buyer Enquiries",enquiriesSub:"People interested in your products.",mandiTitle:"Mandi Price Tracker",mandiSub:"Compare market prices. Live data will be connected later.",state:"State",market:"Mandi",buyerTitle:"Buyer Marketplace",buyerSub:"Find agricultural products listed by farmers.",searchCrop:"Search Crop",location:"Location",minQty:"Minimum Quantity",maxPrice:"Maximum Price",search:"Search Products"},
+hi:{menu:"डैशबोर्ड मेनू",overview:"🏠 अवलोकन",sellCrop:"🌾 फसल बेचें",listings:"📦 मेरी लिस्टिंग",enquiries:"💬 पूछताछ",mandi:"📊 मंडी भाव",switchBuyer:"🏪 खरीदार व्यू",welcome:"KisanMandi में आपका स्वागत है",overviewSub:"अपनी कृषि बाजार गतिविधियां एक जगह से संभालें।",activeListings:"सक्रिय लिस्टिंग",views:"उत्पाद देखे गए",alerts:"मूल्य अलर्ट",quickActions:"त्वरित कार्य",sellDesc:"खरीदारों के लिए नई फसल लिस्ट करें।",listingDesc:"बिक्री के लिए उपलब्ध उत्पाद संभालें।",mandiDesc:"आज के मंडी भाव की तुलना करें।",start:"शुरू करें",view:"देखें",check:"जांचें",todayPrices:"आज के मंडी भाव",viewAll:"सभी देखें",sellTitle:"अपनी फसल बेचें",sellSub:"ऐसी लिस्टिंग बनाएं जिसे खरीदार खोज सकें।",crop:"फसल",variety:"किस्म",quantity:"मात्रा",unit:"इकाई",price:"अपेक्षित कीमत (₹)",harvest:"कटाई की तारीख",district:"जिला",village:"गांव / शहर",photos:"उत्पाद फोटो",description:"विवरण",publish:"खरीदारों के लिए प्रकाशित करें",myListings:"मेरी लिस्टिंग",listingSub:"खरीदारों के लिए उपलब्ध उत्पाद।",addNew:"+ नया जोड़ें",enquiriesTitle:"खरीदार पूछताछ",enquiriesSub:"आपके उत्पादों में रुचि रखने वाले लोग।",mandiTitle:"मंडी मूल्य ट्रैकर",mandiSub:"बाजार भाव की तुलना करें। लाइव डेटा बाद में जोड़ा जाएगा।",state:"राज्य",market:"मंडी",buyerTitle:"खरीदार बाजार",buyerSub:"किसानों द्वारा सूचीबद्ध कृषि उत्पाद खोजें।",searchCrop:"फसल खोजें",location:"स्थान",minQty:"न्यूनतम मात्रा",maxPrice:"अधिकतम कीमत",search:"उत्पाद खोजें"},
+ta:{menu:"டாஷ்போர்டு மெனு",overview:"🏠 மேலோட்டம்",sellCrop:"🌾 பயிரை விற்கவும்",listings:"📦 என் பட்டியல்கள்",enquiries:"💬 விசாரணைகள்",mandi:"📊 சந்தை விலைகள்",switchBuyer:"🏪 வாங்குபவர் பார்வை",welcome:"KisanMandi-க்கு வரவேற்கிறோம்",overviewSub:"உங்கள் விவசாய சந்தை செயல்பாடுகளை ஒரே இடத்தில் நிர்வகிக்கவும்.",activeListings:"செயலில் உள்ள பட்டியல்கள்",views:"பொருள் பார்வைகள்",alerts:"விலை எச்சரிக்கைகள்",quickActions:"விரைவு செயல்கள்",sellDesc:"வாங்குபவர்களுக்காக புதிய பயிர் பட்டியலை வெளியிடுங்கள்.",listingDesc:"விற்பனைக்கான உங்கள் பொருட்களை நிர்வகிக்கவும்.",mandiDesc:"இன்றைய சந்தை விலைகளை ஒப்பிடுங்கள்.",start:"தொடங்கு",view:"பார்க்க",check:"சரிபார்",todayPrices:"இன்றைய சந்தை விலைகள்",viewAll:"அனைத்தையும் பார்க்க",sellTitle:"உங்கள் பயிரை விற்கவும்",sellSub:"வாங்குபவர்கள் காணக்கூடிய பட்டியலை உருவாக்குங்கள்.",crop:"பயிர்",variety:"வகை",quantity:"அளவு",unit:"அலகு",price:"எதிர்பார்க்கும் விலை (₹)",harvest:"அறுவடை தேதி",district:"மாவட்டம்",village:"கிராமம் / நகரம்",photos:"பொருள் புகைப்படங்கள்",description:"விளக்கம்",publish:"வாங்குபவர்களுக்கு வெளியிடு",myListings:"என் பட்டியல்கள்",listingSub:"வாங்குபவர்களுக்கு தற்போது பட்டியலிடப்பட்ட பொருட்கள்.",addNew:"+ புதியது",enquiriesTitle:"வாங்குபவர் விசாரணைகள்",enquiriesSub:"உங்கள் பொருட்களில் ஆர்வமுள்ளவர்கள்.",mandiTitle:"சந்தை விலை கண்காணிப்பு",mandiSub:"சந்தை விலைகளை ஒப்பிடுங்கள். நேரடி தரவு பின்னர் இணைக்கப்படும்.",state:"மாநிலம்",market:"சந்தை",buyerTitle:"வாங்குபவர் சந்தை",buyerSub:"விவசாயிகள் பட்டியலிட்ட விவசாயப் பொருட்களைத் தேடுங்கள்.",searchCrop:"பயிரைத் தேடுங்கள்",location:"இடம்",minQty:"குறைந்தபட்ச அளவு",maxPrice:"அதிகபட்ச விலை",search:"பொருட்களைத் தேடுங்கள்"}
+};
+
+function changeLanguage(){
+ const t=T[language.value];
+ document.querySelectorAll('[data-i18n]').forEach(e=>{if(t[e.dataset.i18n])e.textContent=t[e.dataset.i18n]});
+}
+function showSection(id,btn){
+ document.querySelectorAll('main section').forEach(s=>s.style.display='none');
+ document.getElementById(id).style.display='block';
+ document.getElementById('buyerDash').style.display='none';
+ document.querySelectorAll('.side-btn').forEach(b=>b.classList.remove('active'));
+ if(btn)btn.classList.add('active');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function showBuyer(){
+ document.querySelectorAll('main section').forEach(s=>s.style.display='none');
+ document.getElementById('buyerDash').style.display='block';
+ document.querySelectorAll('.side-btn').forEach(b=>b.classList.remove('active'));
+}
+function publish(){
+ alert(language.value==='hi'?'डेमो लिस्टिंग प्रकाशित हो गई। अगले चरण में यह डेटाबेस में सेव होगी।':language.value==='ta'?'டெமோ பட்டியல் வெளியிடப்பட்டது. அடுத்த கட்டத்தில் தரவுத்தளத்தில் சேமிக்கப்படும்.':'Demo listing published. In the next stage it will be saved to the real database.');
+}
+</script>
+</body>
+</html>

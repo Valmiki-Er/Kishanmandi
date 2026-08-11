@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KisanMandi - Farmers' Digital Market</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f7faf7;color:#17351f;line-height:1.5}
+    header{background:#146b35;color:white;position:sticky;top:0;z-index:10}
+    .nav{max-width:1150px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .logo{font-size:24px;font-weight:800;letter-spacing:.2px}
+    .logo span{color:#dff5a6}
+    nav{display:flex;gap:20px;align-items:center}
+    nav a{color:white;text-decoration:none;font-size:14px}
+    .login{border:1px solid rgba(255,255,255,.6);padding:8px 14px;border-radius:8px}
+    .hero{background:linear-gradient(120deg,#eaf7e8,#fff);padding:60px 20px}
+    .hero-inner{max-width:1150px;margin:auto;display:grid;grid-template-columns:1.2fr .8fr;gap:35px;align-items:center}
+    .badge{display:inline-block;background:#dff2d8;color:#176a35;padding:7px 12px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:15px}
+    h1{font-size:48px;line-height:1.08;margin-bottom:18px}
+    h1 span{color:#168044}
+    .hero p{font-size:17px;color:#4b6352;max-width:650px}
+    .search{display:flex;background:white;border:1px solid #d7e5d9;border-radius:12px;padding:6px;margin-top:25px;max-width:650px;box-shadow:0 8px 25px rgba(27,78,41,.08)}
+    .search input{flex:1;border:0;outline:0;padding:12px;font-size:15px}
+    .search button{border:0;background:#168044;color:white;padding:12px 18px;border-radius:8px;font-weight:700}
+    .hero-card{background:#146b35;color:white;border-radius:20px;padding:28px;box-shadow:0 15px 35px rgba(20,107,53,.2)}
+    .hero-card h3{font-size:22px;margin-bottom:10px}
+    .hero-card p{color:#e7f7e9;font-size:14px;margin-bottom:18px}
+    .price-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .price-mini div{background:rgba(255,255,255,.12);padding:14px;border-radius:10px}
+    .price-mini strong{display:block;font-size:19px}
+    .container{max-width:1150px;margin:auto;padding:45px 20px}
+    .section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px;gap:15px}
+    .section-head h2{font-size:28px}
+    .section-head p{color:#66756a;font-size:14px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .action{background:white;border:1px solid #e0e9e1;border-radius:15px;padding:25px;box-shadow:0 5px 18px rgba(20,50,25,.05)}
+    .icon{font-size:32px;margin-bottom:10px}
+    .action h3{margin-bottom:7px}
+    .action p{color:#66756a;font-size:14px;margin-bottom:18px}
+    .btn{display:inline-block;text-decoration:none;background:#168044;color:white;padding:10px 15px;border-radius:8px;font-weight:700;font-size:14px}
+    .btn.alt{background:#edf7ef;color:#146b35}
+    .prices{background:#fff;border:1px solid #e0e9e1;border-radius:15px;overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    th,td{text-align:left;padding:15px;border-bottom:1px solid #edf1ed;font-size:14px}
+    th{background:#f1f8f2;color:#41634a}
+    .up{color:#168044;font-weight:700}
+    .market-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .market{background:white;border:1px solid #e0e9e1;border-radius:12px;padding:18px}
+    .market h4{margin-bottom:5px}.market p{font-size:13px;color:#6c796f}
+    .features{background:#146b35;color:white}
+    .features .container{padding-top:42px;padding-bottom:42px}
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .feature{padding:10px 0}.feature b{display:block;font-size:17px;margin-bottom:5px}.feature p{color:#dcefe1;font-size:13px}
+    footer{background:#0c4723;color:#cfe3d3;padding:25px 20px;text-align:center;font-size:13px}
+    @media(max-width:800px){
+      nav a:not(.login){display:none}
+      .hero-inner{grid-template-columns:1fr}
+      h1{font-size:38px}
+      .cards,.features-grid{grid-template-columns:1fr}
+      .market-grid{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:500px){
+      .hero{padding:42px 16px}.container{padding:35px 16px}
+      .nav{padding:12px 16px}.logo{font-size:21px}
+      h1{font-size:33px}
+      .search{flex-direction:column;background:transparent;border:0;box-shadow:none;padding:0}
+      .search input{border:1px solid #d7e5d9;border-radius:8px;margin-bottom:8px}
+      .search button{width:100%}
+      .market-grid{grid-template-columns:1fr}
+      th,td{padding:11px 9px;font-size:12px}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">🌾 Kisan<span>Mandi</span></div>
+    <nav>
+      <a href="#prices">Mandi Prices</a>
+      <a href="#buy">Buy</a>
+      <a href="#sell">Sell</a>
+      <a href="#markets">Markets</a>
+      <a class="login" href="#">Login / Register</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="badge">India's Farmer-to-Market Platform</div>
+      <h1>Sell better.<br><span>Buy smarter.</span></h1>
+      <p>Connect farmers and buyers directly, discover agricultural products, and track mandi prices in one simple platform.</p>
+
+      <div class="search">
+        <input id="searchBox" type="text" placeholder="Search wheat, rice, potato, onion...">
+        <button onclick="searchProduct()">Search</button>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <h3>📊 Today's Market Snapshot</h3>
+      <p>Sample prices shown for the homepage prototype. Live mandi data will be connected later.</p>
+      <div class="price-mini">
+        <div><small>Wheat</small><strong>₹2,450/qtl</strong></div>
+        <div><small>Rice</small><strong>₹3,100/qtl</strong></div>
+        <div><small>Potato</small><strong>₹1,450/qtl</strong></div>
+        <div><small>Onion</small><strong>₹2,100/qtl</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="buy">
+  <div class="section-head">
+    <div>
+      <h2>What do you want to do?</h2>
+      <p>Simple tools for farmers, traders and buyers.</p>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="action" id="sell">
+      <div class="icon">🌾</div>
+      <h3>Sell Your Crop</h3>
+      <p>List your vegetables, grains, fruits or pulses and let buyers find your products.</p>
+      <a class="btn" href="#" onclick="demo('Sell Crop')">List a Product</a>
+    </div>
+
+    <div class="action">
+      <div class="icon">🛒</div>
+      <h3>Buy From Farmers</h3>
+      <p>Search available agricultural products by crop, location, quantity and price.</p>
+      <a class="btn" href="#" onclick="demo('Buy Products')">Find Products</a>
+    </div>
+
+    <div class="action">
+      <div class="icon">📈</div>
+      <h3>Check Mandi Prices</h3>
+      <p>Compare market prices and eventually track historical price movement for every mandi.</p>
+      <a class="btn" href="#prices">View Prices</a>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="prices">
+  <div class="section-head">
+    <div>
+      <h2>Today's Mandi Prices</h2>
+      <p>Prototype data — live government/market data will be integrated in the next stage.</p>
+    </div>
+    <a class="btn alt" href="#" onclick="demo('All Mandi Prices')">View All</a>
+  </div>
+
+  <div class="prices">
+    <table>
+      <thead>
+        <tr><th>Crop</th><th>Mandi</th><th>Min Price</th><th>Max Price</th><th>Modal Price</th><th>Trend</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Wheat</td><td>Gorakhpur</td><td>₹2,300</td><td>₹2,550</td><td><b>₹2,450</b></td><td class="up">↑ 3.2%</td></tr>
+        <tr><td>Rice</td><td>Maharajganj</td><td>₹2,850</td><td>₹3,250</td><td><b>₹3,100</b></td><td class="up">↑ 1.8%</td></tr>
+        <tr><td>Potato</td><td>Gorakhpur</td><td>₹1,200</td><td>₹1,600</td><td><b>₹1,450</b></td><td class="up">↑ 5.1%</td></tr>
+        <tr><td>Onion</td><td>Lucknow</td><td>₹1,800</td><td>₹2,300</td><td><b>₹2,100</b></td><td>↓ 1.2%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="container" id="markets">
+  <div class="section-head">
+    <div>
+      <h2>Popular Mandi Markets</h2>
+      <p>Choose a market to explore crop prices.</p>
+    </div>
+  </div>
+
+  <div class="market-grid">
+    <div class="market"><h4>Gorakhpur Mandi</h4><p>Uttar Pradesh</p></div>
+    <div class="market"><h4>Maharajganj Mandi</h4><p>Uttar Pradesh</p></div>
+    <div class="market"><h4>Lucknow Mandi</h4><p>Uttar Pradesh</p></div>
+    <div class="market"><h4>Kanpur Mandi</h4><p>Uttar Pradesh</p></div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature"><b>📍 Location-based marketplace</b><p>Find products and buyers around your selected area.</p></div>
+      <div class="feature"><b>📊 Price tracking</b><p>Compare mandi prices and follow historical market movement.</p></div>
+      <div class="feature"><b>🤝 Direct connection</b><p>Connect farmers and buyers without unnecessary middle steps.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 KisanMandi — Prototype for an agricultural marketplace.
+</footer>
+
+<script>
+  function demo(name){
+    event.preventDefault();
+    alert(name + " feature will be connected to the database in the next development stage.");
+  }
+
+  function searchProduct(){
+    const q = document.getElementById("searchBox").value.trim();
+    if(!q){
+      alert("Please enter a crop or product name.");
+      return;
+    }
+    alert("Searching for: " + q + "\\n\\nProduct search will be connected to the marketplace database in the next stage.");
+  }
+</script>
+</body>
+</html>
