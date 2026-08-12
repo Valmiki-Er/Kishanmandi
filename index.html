@@ -3135,6 +3135,7 @@ let kisanAuth = null;
 let kisanRecaptchaVerifier = null;
 let kisanConfirmationResult = null;
 let kisanAuthMode = null;
+let kisanOtpSending = false;
 
 function getUsers(){
     return JSON.parse(
@@ -3202,38 +3203,70 @@ function ensureKisanAuth(){
     }
 }
 
+function clearKisanRecaptcha(){
+
+    try{
+        if(kisanRecaptchaVerifier){
+            kisanRecaptchaVerifier.clear();
+        }
+    }catch(error){}
+
+    kisanRecaptchaVerifier = null;
+
+    let container = document.getElementById("recaptcha-container");
+    if(container){
+        container.innerHTML = "";
+    }
+}
+
 function setupRecaptcha(){
+
     if(!ensureKisanAuth()) return false;
 
+    // Prevent Firebase from trying to render a second verifier
+    // into the same DOM element.
     if(kisanRecaptchaVerifier){
         return true;
     }
 
+    let container = document.getElementById("recaptcha-container");
+    if(!container){
+        console.error("reCAPTCHA container not found.");
+        return false;
+    }
+
+    // Remove any stale iframe left after a previous attempt.
+    container.innerHTML = "";
+
     try{
         kisanRecaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-            "recaptcha-container",
+            container,
             {
                 size: "invisible",
                 callback: function(){
                     console.log("reCAPTCHA solved.");
                 },
                 "expired-callback": function(){
-                    kisanRecaptchaVerifier = null;
+                    clearKisanRecaptcha();
                 }
             },
             kisanAuth.app
         );
 
-        kisanRecaptchaVerifier.render();
         return true;
+
     }catch(error){
         console.error("reCAPTCHA setup failed:", error);
-        kisanRecaptchaVerifier = null;
+        clearKisanRecaptcha();
         return false;
     }
 }
 
 async function sendKisanOTP(mode){
+
+    if(kisanOtpSending){
+        return;
+    }
 
     let phoneId = mode === "register"
         ? "registerPhone"
@@ -3265,6 +3298,7 @@ async function sendKisanOTP(mode){
     kisanAuthMode = mode;
     message.innerText = "📱 Sending OTP...";
     message.style.color = "#176b2c";
+    kisanOtpSending = true;
 
     try{
         kisanConfirmationResult = await kisanAuth.signInWithPhoneNumber(
@@ -3337,6 +3371,8 @@ async function sendKisanOTP(mode){
             message.style.color = "#176b2c";
         }
 
+        clearKisanRecaptcha();
+
         updateUserBar();
         updateDashboard();
         updateOrders();
@@ -3349,12 +3385,9 @@ async function sendKisanOTP(mode){
         message.innerText = "❌ " + (error.message || "OTP verification failed.");
         message.style.color = "#c62828";
 
-        try{
-            if(kisanRecaptchaVerifier){
-                kisanRecaptchaVerifier.clear();
-            }
-        }catch(e){}
-        kisanRecaptchaVerifier = null;
+        clearKisanRecaptcha();
+    }finally{
+        kisanOtpSending = false;
     }
 }
 
