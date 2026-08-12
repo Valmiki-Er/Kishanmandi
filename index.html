@@ -19,11 +19,14 @@ body{
     color:#263b28;
 }
 
+/* HEADER */
+
 header{
     background:#176b2c;
     color:white;
     padding:18px 20px;
     text-align:center;
+    position:relative;
 }
 
 header h1{
@@ -34,6 +37,20 @@ header p{
     margin-top:5px;
     font-size:14px;
 }
+
+.language{
+    position:absolute;
+    right:15px;
+    top:15px;
+}
+
+.language select{
+    padding:7px;
+    border-radius:6px;
+    border:none;
+}
+
+/* NAVIGATION */
 
 nav{
     background:#0f5421;
@@ -54,14 +71,16 @@ nav button{
     font-weight:bold;
 }
 
+/* HERO */
+
 .hero{
     text-align:center;
-    padding:35px 15px;
+    padding:40px 15px;
     background:#dff1dc;
 }
 
 .hero h2{
-    font-size:28px;
+    font-size:30px;
     margin-bottom:10px;
 }
 
@@ -70,7 +89,7 @@ nav button{
 }
 
 .search-box{
-    max-width:600px;
+    max-width:650px;
     margin:auto;
     display:flex;
     gap:8px;
@@ -93,10 +112,12 @@ nav button{
     cursor:pointer;
 }
 
+/* CONTAINER */
+
 .container{
-    max-width:1100px;
+    max-width:1150px;
     margin:auto;
-    padding:25px 15px;
+    padding:30px 15px;
 }
 
 .section-title{
@@ -104,12 +125,14 @@ nav button{
     margin-bottom:20px;
 }
 
+/* CATEGORIES */
+
 .categories{
     display:flex;
     gap:10px;
     justify-content:center;
     flex-wrap:wrap;
-    margin-bottom:25px;
+    margin-bottom:30px;
 }
 
 .categories button{
@@ -121,41 +144,102 @@ nav button{
     cursor:pointer;
 }
 
+.categories button:hover{
+    background:#176b2c;
+    color:white;
+}
+
+/* PRODUCTS */
+
 .products{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:22px;
 }
 
 .product{
     background:white;
-    border-radius:12px;
-    padding:18px;
-    box-shadow:0 3px 12px rgba(0,0,0,.1);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 3px 15px rgba(0,0,0,.12);
+    transition:.2s;
 }
 
-.product .emoji{
-    font-size:55px;
-    text-align:center;
-    margin-bottom:10px;
+.product:hover{
+    transform:translateY(-3px);
+}
+
+.product-image{
+    height:170px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#eef7e9;
+    font-size:80px;
+}
+
+.product-info{
+    padding:18px;
 }
 
 .product h3{
     margin-bottom:8px;
+    font-size:21px;
 }
 
-.product p{
-    margin:5px 0;
+.farmer{
+    color:#555;
+    margin-bottom:5px;
+}
+
+.location{
+    color:#777;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.stock{
+    font-size:14px;
+    color:#176b2c;
+    font-weight:bold;
 }
 
 .price{
     color:#176b2c;
-    font-size:20px;
+    font-size:21px;
     font-weight:bold;
-    margin:10px 0;
+    margin:12px 0;
 }
 
-.product button{
+/* QUANTITY */
+
+.quantity-box{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-bottom:10px;
+    overflow:hidden;
+}
+
+.quantity-box button{
+    width:38px;
+    height:38px;
+    border:none;
+    background:#eaf4e7;
+    color:#176b2c;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.quantity-box span{
+    font-weight:bold;
+}
+
+/* PRODUCT BUTTON */
+
+.product button.add-btn{
     width:100%;
     padding:11px;
     border:none;
@@ -166,58 +250,88 @@ nav button{
     font-size:15px;
 }
 
-.product button:hover{
+.product button.add-btn:hover{
     background:#0f5421;
 }
 
+/* CART */
+
 .cart{
     background:white;
-    padding:20px;
-    margin-top:30px;
-    border-radius:12px;
-    box-shadow:0 3px 12px rgba(0,0,0,.1);
+    padding:22px;
+    margin-top:35px;
+    border-radius:14px;
+    box-shadow:0 3px 15px rgba(0,0,0,.1);
+}
+
+.cart h2{
+    margin-bottom:15px;
 }
 
 .cart-item{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:12px 0;
+    padding:15px 0;
     border-bottom:1px solid #ddd;
     gap:10px;
 }
 
-.cart-item button{
-    background:#c62828;
-    color:white;
+.cart-info strong{
+    font-size:17px;
+}
+
+.cart-info small{
+    color:#777;
+}
+
+.cart-controls{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.cart-controls button{
     border:none;
-    padding:5px 9px;
+    background:#eaf4e7;
+    color:#176b2c;
+    padding:6px 10px;
     border-radius:5px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.remove-btn{
+    background:#c62828 !important;
+    color:white !important;
 }
 
 .total{
     text-align:right;
-    font-size:20px;
+    font-size:22px;
     font-weight:bold;
-    margin-top:15px;
+    margin-top:18px;
 }
 
+/* ORDER */
+
 .order-box{
-    margin-top:15px;
+    margin-top:20px;
 }
 
 .order-box input,
 .order-box textarea{
     width:100%;
-    padding:11px;
+    padding:12px;
     margin:6px 0;
     border:1px solid #bbb;
     border-radius:7px;
+    font-size:15px;
 }
 
 .order-btn{
     width:100%;
-    padding:13px;
+    padding:14px;
     background:#176b2c;
     color:white;
     border:none;
@@ -226,70 +340,74 @@ nav button{
     cursor:pointer;
 }
 
+/* SELL */
+
 .sell-section{
-    margin-top:30px;
+    margin-top:35px;
     background:#fff8dc;
     padding:25px;
-    border-radius:12px;
+    border-radius:14px;
+}
+
+.sell-section h2{
+    margin-bottom:8px;
 }
 
 .sell-section input,
 .sell-section select{
     width:100%;
-    padding:11px;
+    padding:12px;
     margin:6px 0;
     border:1px solid #bbb;
     border-radius:7px;
+    font-size:15px;
 }
 
 .sell-section button{
     width:100%;
-    padding:12px;
+    padding:13px;
     margin-top:8px;
     background:#e58b00;
     color:white;
     border:none;
     border-radius:7px;
     cursor:pointer;
+    font-size:16px;
 }
+
+/* FOOTER */
 
 footer{
     margin-top:40px;
     background:#0f5421;
     color:white;
     text-align:center;
-    padding:25px;
+    padding:28px;
 }
 
-.hidden{
-    display:none;
-}
+/* EMPTY */
 
 .empty{
     text-align:center;
-    padding:20px;
+    padding:25px;
     color:#777;
 }
 
-.language{
-    position:absolute;
-    right:15px;
-    top:15px;
-}
-
-.language select{
-    padding:7px;
-    border-radius:6px;
-    border:none;
-}
+/* MOBILE */
 
 @media(max-width:600px){
+
     header h1{
         font-size:23px;
     }
 
+    .language{
+        position:static;
+        margin-bottom:10px;
+    }
+
     .hero h2{
-        font-size:23px;
+        font-size:24px;
     }
 
     .search-box{
@@ -300,11 +418,19 @@ footer{
         flex-direction:column;
         align-items:flex-start;
     }
+
+    .cart-controls{
+        width:100%;
+        justify-content:flex-start;
+        flex-wrap:wrap;
+    }
 }
 </style>
 </head>
 
 <body>
+
+<!-- HEADER -->
 
 <header>
 
@@ -317,26 +443,49 @@ footer{
 </div>
 
 <h1>🌾 KisanMandi</h1>
-<p id="tagline"> किसान से ग्राहक तक — सीधा व्यापार</p>
+
+<p id="tagline">
+किसान से ग्राहक तक — सीधा व्यापार
+</p>
 
 </header>
 
+
+<!-- NAVIGATION -->
+
 <nav>
+
 <button onclick="showProducts()">🏠 Home</button>
-<button onclick="scrollToProducts()">🛒 Buy Products</button>
-<button onclick="scrollToSell()">🌱 Sell Products</button>
-<button onclick="scrollToCart()">🛍️ Cart (<span id="cartCount">0</span>)</button>
+
+<button onclick="scrollToProducts()">
+🛒 Buy Products
+</button>
+
+<button onclick="scrollToSell()">
+🌱 Sell Products
+</button>
+
+<button onclick="scrollToCart()">
+🛍️ Cart (<span id="cartCount">0</span>)
+</button>
+
 </nav>
+
+
+<!-- HERO -->
 
 <section class="hero">
 
-<h2 id="heroTitle">Fresh Products Directly From Farmers</h2>
+<h2 id="heroTitle">
+Fresh Products Directly From Farmers
+</h2>
 
 <p id="heroText">
 Buy fresh agricultural products directly from farmers at fair prices.
 </p>
 
 <div class="search-box">
+
 <input
 type="text"
 id="searchBox"
@@ -344,166 +493,509 @@ placeholder="Search vegetables, fruits, grains..."
 oninput="searchProducts()"
 >
 
-<button onclick="searchProducts()">🔍 Search</button>
+<button onclick="searchProducts()">
+🔍 Search
+</button>
+
 </div>
 
 </section>
 
+
+<!-- MAIN -->
+
 <div class="container">
 
-<h2 class="section-title">🌾 Categories</h2>
+<h2 class="section-title">
+🌾 Categories
+</h2>
+
 
 <div class="categories">
 
-<button onclick="filterCategory('all')">All</button>
-<button onclick="filterCategory('vegetable')">🥬 Vegetables</button>
-<button onclick="filterCategory('fruit')">🍎 Fruits</button>
-<button onclick="filterCategory('grain')">🌾 Grains</button>
-<button onclick="filterCategory('dairy')">🥛 Dairy</button>
+<button onclick="filterCategory('all')">
+All
+</button>
+
+<button onclick="filterCategory('vegetable')">
+🥬 Vegetables
+</button>
+
+<button onclick="filterCategory('fruit')">
+🍎 Fruits
+</button>
+
+<button onclick="filterCategory('grain')">
+🌾 Grains
+</button>
+
+<button onclick="filterCategory('dairy')">
+🥛 Dairy
+</button>
 
 </div>
 
-<h2 class="section-title" id="productsTitle">
-Fresh Products
+
+<h2 class="section-title">
+🌱 Fresh Products
 </h2>
+
+
+<!-- PRODUCTS -->
 
 <div class="products" id="productsContainer">
 
+
+<!-- POTATO -->
+
 <div class="product" data-category="vegetable">
 
-<div class="emoji">🥔</div>
+<div class="product-image">
+🥔
+</div>
+
+<div class="product-info">
 
 <h3>Potato</h3>
 
-<p>Farmer: Ramesh Kumar</p>
+<p class="farmer">
+👨‍🌾 Farmer: Ramesh Kumar
+</p>
 
-<p class="price">₹30 / kg</p>
+<p class="location">
+📍 Gorakhpur, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Potato',30)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 500 kg
+</p>
+
+<p class="price">
+₹30 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('potato',-1)">
+−
+</button>
+
+<span id="qty-potato">
+1
+</span>
+
+<button onclick="changeProductQty('potato',1)">
++
 </button>
 
 </div>
 
+<button class="add-btn"
+onclick="addToCart('Potato',30,'potato')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- TOMATO -->
+
 <div class="product" data-category="vegetable">
 
-<div class="emoji">🍅</div>
+<div class="product-image">
+🍅
+</div>
+
+<div class="product-info">
 
 <h3>Tomato</h3>
 
-<p>Farmer: Suresh Yadav</p>
+<p class="farmer">
+👨‍🌾 Farmer: Suresh Yadav
+</p>
 
-<p class="price">₹40 / kg</p>
+<p class="location">
+📍 Maharajganj, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Tomato',40)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 300 kg
+</p>
+
+<p class="price">
+₹40 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('tomato',-1)">
+−
+</button>
+
+<span id="qty-tomato">
+1
+</span>
+
+<button onclick="changeProductQty('tomato',1)">
++
 </button>
 
 </div>
+
+<button class="add-btn"
+onclick="addToCart('Tomato',40,'tomato')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- CARROT -->
 
 <div class="product" data-category="vegetable">
 
-<div class="emoji">🥕</div>
+<div class="product-image">
+🥕
+</div>
+
+<div class="product-info">
 
 <h3>Carrot</h3>
 
-<p>Farmer: Mohan Singh</p>
+<p class="farmer">
+👨‍🌾 Farmer: Mohan Singh
+</p>
 
-<p class="price">₹50 / kg</p>
+<p class="location">
+📍 Lucknow, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Carrot',50)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 200 kg
+</p>
+
+<p class="price">
+₹50 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('carrot',-1)">
+−
+</button>
+
+<span id="qty-carrot">
+1
+</span>
+
+<button onclick="changeProductQty('carrot',1)">
++
 </button>
 
 </div>
 
+<button class="add-btn"
+onclick="addToCart('Carrot',50,'carrot')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- APPLE -->
+
 <div class="product" data-category="fruit">
 
-<div class="emoji">🍎</div>
+<div class="product-image">
+🍎
+</div>
+
+<div class="product-info">
 
 <h3>Apple</h3>
 
-<p>Farmer: Amit Sharma</p>
+<p class="farmer">
+👨‍🌾 Farmer: Amit Sharma
+</p>
 
-<p class="price">₹120 / kg</p>
+<p class="location">
+📍 Shimla, Himachal Pradesh
+</p>
 
-<button onclick="addToCart('Apple',120)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 150 kg
+</p>
+
+<p class="price">
+₹120 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('apple',-1)">
+−
+</button>
+
+<span id="qty-apple">
+1
+</span>
+
+<button onclick="changeProductQty('apple',1)">
++
 </button>
 
 </div>
+
+<button class="add-btn"
+onclick="addToCart('Apple',120,'apple')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- MANGO -->
 
 <div class="product" data-category="fruit">
 
-<div class="emoji">🥭</div>
+<div class="product-image">
+🥭
+</div>
+
+<div class="product-info">
 
 <h3>Mango</h3>
 
-<p>Farmer: Raj Kumar</p>
+<p class="farmer">
+👨‍🌾 Farmer: Raj Kumar
+</p>
 
-<p class="price">₹80 / kg</p>
+<p class="location">
+📍 Malihabad, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Mango',80)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 400 kg
+</p>
+
+<p class="price">
+₹80 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('mango',-1)">
+−
+</button>
+
+<span id="qty-mango">
+1
+</span>
+
+<button onclick="changeProductQty('mango',1)">
++
 </button>
 
 </div>
 
+<button class="add-btn"
+onclick="addToCart('Mango',80,'mango')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- WHEAT -->
+
 <div class="product" data-category="grain">
 
-<div class="emoji">🌾</div>
+<div class="product-image">
+🌾
+</div>
+
+<div class="product-info">
 
 <h3>Wheat</h3>
 
-<p>Farmer: Vikash Patel</p>
+<p class="farmer">
+👨‍🌾 Farmer: Vikash Patel
+</p>
 
-<p class="price">₹35 / kg</p>
+<p class="location">
+📍 Gorakhpur, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Wheat',35)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 1000 kg
+</p>
+
+<p class="price">
+₹35 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('wheat',-1)">
+−
+</button>
+
+<span id="qty-wheat">
+1
+</span>
+
+<button onclick="changeProductQty('wheat',1)">
++
 </button>
 
 </div>
+
+<button class="add-btn"
+onclick="addToCart('Wheat',35,'wheat')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- RICE -->
 
 <div class="product" data-category="grain">
 
-<div class="emoji">🍚</div>
+<div class="product-image">
+🍚
+</div>
+
+<div class="product-info">
 
 <h3>Rice</h3>
 
-<p>Farmer: Deepak Verma</p>
+<p class="farmer">
+👨‍🌾 Farmer: Deepak Verma
+</p>
 
-<p class="price">₹55 / kg</p>
+<p class="location">
+📍 Kushinagar, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Rice',55)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 800 kg
+</p>
+
+<p class="price">
+₹55 / kg
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('rice',-1)">
+−
+</button>
+
+<span id="qty-rice">
+1
+</span>
+
+<button onclick="changeProductQty('rice',1)">
++
 </button>
 
 </div>
+
+<button class="add-btn"
+onclick="addToCart('Rice',55,'rice')">
+
+🛒 Add to Cart
+
+</button>
+
+</div>
+</div>
+
+
+<!-- MILK -->
 
 <div class="product" data-category="dairy">
 
-<div class="emoji">🥛</div>
+<div class="product-image">
+🥛
+</div>
+
+<div class="product-info">
 
 <h3>Fresh Milk</h3>
 
-<p>Farmer: Sunil Yadav</p>
+<p class="farmer">
+👨‍🌾 Farmer: Sunil Yadav
+</p>
 
-<p class="price">₹60 / litre</p>
+<p class="location">
+📍 Gorakhpur, Uttar Pradesh
+</p>
 
-<button onclick="addToCart('Fresh Milk',60)">
-🛒 Add to Cart
+<p class="stock">
+📦 Available: 100 litre
+</p>
+
+<p class="price">
+₹60 / litre
+</p>
+
+<div class="quantity-box">
+
+<button onclick="changeProductQty('milk',-1)">
+−
+</button>
+
+<span id="qty-milk">
+1
+</span>
+
+<button onclick="changeProductQty('milk',1)">
++
 </button>
 
 </div>
 
+<button class="add-btn"
+onclick="addToCart('Fresh Milk',60,'milk')">
+
+🛒 Add to Cart
+
+</button>
+
 </div>
+</div>
+
+
+</div>
+
 
 <!-- CART -->
 
 <div class="cart" id="cartSection">
 
-<h2>🛒 Your Cart</h2>
+<h2>
+🛒 Your Cart
+</h2>
 
 <div id="cartItems">
 
@@ -514,12 +1006,19 @@ Your cart is empty.
 </div>
 
 <div class="total">
+
 Total: ₹<span id="totalPrice">0</span>
+
 </div>
+
+
+<!-- DELIVERY -->
 
 <div class="order-box">
 
-<h3>📦 Delivery Details</h3>
+<h3>
+📦 Delivery Details
+</h3>
 
 <input
 type="text"
@@ -539,22 +1038,30 @@ placeholder="Delivery Address"
 rows="3"
 ></textarea>
 
-<button class="order-btn" onclick="placeOrder()">
+<button class="order-btn"
+onclick="placeOrder()">
+
 ✅ Place Order
+
 </button>
 
 </div>
 
 </div>
 
+
 <!-- SELL -->
 
 <div class="sell-section" id="sellSection">
 
-<h2>🌱 Sell Your Products</h2>
+<h2>
+🌱 Sell Your Products
+</h2>
 
-<p style="margin:10px 0;">
+<p style="margin:10px 0 15px;">
+
 Farmers can list their products on KisanMandi.
+
 </p>
 
 <input
@@ -571,10 +1078,21 @@ placeholder="Product / Crop Name"
 
 <select id="cropCategory">
 
-<option value="vegetable">Vegetable</option>
-<option value="fruit">Fruit</option>
-<option value="grain">Grain</option>
-<option value="dairy">Dairy</option>
+<option value="vegetable">
+Vegetable
+</option>
+
+<option value="fruit">
+Fruit
+</option>
+
+<option value="grain">
+Grain
+</option>
+
+<option value="dairy">
+Dairy
+</option>
 
 </select>
 
@@ -584,19 +1102,34 @@ id="cropPrice"
 placeholder="Price per kg/litre"
 >
 
+<input
+type="number"
+id="cropQuantity"
+placeholder="Available Quantity"
+>
+
 <button onclick="listCrop()">
+
 🌾 List My Product
+
 </button>
 
 </div>
 
 </div>
 
+
+<!-- FOOTER -->
+
 <footer>
 
-<h3>🌾 KisanMandi</h3>
+<h3>
+🌾 KisanMandi
+</h3>
 
-<p>Connecting Farmers Directly With Customers</p>
+<p>
+Connecting Farmers Directly With Customers
+</p>
 
 <p style="margin-top:10px;">
 © 2026 KisanMandi. All Rights Reserved.
@@ -607,394 +1140,720 @@ placeholder="Price per kg/litre"
 
 <script>
 
+
+// ================================
+// CART
+// ================================
+
 let cart = [];
 
-let selectedProductName = "";
-let selectedProductPrice = 0;
+
+// ================================
+// PRODUCT QUANTITY
+// ================================
+
+let productQuantities = {
+
+    potato:1,
+    tomato:1,
+    carrot:1,
+    apple:1,
+    mango:1,
+    wheat:1,
+    rice:1,
+    milk:1
+
+};
 
 
-/* ADD TO CART */
+function changeProductQty(id, change){
 
-function addToCart(name, price){
+    productQuantities[id] += change;
 
-cart.push({
-name:name,
-price:price
-});
+    if(productQuantities[id] < 1){
 
-updateCart();
+        productQuantities[id] = 1;
 
-alert(
-"✅ " + name +
-" added to your cart!"
-);
+    }
+
+    if(productQuantities[id] > 50){
+
+        productQuantities[id] = 50;
+
+    }
+
+    document.getElementById(
+        "qty-" + id
+    ).innerText = productQuantities[id];
 
 }
 
 
-/* UPDATE CART */
+// ================================
+// ADD TO CART
+// ================================
+
+function addToCart(name, price, id){
+
+    let quantity = productQuantities[id];
+
+    let existing = cart.find(
+        item => item.name === name
+    );
+
+    if(existing){
+
+        existing.quantity += quantity;
+
+    }else{
+
+        cart.push({
+
+            name:name,
+            price:price,
+            quantity:quantity
+
+        });
+
+    }
+
+    updateCart();
+
+    alert(
+        "✅ " +
+        quantity +
+        " × " +
+        name +
+        " added to your cart!"
+    );
+
+}
+
+
+// ================================
+// UPDATE CART
+// ================================
 
 function updateCart(){
 
-let cartItems =
-document.getElementById("cartItems");
+    let cartItems =
+        document.getElementById("cartItems");
 
-let cartCount =
-document.getElementById("cartCount");
+    let cartCount =
+        document.getElementById("cartCount");
 
-let totalPrice =
-document.getElementById("totalPrice");
+    let totalPrice =
+        document.getElementById("totalPrice");
 
-cartCount.innerText = cart.length;
 
-if(cart.length === 0){
+    let totalQuantity = cart.reduce(
 
-cartItems.innerHTML =
-'<div class="empty">Your cart is empty.</div>';
+        function(sum,item){
 
-totalPrice.innerText = "0";
+            return sum + item.quantity;
 
-return;
+        },0
+
+    );
+
+
+    cartCount.innerText =
+        totalQuantity;
+
+
+    if(cart.length === 0){
+
+        cartItems.innerHTML =
+        '<div class="empty">Your cart is empty.</div>';
+
+        totalPrice.innerText = "0";
+
+        return;
+
+    }
+
+
+    cartItems.innerHTML = "";
+
+    let total = 0;
+
+
+    cart.forEach(function(item,index){
+
+        let itemTotal =
+            item.price * item.quantity;
+
+        total += itemTotal;
+
+
+        let div =
+            document.createElement("div");
+
+        div.className =
+            "cart-item";
+
+
+        div.innerHTML = `
+
+            <div class="cart-info">
+
+                <strong>
+                    ${item.name}
+                </strong>
+
+                <br>
+
+                <small>
+                    ₹${item.price} × ${item.quantity}
+                </small>
+
+                <br>
+
+                <strong>
+                    Subtotal: ₹${itemTotal}
+                </strong>
+
+            </div>
+
+
+            <div class="cart-controls">
+
+                <button
+                onclick="changeCartQuantity(${index},-1)">
+                −
+                </button>
+
+
+                <span>
+                    ${item.quantity}
+                </span>
+
+
+                <button
+                onclick="changeCartQuantity(${index},1)">
+                +
+                </button>
+
+
+                <button
+                class="remove-btn"
+                onclick="removeFromCart(${index})">
+                Remove
+                </button>
+
+            </div>
+
+        `;
+
+
+        cartItems.appendChild(div);
+
+    });
+
+
+    totalPrice.innerText =
+        total;
 
 }
 
-cartItems.innerHTML = "";
 
-let total = 0;
+// ================================
+// CHANGE CART QUANTITY
+// ================================
 
-cart.forEach(function(item,index){
+function changeCartQuantity(index, change){
 
-total += item.price;
+    cart[index].quantity += change;
 
-let div =
-document.createElement("div");
 
-div.className = "cart-item";
+    if(cart[index].quantity <= 0){
 
-div.innerHTML = `
+        cart.splice(index,1);
 
-<div>
-<strong>${item.name}</strong>
-<br>
-₹${item.price}
-</div>
+    }
 
-<button onclick="removeFromCart(${index})">
-Remove
-</button>
 
-`;
-
-cartItems.appendChild(div);
-
-});
-
-totalPrice.innerText = total;
+    updateCart();
 
 }
 
 
-/* REMOVE */
+// ================================
+// REMOVE FROM CART
+// ================================
 
 function removeFromCart(index){
 
-cart.splice(index,1);
+    cart.splice(index,1);
 
-updateCart();
+    updateCart();
 
 }
 
 
-/* SEARCH */
+// ================================
+// SEARCH
+// ================================
 
 function searchProducts(){
 
-let search =
-document
-.getElementById("searchBox")
-.value
-.toLowerCase()
-.trim();
+    let search =
+        document
+        .getElementById("searchBox")
+        .value
+        .toLowerCase()
+        .trim();
 
-let products =
-document.querySelectorAll(".product");
 
-products.forEach(function(product){
+    let products =
+        document.querySelectorAll(".product");
 
-let name =
-product
-.querySelector("h3")
-.innerText
-.toLowerCase();
 
-let category =
-product.dataset.category
-.toLowerCase();
+    products.forEach(function(product){
 
-if(
-name.includes(search) ||
-category.includes(search)
-){
+        let name =
+            product
+            .querySelector("h3")
+            .innerText
+            .toLowerCase();
 
-product.style.display = "";
 
-}else{
+        let farmer =
+            product
+            .querySelector(".farmer")
+            .innerText
+            .toLowerCase();
 
-product.style.display = "none";
+
+        let location =
+            product
+            .querySelector(".location")
+            .innerText
+            .toLowerCase();
+
+
+        let category =
+            product.dataset.category
+            .toLowerCase();
+
+
+        if(
+
+            name.includes(search) ||
+
+            farmer.includes(search) ||
+
+            location.includes(search) ||
+
+            category.includes(search)
+
+        ){
+
+            product.style.display = "";
+
+        }else{
+
+            product.style.display = "none";
+
+        }
+
+    });
 
 }
 
-});
 
-}
-
-
-/* CATEGORY FILTER */
+// ================================
+// CATEGORY FILTER
+// ================================
 
 function filterCategory(category){
 
-let products =
-document.querySelectorAll(".product");
+    let products =
+        document.querySelectorAll(".product");
 
-products.forEach(function(product){
 
-if(
-category === "all" ||
-product.dataset.category === category
-){
+    products.forEach(function(product){
 
-product.style.display = "";
+        if(
 
-}else{
+            category === "all" ||
 
-product.style.display = "none";
+            product.dataset.category === category
+
+        ){
+
+            product.style.display = "";
+
+        }else{
+
+            product.style.display = "none";
+
+        }
+
+    });
 
 }
 
-});
 
-}
-
-
-/* PLACE ORDER */
+// ================================
+// PLACE ORDER
+// ================================
 
 function placeOrder(){
 
-if(cart.length === 0){
+    if(cart.length === 0){
 
-alert("🛒 Please add a product to your cart first.");
+        alert(
+            "🛒 Please add a product to your cart first."
+        );
 
-return;
+        return;
+
+    }
+
+
+    let name =
+        document
+        .getElementById("customerName")
+        .value
+        .trim();
+
+
+    let phone =
+        document
+        .getElementById("customerPhone")
+        .value
+        .trim();
+
+
+    let address =
+        document
+        .getElementById("customerAddress")
+        .value
+        .trim();
+
+
+    if(
+
+        name === "" ||
+
+        phone === "" ||
+
+        address === ""
+
+    ){
+
+        alert(
+            "⚠️ Please enter your name, mobile number and delivery address."
+        );
+
+        return;
+
+    }
+
+
+    let total = cart.reduce(
+
+        function(sum,item){
+
+            return sum +
+                (item.price * item.quantity);
+
+        },0
+
+    );
+
+
+    let orderDetails =
+        cart.map(
+
+            item =>
+                item.name +
+                " × " +
+                item.quantity
+
+        ).join(", ");
+
+
+    alert(
+
+        "✅ Order Placed Successfully!\n\n" +
+
+        "Customer: " +
+        name +
+
+        "\nMobile: " +
+        phone +
+
+        "\nProducts: " +
+        orderDetails +
+
+        "\nTotal: ₹" +
+        total +
+
+        "\n\nThank you for using KisanMandi 🌾"
+
+    );
+
+
+    cart = [];
+
+    updateCart();
+
+
+    document
+    .getElementById("customerName")
+    .value = "";
+
+
+    document
+    .getElementById("customerPhone")
+    .value = "";
+
+
+    document
+    .getElementById("customerAddress")
+    .value = "";
 
 }
 
-let name =
-document
-.getElementById("customerName")
-.value
-.trim();
 
-let phone =
-document
-.getElementById("customerPhone")
-.value
-.trim();
-
-let address =
-document
-.getElementById("customerAddress")
-.value
-.trim();
-
-if(name === "" || phone === "" || address === ""){
-
-alert(
-"⚠️ Please enter your name, mobile number and delivery address."
-);
-
-return;
-
-}
-
-let total = cart.reduce(
-function(sum,item){
-return sum + item.price;
-},0
-);
-
-alert(
-"✅ Order Placed Successfully!\n\n" +
-"Customer: " + name +
-"\nMobile: " + phone +
-"\nTotal: ₹" + total +
-"\n\nThank you for using KisanMandi 🌾"
-);
-
-cart = [];
-
-updateCart();
-
-document.getElementById("customerName").value = "";
-document.getElementById("customerPhone").value = "";
-document.getElementById("customerAddress").value = "";
-
-}
-
-
-/* LIST CROP */
+// ================================
+// SELL PRODUCT
+// ================================
 
 function listCrop(){
 
-let farmer =
-document
-.getElementById("farmerName")
-.value
-.trim();
+    let farmer =
+        document
+        .getElementById("farmerName")
+        .value
+        .trim();
 
-let crop =
-document
-.getElementById("cropName")
-.value
-.trim();
 
-let category =
-document
-.getElementById("cropCategory")
-.value;
+    let crop =
+        document
+        .getElementById("cropName")
+        .value
+        .trim();
 
-let price =
-document
-.getElementById("cropPrice")
-.value;
 
-if(
-farmer === "" ||
-crop === "" ||
-price === ""
-){
+    let category =
+        document
+        .getElementById("cropCategory")
+        .value;
 
-alert(
-"⚠️ Please enter all product details."
-);
 
-return;
+    let price =
+        document
+        .getElementById("cropPrice")
+        .value;
+
+
+    let quantity =
+        document
+        .getElementById("cropQuantity")
+        .value;
+
+
+    if(
+
+        farmer === "" ||
+
+        crop === "" ||
+
+        price === "" ||
+
+        quantity === ""
+
+    ){
+
+        alert(
+            "⚠️ Please enter all product details."
+        );
+
+        return;
+
+    }
+
+
+    alert(
+
+        "🌾 Product listed successfully!\n\n" +
+
+        "Farmer: " +
+        farmer +
+
+        "\nProduct: " +
+        crop +
+
+        "\nCategory: " +
+        category +
+
+        "\nPrice: ₹" +
+        price +
+
+        "\nQuantity: " +
+        quantity
+
+    );
+
+
+    document
+    .getElementById("farmerName")
+    .value = "";
+
+
+    document
+    .getElementById("cropName")
+    .value = "";
+
+
+    document
+    .getElementById("cropPrice")
+    .value = "";
+
+
+    document
+    .getElementById("cropQuantity")
+    .value = "";
 
 }
 
-alert(
-"🌾 Product listed successfully!\n\n" +
-"Farmer: " + farmer +
-"\nProduct: " + crop +
-"\nPrice: ₹" + price
-);
 
-document.getElementById("farmerName").value = "";
-document.getElementById("cropName").value = "";
-document.getElementById("cropPrice").value = "";
-
-}
-
-
-/* NAVIGATION */
+// ================================
+// NAVIGATION
+// ================================
 
 function scrollToProducts(){
 
-document
-.getElementById("productsContainer")
-.scrollIntoView({
-behavior:"smooth"
-});
+    document
+    .getElementById("productsContainer")
+    .scrollIntoView({
+
+        behavior:"smooth"
+
+    });
 
 }
+
 
 function scrollToSell(){
 
-document
-.getElementById("sellSection")
-.scrollIntoView({
-behavior:"smooth"
-});
+    document
+    .getElementById("sellSection")
+    .scrollIntoView({
+
+        behavior:"smooth"
+
+    });
 
 }
+
 
 function scrollToCart(){
 
-document
-.getElementById("cartSection")
-.scrollIntoView({
-behavior:"smooth"
-});
+    document
+    .getElementById("cartSection")
+    .scrollIntoView({
+
+        behavior:"smooth"
+
+    });
 
 }
+
 
 function showProducts(){
 
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
 
 }
 
 
-/* LANGUAGE */
+// ================================
+// LANGUAGE
+// ================================
 
 function changeLanguage(){
 
-let language =
-document
-.getElementById("languageSelect")
-.value;
+    let language =
+        document
+        .getElementById("languageSelect")
+        .value;
 
-let heroTitle =
-document.getElementById("heroTitle");
 
-let heroText =
-document.getElementById("heroText");
+    let heroTitle =
+        document.getElementById("heroTitle");
 
-if(language === "hi"){
 
-heroTitle.innerText =
-"किसानों से सीधे ताज़ा उत्पाद खरीदें";
+    let heroText =
+        document.getElementById("heroText");
 
-heroText.innerText =
-"उचित कीमत पर किसानों से सीधे ताज़ा कृषि उत्पाद खरीदें।";
 
-document.getElementById("tagline").innerText =
-"किसान से ग्राहक तक — सीधा व्यापार";
+    let tagline =
+        document.getElementById("tagline");
+
+
+    if(language === "hi"){
+
+        heroTitle.innerText =
+        "किसानों से सीधे ताज़ा उत्पाद खरीदें";
+
+
+        heroText.innerText =
+        "उचित कीमत पर किसानों से सीधे ताज़ा कृषि उत्पाद खरीदें.";
+
+
+        tagline.innerText =
+        "किसान से ग्राहक तक — सीधा व्यापार";
+
+    }
+
+
+    else if(language === "ta"){
+
+        heroTitle.innerText =
+        "விவசாயிகளிடமிருந்து நேரடியாக புதிய பொருட்களை வாங்குங்கள்";
+
+
+        heroText.innerText =
+        "நியாயமான விலையில் விவசாயிகளிடமிருந்து நேரடியாக விவசாய பொருட்களை வாங்குங்கள்.";
+
+
+        tagline.innerText =
+        "விவசாயியிடமிருந்து வாடிக்கையாளருக்கு — நேரடி வர்த்தகம்";
+
+    }
+
+
+    else{
+
+        heroTitle.innerText =
+        "Fresh Products Directly From Farmers";
+
+
+        heroText.innerText =
+        "Buy fresh agricultural products directly from farmers at fair prices.";
+
+
+        tagline.innerText =
+        "किसान से ग्राहक तक — सीधा व्यापार";
+
+    }
 
 }
 
-else if(language === "ta"){
 
-heroTitle.innerText =
-"விவசாயிகளிடமிருந்து நேரடியாக புதிய பொருட்களை வாங்குங்கள்";
-
-heroText.innerText =
-"நியாயமான விலையில் விவசாயிகளிடமிருந்து நேரடியாக விவசாய பொருட்களை வாங்குங்கள்.";
-
-document.getElementById("tagline").innerText =
-"விவசாயியிடமிருந்து வாடிக்கையாளருக்கு — நேரடி வர்த்தகம்";
-
-}
-
-else{
-
-heroTitle.innerText =
-"Fresh Products Directly From Farmers";
-
-heroText.innerText =
-"Buy fresh agricultural products directly from farmers at fair prices.";
-
-document.getElementById("tagline").innerText =
-"किसान से ग्राहक तक — सीधा व्यापार";
-
-}
-
-}
-
-
-/* INITIAL CART */
+// ================================
+// START WEBSITE
+// ================================
 
 updateCart();
 
