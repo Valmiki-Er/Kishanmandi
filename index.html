@@ -1456,3 +1456,688 @@ function searchProducts(){
         let category =
             product.dataset.category
             .toLowerCase();
+
+
+        if(
+
+            name.includes(search) ||
+
+            farmer.includes(search) ||
+
+            location.includes(search) ||
+
+            category.includes(search)
+
+        ){
+
+            product.style.display = "";
+
+        }else{
+
+            product.style.display = "none";
+
+        }
+
+    });
+
+}
+
+
+// ========================================
+// CATEGORY FILTER
+// ========================================
+
+function filterCategory(category){
+
+    let products =
+        document.querySelectorAll(".product");
+
+
+    products.forEach(function(product){
+
+        if(
+
+            category === "all" ||
+
+            product.dataset.category === category
+
+        ){
+
+            product.style.display = "";
+
+        }else{
+
+            product.style.display = "none";
+
+        }
+
+    });
+
+}
+
+
+// ========================================
+// PLACE ORDER
+// ========================================
+
+function placeOrder(){
+
+    if(cart.length === 0){
+
+        alert(
+            "🛒 Please add a product to your cart first."
+        );
+
+        return;
+
+    }
+
+
+    let name =
+        document
+        .getElementById("customerName")
+        .value
+        .trim();
+
+
+    let phone =
+        document
+        .getElementById("customerPhone")
+        .value
+        .trim();
+
+
+    let address =
+        document
+        .getElementById("customerAddress")
+        .value
+        .trim();
+
+
+    if(
+
+        name === "" ||
+        phone === "" ||
+        address === ""
+
+    ){
+
+        alert(
+            "⚠️ Please enter your name, mobile number and delivery address."
+        );
+
+        return;
+
+    }
+
+
+    let total =
+        cart.reduce(
+
+            function(sum,item){
+
+                return sum +
+                    (item.price * item.quantity);
+
+            },
+
+            0
+
+        );
+
+
+    let orderDetails =
+        cart.map(
+
+            item =>
+                item.name +
+                " × " +
+                item.quantity
+
+        ).join(", ");
+
+
+    alert(
+
+        "✅ Order Placed Successfully!\n\n" +
+
+        "Customer: " +
+        name +
+
+        "\nMobile: " +
+        phone +
+
+        "\nProducts: " +
+        orderDetails +
+
+        "\nTotal: ₹" +
+        total +
+
+        "\n\nThank you for using KisanMandi 🌾"
+
+    );
+
+
+    cart = [];
+
+    updateCart();
+
+
+    document.getElementById("customerName").value = "";
+
+    document.getElementById("customerPhone").value = "";
+
+    document.getElementById("customerAddress").value = "";
+
+}
+
+
+// ========================================
+// FARMER PRODUCT LISTING
+// ========================================
+
+function listCrop(){
+
+    let farmer =
+        document
+        .getElementById("farmerName")
+        .value
+        .trim();
+
+
+    let crop =
+        document
+        .getElementById("cropName")
+        .value
+        .trim();
+
+
+    let location =
+        document
+        .getElementById("farmerLocation")
+        .value
+        .trim();
+
+
+    let category =
+        document
+        .getElementById("cropCategory")
+        .value;
+
+
+    let price =
+        document
+        .getElementById("cropPrice")
+        .value;
+
+
+    let quantity =
+        document
+        .getElementById("cropQuantity")
+        .value;
+
+
+    if(
+
+        farmer === "" ||
+        crop === "" ||
+        location === "" ||
+        price === "" ||
+        quantity === ""
+
+    ){
+
+        alert(
+            "⚠️ Please enter all product details."
+        );
+
+        return;
+
+    }
+
+
+    if(Number(price) <= 0 || Number(quantity) <= 0){
+
+        alert(
+            "⚠️ Price and quantity must be greater than zero."
+        );
+
+        return;
+
+    }
+
+
+    let products =
+        JSON.parse(
+            localStorage.getItem(
+                "kisanMandiProducts"
+            )
+        ) || [];
+
+
+    let newProduct = {
+
+        id:Date.now(),
+
+        farmer:farmer,
+
+        name:crop,
+
+        location:location,
+
+        category:category,
+
+        price:Number(price),
+
+        quantity:Number(quantity)
+
+    };
+
+
+    products.push(newProduct);
+
+
+    localStorage.setItem(
+
+        "kisanMandiProducts",
+
+        JSON.stringify(products)
+
+    );
+
+
+    alert(
+
+        "🌾 Product listed successfully!\n\n" +
+
+        "Farmer: " +
+        farmer +
+
+        "\nProduct: " +
+        crop +
+
+        "\nLocation: " +
+        location +
+
+        "\nPrice: ₹" +
+        price +
+
+        "\nQuantity: " +
+        quantity
+
+    );
+
+
+    document.getElementById("farmerName").value = "";
+
+    document.getElementById("cropName").value = "";
+
+    document.getElementById("farmerLocation").value = "";
+
+    document.getElementById("cropPrice").value = "";
+
+    document.getElementById("cropQuantity").value = "";
+
+
+    displayFarmerProducts();
+
+}
+
+
+// ========================================
+// DISPLAY FARMER PRODUCTS
+// ========================================
+
+function displayFarmerProducts(){
+
+    let container =
+        document.getElementById(
+            "productsContainer"
+        );
+
+
+    let products =
+        JSON.parse(
+            localStorage.getItem(
+                "kisanMandiProducts"
+            )
+        ) || [];
+
+
+    products.forEach(function(product,index){
+
+        let existing =
+            document.getElementById(
+                "farmer-product-" +
+                product.id
+            );
+
+
+        if(existing){
+            return;
+        }
+
+
+        let emoji = "🌾";
+
+
+        if(product.category === "vegetable"){
+            emoji = "🥬";
+        }
+
+        if(product.category === "fruit"){
+            emoji = "🍎";
+        }
+
+        if(product.category === "grain"){
+            emoji = "🌾";
+        }
+
+        if(product.category === "dairy"){
+            emoji = "🥛";
+        }
+
+
+        let div =
+            document.createElement("div");
+
+
+        div.className =
+            "product";
+
+
+        div.id =
+            "farmer-product-" +
+            product.id;
+
+
+        div.dataset.category =
+            product.category;
+
+
+        div.innerHTML = `
+
+        <div class="product-image">
+            ${emoji}
+        </div>
+
+        <div class="product-info">
+
+            <span class="listed-label">
+                🌱 Farmer Listed
+            </span>
+
+            <h3>
+                ${escapeHTML(product.name)}
+            </h3>
+
+            <p class="farmer">
+                👨‍🌾 Farmer:
+                ${escapeHTML(product.farmer)}
+            </p>
+
+            <p class="location">
+                📍
+                ${escapeHTML(product.location)}
+            </p>
+
+            <p class="stock">
+                📦 Available:
+                ${product.quantity}
+            </p>
+
+            <p class="price">
+                ₹${product.price} / kg
+            </p>
+
+            <button
+            class="add-btn"
+            onclick="addFarmerProductToCart(${index})">
+
+                🛒 Add to Cart
+
+            </button>
+
+            <button
+            class="delete-product"
+            onclick="deleteFarmerProduct(${index})">
+
+                🗑️ Remove Product
+
+            </button>
+
+        </div>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+// ========================================
+// DELETE FARMER PRODUCT
+// ========================================
+
+function deleteFarmerProduct(index){
+
+    let products =
+        JSON.parse(
+            localStorage.getItem(
+                "kisanMandiProducts"
+            )
+        ) || [];
+
+
+    if(!products[index]){
+        return;
+    }
+
+
+    let confirmDelete =
+        confirm(
+            "Are you sure you want to remove " +
+            products[index].name +
+            "?"
+        );
+
+
+    if(!confirmDelete){
+        return;
+    }
+
+
+    let productId =
+        products[index].id;
+
+
+    products.splice(index,1);
+
+
+    localStorage.setItem(
+
+        "kisanMandiProducts",
+
+        JSON.stringify(products)
+
+    );
+
+
+    let card =
+        document.getElementById(
+            "farmer-product-" +
+            productId
+        );
+
+
+    if(card){
+        card.remove();
+    }
+
+
+    alert(
+        "🗑️ Product removed successfully."
+    );
+
+}
+
+
+// ========================================
+// SAFE TEXT
+// ========================================
+
+function escapeHTML(text){
+
+    let div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
+
+
+// ========================================
+// NAVIGATION
+// ========================================
+
+function scrollToProducts(){
+
+    document
+    .getElementById("productsContainer")
+    .scrollIntoView({
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+function scrollToSell(){
+
+    document
+    .getElementById("sellSection")
+    .scrollIntoView({
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+function scrollToCart(){
+
+    document
+    .getElementById("cartSection")
+    .scrollIntoView({
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+function showProducts(){
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+// ========================================
+// LANGUAGE
+// ========================================
+
+function changeLanguage(){
+
+    let language =
+        document
+        .getElementById("languageSelect")
+        .value;
+
+
+    let heroTitle =
+        document.getElementById("heroTitle");
+
+
+    let heroText =
+        document.getElementById("heroText");
+
+
+    let tagline =
+        document.getElementById("tagline");
+
+
+    if(language === "hi"){
+
+        heroTitle.innerText =
+        "किसानों से सीधे ताज़ा उत्पाद खरीदें";
+
+
+        heroText.innerText =
+        "उचित कीमत पर किसानों से सीधे ताज़ा कृषि उत्पाद खरीदें।";
+
+
+        tagline.innerText =
+        "किसान से ग्राहक तक — सीधा व्यापार";
+
+    }
+
+    else if(language === "ta"){
+
+        heroTitle.innerText =
+        "விவசாயிகளிடமிருந்து நேரடியாக புதிய பொருட்களை வாங்குங்கள்";
+
+
+        heroText.innerText =
+        "நியாயமான விலையில் விவசாயிகளிடமிருந்து நேரடியாக விவசாய பொருட்களை வாங்குங்கள்.";
+
+
+        tagline.innerText =
+        "விவசாயியிடமிருந்து வாடிக்கையாளருக்கு — நேரடி வர்த்தகம்";
+
+    }
+
+    else{
+
+        heroTitle.innerText =
+        "Fresh Products Directly From Farmers";
+
+
+        heroText.innerText =
+        "Buy fresh agricultural products directly from farmers at fair prices.";
+
+
+        tagline.innerText =
+        "किसान से ग्राहक तक — सीधा व्यापार";
+
+    }
+
+}
+
+
+// ========================================
+// START
+// ========================================
+
+displayFarmerProducts();
+
+updateCart();
+
+</script>
+
+</body>
+</html>
