@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KisanMandi - किसान मंडी</title>
+<title>KisanMandi - किसान मंडी | V8.1</title>
 
 <style>
 
@@ -2150,6 +2150,10 @@ function listCrop(){
     );
 
 
+    // V8.1: Save the newly listed farmer product to Firebase
+    cloudSaveProduct(newProduct);
+
+
     alert(
 
         "🌾 Product listed successfully!\n\n" +
@@ -2366,7 +2370,8 @@ function deleteFarmerProduct(productId){
         JSON.stringify(products)
     );
 
-    cloudSaveProduct(newProduct);
+    // V8.1: Delete the product from Firebase as well
+    cloudDeleteProduct(productId);
 
     let card =
         document.getElementById(
