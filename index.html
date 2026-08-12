@@ -384,6 +384,111 @@ nav button{
     text-align:center;
 }
 
+/* ========================================
+   AUTHENTICATION
+======================================== */
+
+.auth-panel{
+    max-width:650px;
+    margin:35px auto;
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 15px rgba(0,0,0,.1);
+}
+
+.auth-panel h2{
+    text-align:center;
+    margin-bottom:8px;
+}
+
+.auth-subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:18px;
+}
+
+.auth-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+}
+
+.auth-tabs button{
+    flex:1;
+    padding:11px;
+    border:1px solid #176b2c;
+    border-radius:7px;
+    background:white;
+    color:#176b2c;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.auth-tabs button.active{
+    background:#176b2c;
+    color:white;
+}
+
+.auth-form input,
+.auth-form select{
+    width:100%;
+    padding:12px;
+    margin:6px 0;
+    border:1px solid #bbb;
+    border-radius:7px;
+    font-size:15px;
+}
+
+.auth-form button{
+    width:100%;
+    padding:13px;
+    margin-top:8px;
+    background:#176b2c;
+    color:white;
+    border:none;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.auth-message{
+    text-align:center;
+    margin-top:12px;
+    font-weight:bold;
+}
+
+.user-bar{
+    background:#eaf4e7;
+    color:#176b2c;
+    padding:10px 15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.logout-btn{
+    margin-left:10px;
+    padding:5px 10px;
+    border:none;
+    border-radius:5px;
+    background:#c62828;
+    color:white;
+    cursor:pointer;
+}
+
+@media(max-width:600px){
+    .auth-panel{
+        margin:25px 15px;
+        padding:20px;
+    }
+
+    .logout-btn{
+        display:block;
+        margin:8px auto 0;
+    }
+}
+
+
 footer{
     margin-top:40px;
     background:#0f5421;
@@ -474,6 +579,10 @@ footer{
 
 <button onclick="scrollToCart()">
 🛍️ Cart (<span id="cartCount">0</span>)
+</button>
+
+<button onclick="scrollToAuth()">
+👤 Login / Register
 </button>
 
 </nav>
@@ -1014,6 +1123,90 @@ onclick="placeOrder()">
 </div>
 
 </div>
+
+
+<!-- AUTHENTICATION -->
+
+<div class="auth-panel" id="authSection">
+
+    <h2>👤 KisanMandi Account</h2>
+
+    <p class="auth-subtitle">
+        Login as a customer or farmer
+    </p>
+
+    <div class="auth-tabs">
+        <button id="loginTab" class="active" onclick="showAuthForm('login')">
+            Login
+        </button>
+
+        <button id="registerTab" onclick="showAuthForm('register')">
+            Register
+        </button>
+    </div>
+
+    <div id="loginForm" class="auth-form">
+
+        <input
+            type="tel"
+            id="loginPhone"
+            placeholder="Mobile Number"
+        >
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Password"
+        >
+
+        <button onclick="loginUser()">
+            🔐 Login
+        </button>
+
+    </div>
+
+    <div id="registerForm" class="auth-form" style="display:none;">
+
+        <input
+            type="text"
+            id="registerName"
+            placeholder="Full Name"
+        >
+
+        <input
+            type="tel"
+            id="registerPhone"
+            placeholder="Mobile Number"
+        >
+
+        <select id="registerRole">
+            <option value="customer">Customer</option>
+            <option value="farmer">Farmer</option>
+        </select>
+
+        <input
+            type="password"
+            id="registerPassword"
+            placeholder="Create Password"
+        >
+
+        <input
+            type="password"
+            id="registerConfirmPassword"
+            placeholder="Confirm Password"
+        >
+
+        <button onclick="registerUser()">
+            📝 Create Account
+        </button>
+
+    </div>
+
+    <div id="authMessage" class="auth-message"></div>
+
+</div>
+
+<div id="userBar" class="user-bar" style="display:none;"></div>
 
 
 <!-- SELL -->
@@ -1991,6 +2184,226 @@ function escapeHTML(text){
 
 
 // ========================================
+// AUTHENTICATION
+// ========================================
+
+function getUsers(){
+    return JSON.parse(
+        localStorage.getItem("kisanMandiUsers")
+    ) || [];
+}
+
+function saveUsers(users){
+    localStorage.setItem(
+        "kisanMandiUsers",
+        JSON.stringify(users)
+    );
+}
+
+function showAuthForm(type){
+
+    let loginForm = document.getElementById("loginForm");
+    let registerForm = document.getElementById("registerForm");
+
+    let loginTab = document.getElementById("loginTab");
+    let registerTab = document.getElementById("registerTab");
+
+    let message = document.getElementById("authMessage");
+    message.innerText = "";
+
+    if(type === "register"){
+        loginForm.style.display = "none";
+        registerForm.style.display = "block";
+
+        loginTab.classList.remove("active");
+        registerTab.classList.add("active");
+    }else{
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+
+        loginTab.classList.add("active");
+        registerTab.classList.remove("active");
+    }
+}
+
+function registerUser(){
+
+    let name =
+        document.getElementById("registerName").value.trim();
+
+    let phone =
+        document.getElementById("registerPhone").value.trim();
+
+    let role =
+        document.getElementById("registerRole").value;
+
+    let password =
+        document.getElementById("registerPassword").value;
+
+    let confirmPassword =
+        document.getElementById("registerConfirmPassword").value;
+
+    let message =
+        document.getElementById("authMessage");
+
+    if(name === "" || phone === "" || password === ""){
+        message.innerText = "⚠️ Please fill all required fields.";
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(!/^[0-9]{10}$/.test(phone)){
+        message.innerText = "⚠️ Enter a valid 10-digit mobile number.";
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(password.length < 4){
+        message.innerText = "⚠️ Password must contain at least 4 characters.";
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(password !== confirmPassword){
+        message.innerText = "⚠️ Passwords do not match.";
+        message.style.color = "#c62828";
+        return;
+    }
+
+    let users = getUsers();
+
+    let existingUser = users.find(
+        user => user.phone === phone
+    );
+
+    if(existingUser){
+        message.innerText = "⚠️ This mobile number is already registered.";
+        message.style.color = "#c62828";
+        return;
+    }
+
+    let newUser = {
+        id:Date.now(),
+        name:name,
+        phone:phone,
+        role:role,
+        password:password
+    };
+
+    users.push(newUser);
+    saveUsers(users);
+
+    message.innerText =
+        "✅ Account created successfully. You can now login.";
+
+    message.style.color = "#176b2c";
+
+    document.getElementById("registerName").value = "";
+    document.getElementById("registerPhone").value = "";
+    document.getElementById("registerPassword").value = "";
+    document.getElementById("registerConfirmPassword").value = "";
+
+    showAuthForm("login");
+
+    document.getElementById("loginPhone").value = phone;
+}
+
+function loginUser(){
+
+    let phone =
+        document.getElementById("loginPhone").value.trim();
+
+    let password =
+        document.getElementById("loginPassword").value;
+
+    let message =
+        document.getElementById("authMessage");
+
+    let users = getUsers();
+
+    let user = users.find(
+        item =>
+            item.phone === phone &&
+            item.password === password
+    );
+
+    if(!user){
+        message.innerText =
+            "❌ Mobile number or password is incorrect.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    localStorage.setItem(
+        "kisanMandiCurrentUser",
+        JSON.stringify(user)
+    );
+
+    message.innerText =
+        "✅ Login successful!";
+
+    message.style.color = "#176b2c";
+
+    updateUserBar();
+}
+
+function logoutUser(){
+
+    localStorage.removeItem("kisanMandiCurrentUser");
+
+    updateUserBar();
+
+    showAuthForm("login");
+
+    document.getElementById("authMessage").innerText =
+        "✅ You have been logged out.";
+
+    document.getElementById("authMessage").style.color =
+        "#176b2c";
+}
+
+function updateUserBar(){
+
+    let userBar =
+        document.getElementById("userBar");
+
+    let currentUser =
+        JSON.parse(
+            localStorage.getItem("kisanMandiCurrentUser")
+        );
+
+    if(!currentUser){
+        userBar.style.display = "none";
+        return;
+    }
+
+    userBar.style.display = "block";
+
+    let roleText =
+        currentUser.role === "farmer"
+        ? "Farmer"
+        : "Customer";
+
+    userBar.innerHTML =
+        "👋 Welcome, " +
+        escapeHTML(currentUser.name) +
+        " (" +
+        roleText +
+        ")" +
+        '<button class="logout-btn" onclick="logoutUser()">Logout</button>';
+}
+
+function scrollToAuth(){
+
+    document
+        .getElementById("authSection")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+}
+
+// ========================================
 // NAVIGATION
 // ========================================
 
@@ -2125,6 +2538,8 @@ function changeLanguage(){
 displayFarmerProducts();
 
 updateCart();
+
+updateUserBar();
 
 </script>
 
