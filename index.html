@@ -2,4077 +2,487 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>KisanMandi - किसान मंडी | V8.4</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KisanMandi V8.5 - किसान मंडी</title>
 <style>
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-body{
-    font-family:Arial,sans-serif;
-    background:#f4f8f1;
-    color:#263b28;
-}
-
-header{
-    background:#176b2c;
-    color:white;
-    padding:18px 20px;
-    text-align:center;
-    position:relative;
-}
-
-header h1{
-    font-size:28px;
-}
-
-header p{
-    margin-top:5px;
-    font-size:14px;
-}
-
-.language{
-    position:absolute;
-    right:15px;
-    top:15px;
-}
-
-.language select{
-    padding:7px;
-    border-radius:6px;
-    border:none;
-}
-
-nav{
-    background:#0f5421;
-    padding:10px;
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-nav button{
-    background:white;
-    color:#176b2c;
-    border:none;
-    padding:9px 15px;
-    border-radius:20px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.hero{
-    text-align:center;
-    padding:40px 15px;
-    background:#dff1dc;
-}
-
-.hero h2{
-    font-size:30px;
-    margin-bottom:10px;
-}
-
-.hero p{
-    margin-bottom:20px;
-}
-
-.search-box{
-    max-width:650px;
-    margin:auto;
-    display:flex;
-    gap:8px;
-}
-
-.search-box input{
-    flex:1;
-    padding:13px;
-    border:1px solid #aaa;
-    border-radius:8px;
-    font-size:16px;
-}
-
-.search-box button{
-    padding:13px 18px;
-    background:#176b2c;
-    color:white;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.container{
-    max-width:1150px;
-    margin:auto;
-    padding:30px 15px;
-}
-
-.section-title{
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.categories{
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    flex-wrap:wrap;
-    margin-bottom:30px;
-}
-
-.categories button{
-    border:1px solid #176b2c;
-    background:white;
-    color:#176b2c;
-    padding:10px 16px;
-    border-radius:20px;
-    cursor:pointer;
-}
-
-.categories button:hover{
-    background:#176b2c;
-    color:white;
-}
-
-.products{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:22px;
-}
-
-.product{
-    background:white;
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow:0 3px 15px rgba(0,0,0,.12);
-    transition:.2s;
-}
-
-.product:hover{
-    transform:translateY(-3px);
-}
-
-.product-image{
-    height:170px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#eef7e9;
-    font-size:80px;
-}
-
-.product-info{
-    padding:18px;
-}
-
-.product h3{
-    margin-bottom:8px;
-    font-size:21px;
-}
-
-.farmer{
-    color:#555;
-    margin-bottom:5px;
-}
-
-.location{
-    color:#777;
-    font-size:14px;
-    margin-bottom:8px;
-}
-
-.stock{
-    font-size:14px;
-    color:#176b2c;
-    font-weight:bold;
-}
-
-.price{
-    color:#176b2c;
-    font-size:21px;
-    font-weight:bold;
-    margin:12px 0;
-}
-
-.quantity-box{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border:1px solid #ddd;
-    border-radius:8px;
-    margin-bottom:10px;
-    overflow:hidden;
-}
-
-.quantity-box button{
-    width:38px;
-    height:38px;
-    border:none;
-    background:#eaf4e7;
-    color:#176b2c;
-    font-size:20px;
-    cursor:pointer;
-}
-
-.quantity-box span{
-    font-weight:bold;
-}
-
-.product button.add-btn{
-    width:100%;
-    padding:11px;
-    border:none;
-    border-radius:7px;
-    background:#176b2c;
-    color:white;
-    cursor:pointer;
-    font-size:15px;
-}
-
-.product button.add-btn:hover{
-    background:#0f5421;
-}
-
-.delete-product{
-    width:100%;
-    padding:9px;
-    margin-top:8px;
-    border:none;
-    border-radius:7px;
-    background:#c62828;
-    color:white;
-    cursor:pointer;
-}
-
-.listed-label{
-    display:inline-block;
-    background:#fff0c2;
-    color:#8a5b00;
-    padding:4px 8px;
-    border-radius:12px;
-    font-size:12px;
-    margin-bottom:8px;
-    font-weight:bold;
-}
-
-.cart{
-    background:white;
-    padding:22px;
-    margin-top:35px;
-    border-radius:14px;
-    box-shadow:0 3px 15px rgba(0,0,0,.1);
-}
-
-.cart h2{
-    margin-bottom:15px;
-}
-
-.cart-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 0;
-    border-bottom:1px solid #ddd;
-    gap:10px;
-}
-
-.cart-info strong{
-    font-size:17px;
-}
-
-.cart-info small{
-    color:#777;
-}
-
-.cart-controls{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-.cart-controls button{
-    border:none;
-    background:#eaf4e7;
-    color:#176b2c;
-    padding:6px 10px;
-    border-radius:5px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.remove-btn{
-    background:#c62828 !important;
-    color:white !important;
-}
-
-.total{
-    text-align:right;
-    font-size:22px;
-    font-weight:bold;
-    margin-top:18px;
-}
-
-.order-box{
-    margin-top:20px;
-}
-
-.order-box input,
-.order-box textarea{
-    width:100%;
-    padding:12px;
-    margin:6px 0;
-    border:1px solid #bbb;
-    border-radius:7px;
-    font-size:15px;
-}
-
-.order-btn{
-    width:100%;
-    padding:14px;
-    background:#176b2c;
-    color:white;
-    border:none;
-    border-radius:7px;
-    font-size:16px;
-    cursor:pointer;
-}
-
-.sell-section{
-    margin-top:35px;
-    background:#fff8dc;
-    padding:25px;
-    border-radius:14px;
-}
-
-.sell-section h2{
-    margin-bottom:8px;
-}
-
-.sell-section input,
-.sell-section select{
-    width:100%;
-    padding:12px;
-    margin:6px 0;
-    border:1px solid #bbb;
-    border-radius:7px;
-    font-size:15px;
-}
-
-.sell-section button{
-    width:100%;
-    padding:13px;
-    margin-top:8px;
-    background:#e58b00;
-    color:white;
-    border:none;
-    border-radius:7px;
-    cursor:pointer;
-    font-size:16px;
-}
-
-.info-box{
-    margin-top:20px;
-    padding:15px;
-    background:#eef7e9;
-    border-radius:10px;
-    text-align:center;
-}
-
-/* ========================================
-   AUTHENTICATION
-======================================== */
-
-.auth-panel{
-    max-width:650px;
-    margin:35px auto;
-    background:white;
-    padding:25px;
-    border-radius:14px;
-    box-shadow:0 3px 15px rgba(0,0,0,.1);
-}
-
-.auth-panel h2{
-    text-align:center;
-    margin-bottom:8px;
-}
-
-.auth-subtitle{
-    text-align:center;
-    color:#666;
-    margin-bottom:18px;
-}
-
-.auth-tabs{
-    display:flex;
-    gap:8px;
-    margin-bottom:18px;
-}
-
-.auth-tabs button{
-    flex:1;
-    padding:11px;
-    border:1px solid #176b2c;
-    border-radius:7px;
-    background:white;
-    color:#176b2c;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.auth-tabs button.active{
-    background:#176b2c;
-    color:white;
-}
-
-.auth-form input,
-.auth-form select{
-    width:100%;
-    padding:12px;
-    margin:6px 0;
-    border:1px solid #bbb;
-    border-radius:7px;
-    font-size:15px;
-}
-
-.auth-form button{
-    width:100%;
-    padding:13px;
-    margin-top:8px;
-    background:#176b2c;
-    color:white;
-    border:none;
-    border-radius:7px;
-    cursor:pointer;
-    font-size:16px;
-}
-
-.auth-message{
-    text-align:center;
-    margin-top:12px;
-    font-weight:bold;
-}
-
-.user-bar{
-    background:#eaf4e7;
-    color:#176b2c;
-    padding:10px 15px;
-    text-align:center;
-    font-weight:bold;
-}
-
-.logout-btn{
-    margin-left:10px;
-    padding:5px 10px;
-    border:none;
-    border-radius:5px;
-    background:#c62828;
-    color:white;
-    cursor:pointer;
-}
-
-@media(max-width:600px){
-    .auth-panel{
-        margin:25px 15px;
-        padding:20px;
-    }
-
-    .logout-btn{
-        display:block;
-        margin:8px auto 0;
-    }
-}
-
-
-/* ========================================
-   USER DASHBOARD
-======================================== */
-
-.dashboard{
-    margin-top:35px;
-    background:white;
-    padding:25px;
-    border-radius:14px;
-    box-shadow:0 3px 15px rgba(0,0,0,.1);
-}
-
-.dashboard h2{
-    margin-bottom:8px;
-}
-
-.dashboard-subtitle{
-    color:#666;
-    margin-bottom:18px;
-}
-
-.dashboard-card{
-    background:#f4f8f1;
-    padding:18px;
-    border-radius:10px;
-    margin-bottom:12px;
-}
-
-.dashboard-card strong{
-    color:#176b2c;
-}
-
-.dashboard-actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:15px;
-}
-
-.dashboard-actions button{
-    padding:10px 15px;
-    border:none;
-    border-radius:7px;
-    background:#176b2c;
-    color:white;
-    cursor:pointer;
-}
-
-.dashboard-actions button.secondary{
-    background:#e58b00;
-}
-
-
-/* ========================================
-   ORDER MANAGEMENT
-======================================== */
-
-.orders-section{
-    margin-top:35px;
-    background:white;
-    padding:25px;
-    border-radius:14px;
-    box-shadow:0 3px 15px rgba(0,0,0,.1);
-}
-
-.order-card{
-    background:#f8fbf6;
-    border:1px solid #dfe9dc;
-    border-radius:10px;
-    padding:16px;
-    margin:12px 0;
-}
-
-.order-card h3{
-    color:#176b2c;
-    margin-bottom:8px;
-}
-
-.order-line{
-    padding:8px 0;
-    border-bottom:1px solid #e2e2e2;
-}
-
-.order-line:last-child{
-    border-bottom:none;
-}
-
-.order-status{
-    display:inline-block;
-    margin-top:8px;
-    padding:5px 9px;
-    border-radius:12px;
-    background:#fff0c2;
-    color:#8a5b00;
-    font-weight:bold;
-    font-size:13px;
-}
-
-.order-status.delivered{
-    background:#dff1dc;
-    color:#176b2c;
-}
-
-.order-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:12px;
-}
-
-.order-actions button{
-    border:none;
-    border-radius:7px;
-    padding:9px 12px;
-    background:#176b2c;
-    color:white;
-    cursor:pointer;
-}
-
-.order-actions button.reject{
-    background:#c62828;
-}
-
-.order-empty{
-    text-align:center;
-    padding:20px;
-    color:#777;
-}
-
-
-
-/* WhatsApp communication */
-.whatsapp-btn{display:inline-block;margin:8px 6px 0 0;padding:10px 14px;border:0;border-radius:7px;background:#25D366;color:#fff;text-decoration:none;cursor:pointer;font-weight:bold}
-.order-note{margin-top:8px;padding:9px;border-radius:7px;background:#fff8df;color:#6b5200;font-size:13px}
-
-footer{
-    margin-top:40px;
-    background:#0f5421;
-    color:white;
-    text-align:center;
-    padding:28px;
-}
-
-.empty{
-    text-align:center;
-    padding:25px;
-    color:#777;
-}
-
-@media(max-width:600px){
-
-    header h1{
-        font-size:23px;
-    }
-
-    .language{
-        position:static;
-        margin-bottom:10px;
-    }
-
-    .hero h2{
-        font-size:24px;
-    }
-
-    .search-box{
-        flex-direction:column;
-    }
-
-    .cart-item{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .cart-controls{
-        width:100%;
-        justify-content:flex-start;
-        flex-wrap:wrap;
-    }
-
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
+header{background:#176b2c;color:white;padding:20px;text-align:center;position:sticky;top:0;z-index:20;box-shadow:0 3px 12px #0002}
+header h1{font-size:30px}
+header p{font-size:15px;margin-top:4px}
+nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+nav button{border:0;border-radius:20px;padding:9px 15px;background:white;color:#176b2c;font-weight:bold}
+.container{width:min(950px,94%);margin:25px auto}
+.card{background:white;border-radius:22px;padding:24px;margin-bottom:22px;box-shadow:0 8px 25px #00000012}
+.card h2{color:#176b2c;margin-bottom:12px}
+input,select,textarea{width:100%;padding:14px;margin:7px 0;border:1px solid #bbb;border-radius:12px;font-size:16px}
+button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;margin-top:8px;font-size:17px;font-weight:bold}
+.green{background:#176b2c;color:white}.red{background:#d52b2b;color:white}.orange{background:#ed9400;color:white}.blue{background:#2777c9;color:white}.outline{background:white;color:#176b2c;border:2px solid #176b2c}
+.product{overflow:hidden;border:1px solid #e2e8df;border-radius:20px;margin:18px 0;background:white}
+.product-img{height:190px;background:#edf7e9;display:flex;align-items:center;justify-content:center;font-size:90px}
+.product-body{padding:20px}.price{font-size:27px;font-weight:bold;color:#176b2c;margin:10px 0}
+.stock{font-weight:bold;color:#247738}.badge{display:inline-block;padding:5px 12px;border-radius:20px;background:#fff1b9;color:#755b0b;font-weight:bold}
+.status{display:inline-block;padding:6px 13px;border-radius:20px;font-weight:bold}.pending{background:#fff0bd;color:#785900}.confirmed{background:#dcecff;color:#12558d}.delivered{background:#dff2df;color:#176b2c}.rejected{background:#ffdede;color:#a51d1d}
+.order{border:1px solid #d8e3d4;border-radius:18px;padding:18px;margin:15px 0;background:#fbfdf9}
+.order h3{color:#176b2c;margin-bottom:8px}.qty{display:flex;align-items:center;gap:12px;margin:10px 0}.qty button{width:42px;height:42px;border:0;border-radius:50%;background:#176b2c;color:white;font-size:22px}
+.total{font-size:24px;font-weight:bold;color:#176b2c;padding:12px 0}.hidden{display:none!important}
+.success{background:#e5f5e3;color:#176b2c;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
+.error{background:#ffe3e3;color:#a51d1d;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
+.info{background:#fff8d9;color:#675613;padding:14px;border-radius:12px;margin:10px 0}.center{text-align:center}
+.hero{text-align:center;padding:30px 10px}.hero .emoji{font-size:75px}
+footer{text-align:center;padding:30px;color:#607060}
+@media(max-width:600px){.card{padding:18px}header h1{font-size:25px}.product-img{height:160px}}
 </style>
-
-<!-- KisanMandi V8.4 - Firebase backend -->
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-
 </head>
-
 <body>
 
 <header>
-
-<div class="language">
-
-<select id="languageSelect" onchange="changeLanguage()">
-
-<option value="en">English</option>
-<option value="hi">हिन्दी</option>
-<option value="ta">தமிழ்</option>
-
-</select>
-
-</div>
-
 <h1>🌾 KisanMandi</h1>
-
-<p id="tagline">
-किसान से ग्राहक तक — सीधा व्यापार
-</p>
-
+<p>किसान मंडी • Direct Farmer Marketplace</p>
+<nav>
+<button onclick="showSection('home')">🏠 Home</button>
+<button onclick="showSection('productsSection')">🌾 Products</button>
+<button onclick="showSection('cartSection')">🛒 Cart</button>
+<button onclick="showSection('ordersSection')">📦 Orders</button>
+<button onclick="showSection('accountSection')">👤 Account</button>
+</nav>
 </header>
 
+<div class="container">
 
-<nav>
-
-<button onclick="showProducts()">
-🏠 Home
-</button>
-
-<button onclick="scrollToProducts()">
-🛒 Buy Products
-</button>
-
-<button onclick="scrollToSell()">
-🌱 Sell Products
-</button>
-
-<button onclick="scrollToCart()">
-🛍️ Cart (<span id="cartCount">0</span>)
-</button>
-
-<button onclick="scrollToAuth()">
-👤 Login / Register
-</button>
-
-<button onclick="scrollToDashboard()">
-📊 Dashboard
-</button>
-
-<button onclick="scrollToOrders()">
-📦 My Orders
-</button>
-
-</nav>
-
-
-<section class="hero">
-
-<h2 id="heroTitle">
-Fresh Products Directly From Farmers
-</h2>
-
-<p id="heroText">
-Buy fresh agricultural products directly from farmers at fair prices.
-</p>
-
-<div class="search-box">
-
-<input
-type="text"
-id="searchBox"
-placeholder="Search vegetables, fruits, grains..."
-oninput="searchProducts()"
->
-
-<button onclick="searchProducts()">
-🔍 Search
-</button>
-
-</div>
-
+<section id="home" class="card hero">
+<div class="emoji">🌾</div>
+<h2>Welcome to KisanMandi</h2>
+<p>Buy directly from farmers and sell your agricultural products.</p>
+<button class="btn green" onclick="showSection('productsSection')">🌱 Browse Products</button>
+<button class="btn outline" onclick="showSection('accountSection')">👤 Login / Register</button>
 </section>
 
+<section id="accountSection" class="card">
+<h2>👤 KisanMandi Account</h2>
+<p>Login as a customer or farmer</p>
+<div id="accountMessage"></div>
 
-<div class="container">
-
-<h2 class="section-title">
-🌾 Categories
-</h2>
-
-<div class="categories">
-
-<button onclick="filterCategory('all')">
-All
-</button>
-
-<button onclick="filterCategory('vegetable')">
-🥬 Vegetables
-</button>
-
-<button onclick="filterCategory('fruit')">
-🍎 Fruits
-</button>
-
-<button onclick="filterCategory('grain')">
-🌾 Grains
-</button>
-
-<button onclick="filterCategory('dairy')">
-🥛 Dairy
-</button>
-
+<div id="loginBox">
+<input id="loginEmail" type="email" placeholder="Email Address">
+<input id="loginPassword" type="password" placeholder="Password">
+<button class="btn green" onclick="loginUser()">🔐 Login</button>
+<button class="btn orange" onclick="forgotPassword()">🔑 Forgot Password?</button>
+<button class="btn outline" onclick="showRegister()">📝 Create New Account</button>
 </div>
 
-
-<h2 class="section-title">
-🌱 Fresh Products
-</h2>
-
-
-<div class="products" id="productsContainer">
-
-
-<!-- POTATO -->
-
-<div class="product" data-category="vegetable">
-
-<div class="product-image">🥔</div>
-
-<div class="product-info">
-
-<h3>Potato</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Ramesh Kumar
-</p>
-
-<p class="location">
-📍 Gorakhpur, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 500 kg
-</p>
-
-<p class="price">
-₹30 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('potato',-1)">
-−
-</button>
-
-<span id="qty-potato">1</span>
-
-<button onclick="changeProductQty('potato',1)">
-+
-</button>
-
+<div id="registerBox" class="hidden">
+<input id="regName" placeholder="Full Name">
+<input id="regEmail" type="email" placeholder="Email Address">
+<input id="regPassword" type="password" placeholder="Create Password (minimum 6 characters)">
+<input id="regMobile" placeholder="Mobile Number">
+<select id="regRole"><option value="customer">Customer</option><option value="farmer">Farmer</option></select>
+<button class="btn green" onclick="registerUser()">📋 Create Account</button>
+<button class="btn outline" onclick="showLogin()">🔐 Back to Login</button>
 </div>
 
-<button class="add-btn"
-onclick="addToCart('Potato',30,'potato')">
-
-🛒 Add to Cart
-
-</button>
-
+<div id="loggedBox" class="hidden">
+<div class="success">✅ You are logged in.</div>
+<h3 id="welcomeUser"></h3>
+<button class="btn green" onclick="showSection('ordersSection')">📦 My Orders</button>
+<button id="farmerDashboardButton" class="btn blue hidden" onclick="showSection('farmerSection')">👨‍🌾 Farmer Dashboard</button>
+<button class="btn red" onclick="logoutUser()">🚪 Logout</button>
 </div>
-</div>
-
-
-<!-- TOMATO -->
-
-<div class="product" data-category="vegetable">
-
-<div class="product-image">🍅</div>
-
-<div class="product-info">
-
-<h3>Tomato</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Suresh Yadav
-</p>
-
-<p class="location">
-📍 Maharajganj, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 300 kg
-</p>
-
-<p class="price">
-₹40 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('tomato',-1)">
-−
-</button>
-
-<span id="qty-tomato">1</span>
-
-<button onclick="changeProductQty('tomato',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Tomato',40,'tomato')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-<!-- CARROT -->
-
-<div class="product" data-category="vegetable">
-
-<div class="product-image">🥕</div>
-
-<div class="product-info">
-
-<h3>Carrot</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Mohan Singh
-</p>
-
-<p class="location">
-📍 Lucknow, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 200 kg
-</p>
-
-<p class="price">
-₹50 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('carrot',-1)">
-−
-</button>
-
-<span id="qty-carrot">1</span>
-
-<button onclick="changeProductQty('carrot',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Carrot',50,'carrot')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-<!-- APPLE -->
-
-<div class="product" data-category="fruit">
-
-<div class="product-image">🍎</div>
-
-<div class="product-info">
-
-<h3>Apple</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Amit Sharma
-</p>
-
-<p class="location">
-📍 Shimla, Himachal Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 150 kg
-</p>
-
-<p class="price">
-₹120 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('apple',-1)">
-−
-</button>
-
-<span id="qty-apple">1</span>
-
-<button onclick="changeProductQty('apple',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Apple',120,'apple')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-<!-- MANGO -->
-
-<div class="product" data-category="fruit">
-
-<div class="product-image">🥭</div>
-
-<div class="product-info">
-
-<h3>Mango</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Raj Kumar
-</p>
-
-<p class="location">
-📍 Malihabad, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 400 kg
-</p>
-
-<p class="price">
-₹80 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('mango',-1)">
-−
-</button>
-
-<span id="qty-mango">1</span>
-
-<button onclick="changeProductQty('mango',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Mango',80,'mango')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-<!-- WHEAT -->
-
-<div class="product" data-category="grain">
-
-<div class="product-image">🌾</div>
-
-<div class="product-info">
-
-<h3>Wheat</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Vikash Patel
-</p>
-
-<p class="location">
-📍 Gorakhpur, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 1000 kg
-</p>
-
-<p class="price">
-₹35 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('wheat',-1)">
-−
-</button>
-
-<span id="qty-wheat">1</span>
-
-<button onclick="changeProductQty('wheat',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Wheat',35,'wheat')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-<!-- RICE -->
-
-<div class="product" data-category="grain">
-
-<div class="product-image">🍚</div>
-
-<div class="product-info">
-
-<h3>Rice</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Deepak Verma
-</p>
-
-<p class="location">
-📍 Kushinagar, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 800 kg
-</p>
-
-<p class="price">
-₹55 / kg
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('rice',-1)">
-−
-</button>
-
-<span id="qty-rice">1</span>
-
-<button onclick="changeProductQty('rice',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Rice',55,'rice')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-<!-- MILK -->
-
-<div class="product" data-category="dairy">
-
-<div class="product-image">🥛</div>
-
-<div class="product-info">
-
-<h3>Fresh Milk</h3>
-
-<p class="farmer">
-👨‍🌾 Farmer: Sunil Yadav
-</p>
-
-<p class="location">
-📍 Gorakhpur, Uttar Pradesh
-</p>
-
-<p class="stock">
-📦 Available: 100 litre
-</p>
-
-<p class="price">
-₹60 / litre
-</p>
-
-<div class="quantity-box">
-
-<button onclick="changeProductQty('milk',-1)">
-−
-</button>
-
-<span id="qty-milk">1</span>
-
-<button onclick="changeProductQty('milk',1)">
-+
-</button>
-
-</div>
-
-<button class="add-btn"
-onclick="addToCart('Fresh Milk',60,'milk')">
-
-🛒 Add to Cart
-
-</button>
-
-</div>
-</div>
-
-
-</div>
-
-
-<!-- CART -->
-
-<div class="cart" id="cartSection">
-
-<h2>
-🛒 Your Cart
-</h2>
-
-<div id="cartItems">
-
-<div class="empty">
-Your cart is empty.
-</div>
-
-</div>
-
-<div class="total">
-
-Total: ₹<span id="totalPrice">0</span>
-
-</div>
-
-
-<div class="order-box">
-
-<h3>
-📦 Delivery Details
-</h3>
-
-<input
-type="text"
-id="customerName"
-placeholder="Your Name"
->
-
-<input
-type="tel"
-id="customerPhone"
-placeholder="Mobile Number"
->
-
-<textarea
-id="customerAddress"
-placeholder="Delivery Address"
-rows="3"
-></textarea>
-
-<button class="order-btn"
-onclick="placeOrder()">
-
-✅ Place Order
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- USER DASHBOARD -->
-
-<div class="container">
-    <div class="dashboard" id="dashboardSection">
-
-        <h2>📊 My Dashboard</h2>
-
-        <p class="dashboard-subtitle">
-            Manage your KisanMandi account and products.
-        </p>
-
-        <div id="dashboardContent">
-            <div class="dashboard-card">
-                🔒 Please login to view your dashboard.
-            </div>
-        </div>
-
-    </div>
-</div>
-
-
-
-<div class="container">
-    <div id="firebaseStatus" class="order-note" style="display:none;margin-top:15px;">
-        🔐 KisanMandi V8.4 secure cloud backend status.
-    </div>
-</div>
-
-<!-- ORDER MANAGEMENT -->
-
-<div class="container">
-    <div class="orders-section" id="ordersSection">
-
-        <h2>📦 Orders</h2>
-
-        <p class="dashboard-subtitle">
-            Customers can track orders and farmers can manage orders for their products.
-        </p>
-
-        <div id="ordersContent">
-            <div class="order-empty">
-                🔒 Please login to view orders.
-            </div>
-        </div>
-
-    </div>
-</div>
-
-
-<!-- AUTHENTICATION -->
-
-<div class="auth-panel" id="authSection">
-
-    <h2>👤 KisanMandi Account</h2>
-
-    <p class="auth-subtitle">
-        Login as a customer or farmer
-    </p>
-
-    <div class="auth-tabs">
-        <button id="loginTab" class="active" onclick="showAuthForm('login')">
-            Login
-        </button>
-
-        <button id="registerTab" onclick="showAuthForm('register')">
-            Register
-        </button>
-    </div>
-    <div id="loginForm" class="auth-form">
-
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="Email Address"
-            autocomplete="email"
-        >
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Password"
-            autocomplete="current-password"
-        >
-
-        <button onclick="loginUser()">
-            🔐 Login
-        </button>
-
-        <button type="button" onclick="forgotPassword()" style="background:#e58b00;">
-            🔑 Forgot Password?
-        </button>
-
-    </div>
-
-    <div id="registerForm" class="auth-form" style="display:none;">
-
-        <input
-            type="text"
-            id="registerName"
-            placeholder="Full Name"
-            autocomplete="name"
-        >
-
-        <input
-            type="email"
-            id="registerEmail"
-            placeholder="Email Address"
-            autocomplete="email"
-        >
-
-        <input
-            type="password"
-            id="registerPassword"
-            placeholder="Create Password (minimum 6 characters)"
-            autocomplete="new-password"
-        >
-
-        <input
-            type="tel"
-            id="registerPhone"
-            placeholder="Mobile Number (optional)"
-            autocomplete="tel"
-        >
-
-        <select id="registerRole">
-            <option value="customer">Customer</option>
-            <option value="farmer">Farmer</option>
-        </select>
-
-        <button onclick="registerUser()">
-            📝 Create Account
-        </button>
-
-    </div>
-
-    <div class="order-note" style="margin-top:10px;">
-        📧 KisanMandi uses Firebase Email/Password login. No SMS OTP or billing account is required.
-    </div>
-    <div id="authMessage" class="auth-message"></div>
-
-</div>
-
-<div id="userBar" class="user-bar" style="display:none;"></div>
-
-
-<!-- SELL -->
-
-<div class="sell-section" id="sellSection">
-
-<h2>
-🌱 Sell Your Products
-</h2>
-
-<p style="margin:10px 0 15px;">
-
-Farmers can list their products on KisanMandi.
-
-</p>
-
-<input
-type="text"
-id="farmerName"
-placeholder="Farmer Name"
->
-
-<input
-type="text"
-id="cropName"
-placeholder="Product / Crop Name"
->
-
-<input
-type="text"
-id="farmerLocation"
-placeholder="Farmer Location"
->
-
-<select id="cropCategory">
-
-<option value="vegetable">
-Vegetable
-</option>
-
-<option value="fruit">
-Fruit
-</option>
-
-<option value="grain">
-Grain
-</option>
-
-<option value="dairy">
-Dairy
-</option>
-
+</section>
+
+<section id="productsSection" class="card">
+<h2>🌾 Available Products</h2>
+<input id="searchBox" placeholder="🔍 Search products..." oninput="renderProducts()">
+<div id="productsList"><p>Loading products...</p></div>
+</section>
+
+<section id="cartSection" class="card">
+<h2>🛒 Your Cart</h2>
+<div id="cartList"><p>Your cart is empty.</p></div>
+<div id="cartTotal" class="total"></div>
+<button id="checkoutButton" class="btn green hidden" onclick="checkout()">📦 Place Order</button>
+</section>
+
+<section id="ordersSection" class="card">
+<h2>📦 Orders</h2>
+<p>Customers can track orders and farmers can manage orders for their products.</p>
+<div id="ordersList"><div class="info">🔒 Please login to view orders.</div></div>
+</section>
+
+<section id="farmerSection" class="card hidden">
+<h2>👨‍🌾 Farmer Dashboard</h2>
+<div id="farmerMessage"></div>
+
+<div class="card">
+<h2>🌱 Add Product</h2>
+<input id="productName" placeholder="Product / Crop Name">
+<input id="productPrice" type="number" placeholder="Price per kg">
+<input id="productStock" type="number" placeholder="Available Stock">
+<input id="productLocation" placeholder="Location">
+<select id="productCategory">
+<option value="vegetable">🥬 Vegetable</option>
+<option value="fruit">🍎 Fruit</option>
+<option value="grain">🌾 Grain</option>
+<option value="dairy">🥛 Dairy</option>
+<option value="other">🌱 Other</option>
 </select>
-
-<input
-type="number"
-id="cropPrice"
-placeholder="Price per kg/litre"
->
-
-<input
-type="number"
-id="cropQuantity"
-placeholder="Available Quantity"
->
-
-<button onclick="listCrop()">
-
-🌾 List My Product
-
-</button>
-
-<div class="info-box">
-
-💡 Your product will appear immediately in the marketplace.
-
+<button class="btn green" onclick="addProduct()">➕ List Product</button>
 </div>
 
+<h2>📋 My Products</h2><div id="myProducts"></div>
+<h2>📥 Incoming Orders</h2><div id="farmerOrders"></div>
+</section>
 </div>
 
-</div>
+<footer><p>🌾 KisanMandi V8.5</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-<footer>
-
-<h3>
-🌾 KisanMandi
-</h3>
-
-<p>
-Connecting Farmers Directly With Customers
-</p>
-
-<p style="margin-top:10px;">
-© 2026 KisanMandi. All Rights Reserved.
-</p>
-
-</footer>
-
-
-<script>
-
-
-// ========================================
-// CART
-// ========================================
-
-let cart = [];
-
-
-// ========================================
-// PRODUCT QUANTITIES
-// ========================================
-
-let productQuantities = {
-
-    potato:1,
-    tomato:1,
-    carrot:1,
-    apple:1,
-    mango:1,
-    wheat:1,
-    rice:1,
-    milk:1
-
+/*
+IMPORTANT:
+Replace ONLY the values below with the SAME firebaseConfig
+from your working V8.4 index.html.
+*/
+const firebaseConfig={
+apiKey:"YOUR_V8_4_API_KEY",
+authDomain:"YOUR_PROJECT.firebaseapp.com",
+projectId:"YOUR_PROJECT_ID",
+storageBucket:"YOUR_PROJECT.firebasestorage.app",
+messagingSenderId:"YOUR_SENDER_ID",
+appId:"YOUR_APP_ID"
 };
 
-
-function changeProductQty(id,change){
-
-    productQuantities[id] += change;
-
-    if(productQuantities[id] < 1){
-        productQuantities[id] = 1;
-    }
-
-    if(productQuantities[id] > 50){
-        productQuantities[id] = 50;
-    }
-
-    document.getElementById(
-        "qty-" + id
-    ).innerText = productQuantities[id];
-
-}
-
-
-// ========================================
-// ADD TO CART
-// ========================================
-
-function addToCart(name,price,id){
-
-    let quantity = productQuantities[id];
-
-    let existing = cart.find(
-        item => item.name === name
-    );
-
-    if(existing){
-
-        existing.quantity += quantity;
-
-    }else{
-
-        cart.push({
-
-            name:name,
-            price:price,
-            quantity:quantity
-
-        });
-
-    }
-
-    updateCart();
-
-    alert(
-        "✅ " +
-        quantity +
-        " × " +
-        name +
-        " added to your cart!"
-    );
-
-}
-
-
-// ========================================
-// ADD FARMER PRODUCT TO CART
-// ========================================
-
-function addFarmerProductToCart(productId){
-
-    let products =
-        JSON.parse(
-            localStorage.getItem("kisanMandiProducts")
-        ) || [];
-
-    let product = products.find(
-        item => Number(item.id) === Number(productId)
-    );
-
-    if(!product){
-        alert("⚠️ Product not found.");
-        return;
-    }
-
-    let cartName =
-        product.name +
-        " (" +
-        product.farmer +
-        ")";
-
-    let existing = cart.find(
-        item => item.name === cartName
-    );
-
-    if(existing){
-        existing.quantity += 1;
-    }else{
-        cart.push({
-            name:cartName,
-            price:Number(product.price),
-            quantity:1,
-            productId:product.id,
-            farmerId:product.ownerId || null,
-            farmerUid:product.ownerUid || null,
-            farmer:product.farmer,
-            farmerPhone:getFarmerPhoneById(product.ownerId)
-        });
-    }
-
-    updateCart();
-
-    alert(
-        "✅ " +
-        product.name +
-        " added to your cart!"
-    );
-}
-
-
-// ========================================
-// UPDATE CART
-// ========================================
-
-function updateCart(){
-
-    let cartItems =
-        document.getElementById("cartItems");
-
-    let cartCount =
-        document.getElementById("cartCount");
-
-    let totalPrice =
-        document.getElementById("totalPrice");
-
-
-    let totalQuantity =
-        cart.reduce(
-
-            function(sum,item){
-                return sum + item.quantity;
-            },
-
-            0
-
-        );
-
-
-    cartCount.innerText =
-        totalQuantity;
-
-
-    if(cart.length === 0){
-
-        cartItems.innerHTML =
-        '<div class="empty">Your cart is empty.</div>';
-
-        totalPrice.innerText = "0";
-
-        return;
-
-    }
-
-
-    cartItems.innerHTML = "";
-
-    let total = 0;
-
-
-    cart.forEach(function(item,index){
-
-        let itemTotal =
-            item.price * item.quantity;
-
-        total += itemTotal;
-
-
-        let div =
-            document.createElement("div");
-
-        div.className =
-            "cart-item";
-
-
-        div.innerHTML = `
-
-        <div class="cart-info">
-
-            <strong>
-                ${item.name}
-            </strong>
-
-            <br>
-
-            <small>
-                ₹${item.price} × ${item.quantity}
-            </small>
-
-            <br>
-
-            <strong>
-                Subtotal: ₹${itemTotal}
-            </strong>
-
-        </div>
-
-        <div class="cart-controls">
-
-            <button
-            onclick="changeCartQuantity(${index},-1)">
-            −
-            </button>
-
-            <span>
-                ${item.quantity}
-            </span>
-
-            <button
-            onclick="changeCartQuantity(${index},1)">
-            +
-            </button>
-
-            <button
-            class="remove-btn"
-            onclick="removeFromCart(${index})">
-            Remove
-            </button>
-
-        </div>
-
-        `;
-
-
-        cartItems.appendChild(div);
-
-    });
-
-
-    totalPrice.innerText =
-        total;
-
-}
-
-
-// ========================================
-// CHANGE CART QUANTITY
-// ========================================
-
-function changeCartQuantity(index,change){
-
-    cart[index].quantity += change;
-
-    if(cart[index].quantity <= 0){
-
-        cart.splice(index,1);
-
-    }
-
-    updateCart();
-
-}
-
-
-// ========================================
-// REMOVE CART ITEM
-// ========================================
-
-function removeFromCart(index){
-
-    cart.splice(index,1);
-
-    updateCart();
-
-}
-
-
-// ========================================
-// SEARCH
-// ========================================
-
-function searchProducts(){
-
-    let search =
-        document
-        .getElementById("searchBox")
-        .value
-        .toLowerCase()
-        .trim();
-
-
-    let products =
-        document.querySelectorAll(".product");
-
-
-    products.forEach(function(product){
-
-        let name =
-            product
-            .querySelector("h3")
-            .innerText
-            .toLowerCase();
-
-
-        let farmer =
-            product
-            .querySelector(".farmer")
-            .innerText
-            .toLowerCase();
-
-
-        let location =
-            product
-            .querySelector(".location")
-            .innerText
-            .toLowerCase();
-
-
-        let category =
-            product.dataset.category
-            .toLowerCase();
-
-
-        if(
-
-            name.includes(search) ||
-
-            farmer.includes(search) ||
-
-            location.includes(search) ||
-
-            category.includes(search)
-
-        ){
-
-            product.style.display = "";
-
-        }else{
-
-            product.style.display = "none";
-
-        }
-
-    });
-
-}
-
-
-// ========================================
-// CATEGORY FILTER
-// ========================================
-
-function filterCategory(category){
-
-    let products =
-        document.querySelectorAll(".product");
-
-
-    products.forEach(function(product){
-
-        if(
-
-            category === "all" ||
-
-            product.dataset.category === category
-
-        ){
-
-            product.style.display = "";
-
-        }else{
-
-            product.style.display = "none";
-
-        }
-
-    });
-
-}
-
-
-// ========================================
-// PLACE ORDER
-// ========================================
-
-function placeOrder(){
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(!currentUser){
-        alert("🔐 Please login before placing an order.");
-        scrollToAuth();
-        return;
-    }
-
-    if(currentUser.role !== "customer"){
-        alert("🛒 Please login with a customer account to place an order.");
-        return;
-    }
-
-    if(cart.length === 0){
-        alert("🛒 Please add a product to your cart first.");
-        return;
-    }
-
-    let name =
-        document.getElementById("customerName").value.trim();
-
-    let phone =
-        document.getElementById("customerPhone").value.trim();
-
-    let address =
-        document.getElementById("customerAddress").value.trim();
-
-    if(name === "" || phone === "" || address === ""){
-        alert(
-            "⚠️ Please enter your name, mobile number and delivery address."
-        );
-        return;
-    }
-
-    let total =
-        cart.reduce(
-            function(sum,item){
-                return sum + (item.price * item.quantity);
-            },
-            0
-        );
-
-    let orders =
-        JSON.parse(
-            localStorage.getItem("kisanMandiOrders")
-        ) || [];
-
-    let orderId =
-        "KM" +
-        Date.now().toString().slice(-8);
-
-    let orderItems = cart.map(function(item){
-        return {
-            name:item.name,
-            price:Number(item.price),
-            quantity:Number(item.quantity),
-            productId:item.productId || null,
-            farmerId:item.farmerId || null,
-            farmerUid:item.farmerUid || null,
-            farmer:item.farmer || "",
-            farmerPhone:item.farmerPhone || getFarmerPhoneById(item.farmerId)
-        };
-    });
-
-    let farmerUids = [
-        ...new Set(
-            orderItems
-                .map(function(item){
-                    return item.farmerUid;
-                })
-                .filter(Boolean)
-        )
-    ];
-
-    let order = {
-        id:orderId,
-        customerId:currentUser.id,
-        customerUid:currentUser.uid || null,
-        customerName:name,
-        customerPhone:phone,
-        customerAddress:address,
-        items:orderItems,
-        farmerUids:farmerUids,
-        total:Number(total),
-        status:"Pending",
-        createdAt:new Date().toISOString()
-    };
-
-    orders.push(order);
-
-    localStorage.setItem(
-        "kisanMandiOrders",
-        JSON.stringify(orders)
-    );
-
-    cloudSaveOrder(order);
-
-    alert(
-        "✅ Order Placed Successfully!\n\n" +
-        "Order ID: " + orderId +
-        "\nTotal: ₹" + total +
-        "\n\nThank you for using KisanMandi 🌾"
-    );
-
-    cart = [];
-    updateCart();
-
-    document.getElementById("customerName").value = "";
-    document.getElementById("customerPhone").value = "";
-    document.getElementById("customerAddress").value = "";
-
-    updateOrders();
-    scrollToOrders();
-}
-
-
-// ========================================
-// FARMER PRODUCT LISTING
-// ========================================
-
-function listCrop(){
-
-    let farmer =
-        document
-        .getElementById("farmerName")
-        .value
-        .trim();
-
-
-    let crop =
-        document
-        .getElementById("cropName")
-        .value
-        .trim();
-
-
-    let location =
-        document
-        .getElementById("farmerLocation")
-        .value
-        .trim();
-
-
-    let category =
-        document
-        .getElementById("cropCategory")
-        .value;
-
-
-    let price =
-        document
-        .getElementById("cropPrice")
-        .value;
-
-
-    let quantity =
-        document
-        .getElementById("cropQuantity")
-        .value;
-
-
-    if(
-
-        farmer === "" ||
-        crop === "" ||
-        location === "" ||
-        price === "" ||
-        quantity === ""
-
-    ){
-
-        alert(
-            "⚠️ Please enter all product details."
-        );
-
-        return;
-
-    }
-
-
-    if(Number(price) <= 0 || Number(quantity) <= 0){
-
-        alert(
-            "⚠️ Price and quantity must be greater than zero."
-        );
-
-        return;
-
-    }
-
-
-    let products =
-        JSON.parse(
-            localStorage.getItem(
-                "kisanMandiProducts"
-            )
-        ) || [];
-
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(!currentUser){
-        alert("🔐 Please login as a farmer before listing a product.");
-        scrollToAuth();
-        return;
-    }
-
-    if(currentUser.role !== "farmer"){
-        alert("🧑‍🌾 Only farmer accounts can list products.");
-        return;
-    }
-
-    let newProduct = {
-
-        id:Date.now(),
-
-        ownerId:currentUser.id,
-        ownerUid:currentUser.uid,
-
-        farmer:farmer,
-
-        name:crop,
-
-        location:location,
-
-        category:category,
-
-        price:Number(price),
-
-        quantity:Number(quantity),
-
-        createdAt:new Date().toISOString()
-
-    };
-
-
-    products.push(newProduct);
-
-
-    localStorage.setItem(
-
-        "kisanMandiProducts",
-
-        JSON.stringify(products)
-
-    );
-
-
-    // V8.1: Save the newly listed farmer product to Firebase
-    cloudSaveProduct(newProduct);
-
-
-    alert(
-
-        "🌾 Product listed successfully!\n\n" +
-
-        "Farmer: " +
-        farmer +
-
-        "\nProduct: " +
-        crop +
-
-        "\nLocation: " +
-        location +
-
-        "\nPrice: ₹" +
-        price +
-
-        "\nQuantity: " +
-        quantity
-
-    );
-
-
-    document.getElementById("farmerName").value = "";
-
-    document.getElementById("cropName").value = "";
-
-    document.getElementById("farmerLocation").value = "";
-
-    document.getElementById("cropPrice").value = "";
-
-    document.getElementById("cropQuantity").value = "";
-
-
-    displayFarmerProducts();
-
-}
-
-
-// ========================================
-// DISPLAY FARMER PRODUCTS
-// ========================================
-
-function displayFarmerProducts(){
-
-    let existingFarmerProducts =
-        document.querySelectorAll('[id^="farmer-product-"]');
-
-    existingFarmerProducts.forEach(function(card){
-        card.remove();
-    });
-
-    let container =
-        document.getElementById(
-            "productsContainer"
-        );
-
-
-    let products =
-        JSON.parse(
-            localStorage.getItem(
-                "kisanMandiProducts"
-            )
-        ) || [];
-
-
-    products.forEach(function(product,index){
-
-        let existing =
-            document.getElementById(
-                "farmer-product-" +
-                product.id
-            );
-
-
-        if(existing){
-            return;
-        }
-
-
-        let emoji = "🌾";
-
-
-        if(product.category === "vegetable"){
-            emoji = "🥬";
-        }
-
-        if(product.category === "fruit"){
-            emoji = "🍎";
-        }
-
-        if(product.category === "grain"){
-            emoji = "🌾";
-        }
-
-        if(product.category === "dairy"){
-            emoji = "🥛";
-        }
-
-
-        let div =
-            document.createElement("div");
-
-
-        div.className =
-            "product";
-
-
-        div.id =
-            "farmer-product-" +
-            product.id;
-
-
-        div.dataset.category =
-            product.category;
-
-
-        div.innerHTML = `
-
-        <div class="product-image">
-            ${emoji}
-        </div>
-
-        <div class="product-info">
-
-            <span class="listed-label">
-                🌱 Farmer Listed
-            </span>
-
-            <h3>
-                ${escapeHTML(product.name)}
-            </h3>
-
-            <p class="farmer">
-                👨‍🌾 Farmer:
-                ${escapeHTML(product.farmer)}
-            </p>
-
-            <p class="location">
-                📍
-                ${escapeHTML(product.location)}
-            </p>
-
-            <p class="stock">
-                📦 Available:
-                ${product.quantity}
-            </p>
-
-            <p class="price">
-                ₹${product.price} / kg
-            </p>
-
-            <button
-            class="add-btn"
-            onclick="addFarmerProductToCart(${product.id})">
-
-                🛒 Add to Cart
-
-            </button>
-
-            <button
-            class="delete-product"
-            onclick="deleteFarmerProduct(${product.id})">
-
-                🗑️ Remove Product
-
-            </button>
-
-        </div>
-
-        `;
-
-
-        container.appendChild(div);
-
-    });
-
-}
-
-
-// ========================================
-// DELETE FARMER PRODUCT
-// ========================================
-
-async function deleteFarmerProduct(productId){
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(
-        !currentUser ||
-        currentUser.role !== "farmer" ||
-        !currentUser.uid
-    ){
-        alert(
-            "🔐 Please login as a farmer before removing a product."
-        );
-        return;
-    }
-
-    let products =
-        JSON.parse(
-            localStorage.getItem("kisanMandiProducts")
-        ) || [];
-
-    let productIndex = products.findIndex(
-        item => Number(item.id) === Number(productId)
-    );
-
-    if(productIndex === -1){
-        return;
-    }
-
-    let product = products[productIndex];
-
-    if(
-        product.ownerUid &&
-        product.ownerUid !== currentUser.uid
-    ){
-        alert(
-            "❌ You are not authorized to remove this product."
-        );
-        return;
-    }
-
-    let confirmDelete =
-        confirm(
-            "Are you sure you want to remove " +
-            product.name +
-            "?"
-        );
-
-    if(!confirmDelete){
-        return;
-    }
-
-    if(product.ownerUid){
-
-        let cloudDeleted =
-            await cloudDeleteProduct(productId);
-
-        if(!cloudDeleted){
-            return;
-        }
-    }
-
-    products.splice(productIndex,1);
-
-    localStorage.setItem(
-        "kisanMandiProducts",
-        JSON.stringify(products)
-    );
-
-    let card =
-        document.getElementById(
-            "farmer-product-" +
-            productId
-        );
-
-    if(card){
-        card.remove();
-    }
-
-    alert(
-        "🗑️ Product removed successfully."
-    );
-
-    updateDashboard();
-}
-
-// ========================================
-// SAFE TEXT
-// ========================================
-
-function escapeHTML(text){
-
-    let div =
-        document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-
-}
-
-
-// ========================================
-// ========================================
-// KISANMANDI V8.4 - FIREBASE BACKEND
-// SECURITY-COMPATIBLE VERSION
-// ========================================
-
-const KISAN_FIREBASE_CONFIG = {
-    apiKey: "AIzaSyCMFjkYeAq29DqFXYxXqEEtfks-hr9uG_s",
-    authDomain: "kisanmandi-a372a.firebaseapp.com",
-    projectId: "kisanmandi-a372a",
-    storageBucket: "kisanmandi-a372a.firebasestorage.app",
-    messagingSenderId: "562289122561",
-    appId: "1:562289122561:web:55c59c462db40b8f170f00",
-    measurementId: "G-FHCQZCPKLX"
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let currentUser=null;
+let currentProfile=null;
+let products=[];
+let cart=JSON.parse(localStorage.getItem("kisanMandiCart")||"[]");
+
+window.showSection=function(id){
+["home","productsSection","cartSection","ordersSection","accountSection","farmerSection"].forEach(s=>{
+const e=document.getElementById(s);if(e)e.classList.add("hidden");
+});
+const target=document.getElementById(id);
+if(target){target.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});}
+if(id==="ordersSection")loadOrders();
+if(id==="farmerSection")loadFarmerDashboard();
+if(id==="cartSection")renderCart();
 };
 
-let kisanCloudReady = false;
-let kisanDB = null;
-let kisanAuth = null;
+window.showRegister=function(){
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.remove("hidden");
+};
+window.showLogin=function(){
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loginBox").classList.remove("hidden");
+};
 
-function firebaseConfigReady(){
-    return KISAN_FIREBASE_CONFIG.apiKey &&
-        KISAN_FIREBASE_CONFIG.projectId;
+window.registerUser=async function(){
+const name=document.getElementById("regName").value.trim();
+const email=document.getElementById("regEmail").value.trim();
+const password=document.getElementById("regPassword").value;
+const mobile=document.getElementById("regMobile").value.trim();
+const role=document.getElementById("regRole").value;
+if(!name||!email||!password){showMessage("accountMessage","❌ Please fill all required fields.",true);return;}
+if(password.length<6){showMessage("accountMessage","❌ Password must contain at least 6 characters.",true);return;}
+try{
+const credential=await createUserWithEmailAndPassword(auth,email,password);
+await updateProfile(credential.user,{displayName:name});
+await setDoc(doc(db,"users",credential.user.uid),{uid:credential.user.uid,name,email,mobile,role,createdAt:serverTimestamp()});
+showMessage("accountMessage","✅ Account created successfully!");
+}catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
+};
+
+window.loginUser=async function(){
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
+if(!email||!password){showMessage("accountMessage","❌ Enter email and password.",true);return;}
+try{
+await signInWithEmailAndPassword(auth,email,password);
+showMessage("accountMessage","✅ Login successful! Welcome back.");
+}catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
+};
+
+window.forgotPassword=async function(){
+const email=document.getElementById("loginEmail").value.trim();
+if(!email){showMessage("accountMessage","❌ Enter your email address first.",true);return;}
+try{
+await sendPasswordResetEmail(auth,email);
+showMessage("accountMessage","✅ Password reset email sent.");
+}catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
+};
+
+window.logoutUser=async function(){await signOut(auth);};
+
+onAuthStateChanged(auth,async user=>{
+currentUser=user;
+if(user){
+await loadCurrentProfile();
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loggedBox").classList.remove("hidden");
+document.getElementById("welcomeUser").textContent="👋 Welcome, "+(currentProfile?.name||user.displayName||"KisanMandi User");
+if(currentProfile?.role==="farmer")document.getElementById("farmerDashboardButton").classList.remove("hidden");
+else document.getElementById("farmerDashboardButton").classList.add("hidden");
+}else{
+currentProfile=null;
+document.getElementById("loginBox").classList.remove("hidden");
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loggedBox").classList.add("hidden");
+document.getElementById("farmerDashboardButton").classList.add("hidden");
+}
+loadOrders();
+});
+
+async function loadCurrentProfile(){
+if(!currentUser)return;
+const snap=await getDoc(doc(db,"users",currentUser.uid));
+if(snap.exists())currentProfile=snap.data();
 }
 
-function initKisanFirebase(){
-
-    if(!firebaseConfigReady()){
-        let status = document.getElementById("firebaseStatus");
-
-        if(status){
-            status.style.display = "block";
-            status.innerText =
-                "⚠️ Firebase configuration is incomplete.";
-        }
-
-        return false;
-    }
-
-    try{
-
-        if(!firebase.apps.length){
-            firebase.initializeApp(KISAN_FIREBASE_CONFIG);
-        }
-
-        kisanDB = firebase.firestore();
-        kisanAuth = firebase.auth();
-        kisanCloudReady = true;
-
-        let status = document.getElementById("firebaseStatus");
-
-        if(status){
-            status.style.display = "none";
-        }
-
-        return true;
-
-    }catch(error){
-
-        console.error(
-            "Firebase initialization failed:",
-            error
-        );
-
-        let status = document.getElementById("firebaseStatus");
-
-        if(status){
-            status.style.display = "block";
-            status.innerText =
-                "⚠️ Firebase connection failed. Please refresh.";
-        }
-
-        return false;
-    }
+async function loadProducts(){
+try{
+const snap=await getDocs(collection(db,"products"));
+products=[];
+snap.forEach(item=>products.push({id:item.id,...item.data()}));
+renderProducts();
+}catch(error){
+document.getElementById("productsList").innerHTML='<div class="error">❌ Unable to load products.</div>';
+}
 }
 
-async function cloudSaveProduct(product){
-
-    if(!kisanCloudReady || !product){
-        return false;
-    }
-
-    try{
-
-        if(!product.ownerUid){
-            console.warn("Product not saved: ownerUid is missing.");
-            return false;
-        }
-
-        await kisanDB
-            .collection("products")
-            .doc(String(product.id))
-            .set(product);
-
-        return true;
-
-    }catch(error){
-
-        console.error("Cloud product save failed:", error);
-        return false;
-    }
+function emojiForCategory(category){
+return {vegetable:"🥬",fruit:"🍎",grain:"🌾",dairy:"🥛",other:"🌱"}[category]||"🌱";
 }
 
-async function cloudDeleteProduct(productId){
+window.renderProducts=function(){
+const list=document.getElementById("productsList");
+const search=document.getElementById("searchBox").value.toLowerCase().trim();
+const filtered=products.filter(product=>{
+const name=String(product.name||"").toLowerCase();
+const farmer=String(product.farmerName||"").toLowerCase();
+const location=String(product.location||"").toLowerCase();
+return name.includes(search)||farmer.includes(search)||location.includes(search);
+});
+if(filtered.length===0){list.innerHTML='<div class="info">🌱 No products found.</div>';return;}
+list.innerHTML=filtered.map(product=>{
+const stock=Number(product.stock||0);
+return `<div class="product">
+<div class="product-img">${emojiForCategory(product.category)}</div>
+<div class="product-body">
+<span class="badge">🌱 Farmer Listed</span>
+<h2>${escapeHTML(product.name||"Product")}</h2>
+<p>👨‍🌾 Farmer: ${escapeHTML(product.farmerName||"Farmer")}</p>
+<p>📍 ${escapeHTML(product.location||"India")}</p>
+<p class="stock">📦 Available: ${stock}</p>
+<div class="price">₹${Number(product.price||0)} / kg</div>
+${stock>0?`<button class="btn green" onclick="addToCart('${product.id}')">🛒 Add to Cart</button>`:`<button class="btn red" disabled>❌ Out of Stock</button>`}
+</div></div>`;
+}).join("");
+};
 
-    if(!kisanCloudReady){
-        return false;
-    }
+window.addToCart=function(productId){
+const product=products.find(p=>p.id===productId);
+if(!product)return;
+const stock=Number(product.stock||0);
+if(stock<=0){alert("❌ Product is out of stock.");return;}
+const existing=cart.find(item=>item.productId===productId);
+if(existing){
+if(existing.quantity<stock)existing.quantity++;
+else{alert("❌ Maximum available stock reached.");return;}
+}else{
+cart.push({productId,name:product.name,price:Number(product.price||0),quantity:1,farmerId:product.ownerUid||product.farmerUid||"",farmerName:product.farmerName||"",location:product.location||""});
+}
+saveCart();renderCart();alert("🛒 Product added to cart.");
+};
 
-    try{
+function saveCart(){localStorage.setItem("kisanMandiCart",JSON.stringify(cart));}
 
-        await kisanDB
-            .collection("products")
-            .doc(String(productId))
-            .delete();
+window.changeQuantity=function(index,change){
+if(!cart[index])return;
+cart[index].quantity+=change;
+if(cart[index].quantity<=0)cart.splice(index,1);
+saveCart();renderCart();
+};
 
-        return true;
-
-    }catch(error){
-
-        console.error("Cloud product delete failed:", error);
-
-        alert(
-            "❌ Firebase rejected the product deletion. " +
-            "Publish the V8.4 Security Rules first."
-        );
-
-        return false;
-    }
+function renderCart(){
+const list=document.getElementById("cartList");
+const totalBox=document.getElementById("cartTotal");
+const checkoutButton=document.getElementById("checkoutButton");
+if(cart.length===0){
+list.innerHTML='<p class="center">🛒 Your cart is empty.</p>';
+totalBox.innerHTML="";checkoutButton.classList.add("hidden");return;
+}
+let total=0;
+list.innerHTML=cart.map((item,index)=>{
+const itemTotal=item.price*item.quantity;total+=itemTotal;
+return `<div class="order">
+<h3>${escapeHTML(item.name)}</h3>
+<p>👨‍🌾 ${escapeHTML(item.farmerName)}</p>
+<p>₹${item.price} / kg</p>
+<div class="qty"><button onclick="changeQuantity(${index},-1)">−</button><strong>${item.quantity}</strong><button onclick="changeQuantity(${index},1)">+</button></div>
+<strong>Item total: ₹${itemTotal}</strong>
+</div>`;
+}).join("");
+totalBox.innerHTML=`💰 Cart Total: ₹${total}`;
+checkoutButton.classList.remove("hidden");
 }
 
-async function loadCloudProducts(){
+window.checkout=async function(){
+if(!currentUser){alert("🔒 Please login before placing an order.");showSection("accountSection");return;}
+if(cart.length===0){alert("🛒 Your cart is empty.");return;}
+if(currentProfile?.role==="farmer"){alert("👨‍🌾 Farmer accounts cannot place customer orders.");return;}
+try{
+let total=0;
+cart.forEach(item=>total+=item.price*item.quantity);
+const orderItems=cart.map(item=>({productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,farmerId:item.farmerId,farmerName:item.farmerName}));
+const farmerIds=[...new Set(cart.map(item=>item.farmerId).filter(Boolean))];
+const orderRef=await addDoc(collection(db,"orders"),{
+customerUid:currentUser.uid,
+customerName:currentProfile?.name||currentUser.displayName||"",
+customerEmail:currentUser.email||"",
+customerMobile:currentProfile?.mobile||"",
+items:orderItems,farmerUids:farmerIds,total,status:"pending",
+createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+});
+for(const item of cart){
+try{
+const productRef=doc(db,"products",item.productId);
+const productSnap=await getDoc(productRef);
+if(productSnap.exists()){
+const oldStock=Number(productSnap.data().stock||0);
+await updateDoc(productRef,{stock:Math.max(0,oldStock-item.quantity)});
+}
+}catch(stockError){console.warn("Stock update failed:",stockError);}
+}
+cart=[];saveCart();renderCart();await loadProducts();await loadOrders();
+alert("✅ Order placed successfully!\n\nOrder ID: "+orderRef.id);
+showSection("ordersSection");
+}catch(error){alert("❌ Order failed:\n"+friendlyError(error));}
+};
 
-    if(!kisanCloudReady){
-        return;
-    }
-
-    try{
-
-        let snapshot =
-            await kisanDB
-                .collection("products")
-                .get();
-
-        let products = [];
-
-        snapshot.forEach(function(doc){
-            products.push(doc.data());
-        });
-
-        localStorage.setItem(
-            "kisanMandiProducts",
-            JSON.stringify(products)
-        );
-
-        displayFarmerProducts();
-
-    }catch(error){
-
-        console.error("Cloud product load failed:", error);
-    }
+async function loadOrders(){
+const list=document.getElementById("ordersList");
+if(!currentUser){list.innerHTML='<div class="info">🔒 Please login to view orders.</div>';return;}
+try{
+const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+const snap=await getDocs(q);const orders=[];
+snap.forEach(item=>orders.push({id:item.id,...item.data()}));
+orders.sort((a,b)=>timestampValue(b.createdAt)-timestampValue(a.createdAt));
+if(orders.length===0){list.innerHTML='<div class="info">📦 You have no orders yet.</div>';return;}
+list.innerHTML=orders.map(renderCustomerOrder).join("");
+}catch(error){list.innerHTML='<div class="error">❌ Could not load orders.</div>';}
 }
 
-async function cloudSaveOrder(order){
-
-    if(!kisanCloudReady || !order){
-        return false;
-    }
-
-    try{
-
-        if(!order.customerUid){
-            console.warn("Order not saved: customerUid is missing.");
-            return false;
-        }
-
-        await kisanDB
-            .collection("orders")
-            .doc(String(order.id))
-            .set(order);
-
-        return true;
-
-    }catch(error){
-
-        console.error("Cloud order save failed:", error);
-
-        alert(
-            "❌ Firebase rejected the order. " +
-            "Publish the V8.4 Security Rules first."
-        );
-
-        return false;
-    }
+function renderCustomerOrder(order){
+const status=order.status||"pending";
+const items=Array.isArray(order.items)?order.items:[];
+const itemsHTML=items.map(item=>`<p>${escapeHTML(item.name||"Product")} — ₹${item.price||0} × ${item.quantity||1}</p>`).join("");
+return `<div class="order"><h3>📦 Order ${escapeHTML(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3></div>`;
 }
 
-async function cloudUpdateOrder(order){
-
-    if(!kisanCloudReady || !order){
-        return false;
-    }
-
-    try{
-
-        await kisanDB
-            .collection("orders")
-            .doc(String(order.id))
-            .set(
-                {
-                    status: order.status,
-                    updatedAt: new Date().toISOString()
-                },
-                {
-                    merge:true
-                }
-            );
-
-        return true;
-
-    }catch(error){
-
-        console.error("Cloud order update failed:", error);
-
-        alert(
-            "❌ Firebase rejected this status update. " +
-            "Please check the V8.4 Security Rules."
-        );
-
-        return false;
-    }
+async function loadFarmerDashboard(){
+if(!currentUser||currentProfile?.role!=="farmer"){document.getElementById("farmerSection").classList.add("hidden");return;}
+await loadMyProducts();await loadFarmerOrders();
 }
 
-async function loadCloudOrdersForCurrentUser(){
+window.addProduct=async function(){
+if(!currentUser||currentProfile?.role!=="farmer"){alert("❌ Farmer login required.");return;}
+const name=document.getElementById("productName").value.trim();
+const price=Number(document.getElementById("productPrice").value);
+const stock=Number(document.getElementById("productStock").value);
+const location=document.getElementById("productLocation").value.trim();
+const category=document.getElementById("productCategory").value;
+if(!name||price<=0||stock<0){showMessage("farmerMessage","❌ Enter valid product details.",true);return;}
+try{
+await addDoc(collection(db,"products"),{name,price,stock,location:location||"Maharajganj",category,ownerUid:currentUser.uid,farmerUid:currentUser.uid,farmerName:currentProfile?.name||currentUser.displayName||"Farmer",createdAt:serverTimestamp()});
+showMessage("farmerMessage","✅ Product listed successfully!");
+["productName","productPrice","productStock","productLocation"].forEach(id=>document.getElementById(id).value="");
+await loadProducts();await loadMyProducts();
+}catch(error){showMessage("farmerMessage","❌ "+friendlyError(error),true);}
+};
 
-    if(!kisanCloudReady || !kisanAuth){
-        return;
-    }
-
-    let firebaseUser = kisanAuth.currentUser;
-
-    if(!firebaseUser){
-        localStorage.setItem(
-            "kisanMandiOrders",
-            JSON.stringify([])
-        );
-
-        updateOrders();
-        return;
-    }
-
-    try{
-
-        let profile = JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        ) || {};
-
-        let ordersMap = {};
-
-        if(profile.role === "farmer"){
-
-            let farmerSnapshot =
-                await kisanDB
-                    .collection("orders")
-                    .where(
-                        "farmerUids",
-                        "array-contains",
-                        firebaseUser.uid
-                    )
-                    .get();
-
-            farmerSnapshot.forEach(function(doc){
-                ordersMap[doc.id] = doc.data();
-            });
-
-        }else{
-
-            let customerSnapshot =
-                await kisanDB
-                    .collection("orders")
-                    .where(
-                        "customerUid",
-                        "==",
-                        firebaseUser.uid
-                    )
-                    .get();
-
-            customerSnapshot.forEach(function(doc){
-                ordersMap[doc.id] = doc.data();
-            });
-        }
-
-        let orders = Object.values(ordersMap);
-
-        localStorage.setItem(
-            "kisanMandiOrders",
-            JSON.stringify(orders)
-        );
-
-        updateOrders();
-
-    }catch(error){
-
-        console.error("Secure cloud order load failed:", error);
-
-        let message =
-            document.getElementById("firebaseStatus");
-
-        if(message){
-            message.style.display = "block";
-            message.innerText =
-                "⚠️ Orders could not be loaded. " +
-                "Publish the V8.4 Security Rules.";
-        }
-    }
+async function loadMyProducts(){
+const box=document.getElementById("myProducts");
+try{
+const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
+const snap=await getDocs(q);const list=[];
+snap.forEach(item=>list.push({id:item.id,...item.data()}));
+if(list.length===0){box.innerHTML='<div class="info">🌱 You have not listed any products.</div>';return;}
+box.innerHTML=list.map(product=>`<div class="order"><h3>${escapeHTML(product.name)}</h3><p>💰 ₹${product.price} / kg</p><p>📦 Stock: <strong>${product.stock||0}</strong></p><p>📍 ${escapeHTML(product.location||"")}</p></div>`).join("");
+}catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';}
 }
 
-async function migrateLocalDataToCloud(){
-
-    if(!kisanCloudReady || !kisanAuth || !kisanAuth.currentUser){
-        return;
-    }
-
-    let firebaseUser = kisanAuth.currentUser;
-
-    let currentUser = JSON.parse(
-        localStorage.getItem("kisanMandiCurrentUser")
-    );
-
-    if(!currentUser){
-        return;
-    }
-
-    let products =
-        JSON.parse(
-            localStorage.getItem("kisanMandiProducts")
-        ) || [];
-
-    for(let product of products){
-
-        let belongsToCurrentFarmer =
-            Number(product.ownerId) === Number(currentUser.id);
-
-        if(
-            currentUser.role === "farmer" &&
-            belongsToCurrentFarmer
-        ){
-
-            product.ownerUid = firebaseUser.uid;
-
-            await cloudSaveProduct(product);
-        }
-    }
-
-    localStorage.setItem(
-        "kisanMandiProducts",
-        JSON.stringify(products)
-    );
-
-    let orders =
-        JSON.parse(
-            localStorage.getItem("kisanMandiOrders")
-        ) || [];
-
-    for(let order of orders){
-
-        let belongsToCurrentCustomer =
-            currentUser.role === "customer" &&
-            Number(order.customerId) === Number(currentUser.id);
-
-        if(belongsToCurrentCustomer){
-
-            order.customerUid = firebaseUser.uid;
-
-            let farmerUids = [];
-
-            order.items = order.items.map(function(item){
-
-                let productsLocal =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "kisanMandiProducts"
-                        )
-                    ) || [];
-
-                let product = productsLocal.find(function(p){
-                    return Number(p.id) === Number(item.productId);
-                });
-
-                if(product && product.ownerUid){
-
-                    item.farmerUid = product.ownerUid;
-
-                    if(!farmerUids.includes(product.ownerUid)){
-                        farmerUids.push(product.ownerUid);
-                    }
-                }
-
-                return item;
-            });
-
-            order.farmerUids = farmerUids;
-
-            await cloudSaveOrder(order);
-        }
-    }
-
-    localStorage.setItem(
-        "kisanMandiOrders",
-        JSON.stringify(orders)
-    );
+async function loadFarmerOrders(){
+const box=document.getElementById("farmerOrders");
+try{
+const snap=await getDocs(collection(db,"orders"));const orders=[];
+snap.forEach(item=>{
+const data=item.data();
+const farmerIds=Array.isArray(data.farmerUids)?data.farmerUids:[];
+if(farmerIds.includes(currentUser.uid))orders.push({id:item.id,...data});
+});
+if(orders.length===0){box.innerHTML='<div class="info">📥 No incoming orders.</div>';return;}
+orders.sort((a,b)=>timestampValue(b.createdAt)-timestampValue(a.createdAt));
+box.innerHTML=orders.map(renderFarmerOrder).join("");
+}catch(error){box.innerHTML='<div class="error">❌ Could not load farmer orders.</div>';}
 }
 
-async function startKisanCloud(){
-
-    if(!initKisanFirebase()){
-        return;
-    }
-
-    await loadCloudProducts();
-
-    kisanAuth.onAuthStateChanged(
-        async function(firebaseUser){
-
-            if(!firebaseUser){
-
-                localStorage.removeItem(
-                    "kisanMandiCurrentUser"
-                );
-
-                localStorage.removeItem(
-                    "kisanMandiOrders"
-                );
-
-                updateUserBar();
-                updateDashboard();
-                updateOrders();
-
-                return;
-            }
-
-            try{
-
-                let profileDoc =
-                    await kisanDB
-                        .collection("users")
-                        .doc(firebaseUser.uid)
-                        .get();
-
-                if(profileDoc.exists){
-
-                    let profile =
-                        profileDoc.data();
-
-                    profile.uid =
-                        firebaseUser.uid;
-
-                    localStorage.setItem(
-                        "kisanMandiCurrentUser",
-                        JSON.stringify(profile)
-                    );
-
-                    updateUserBar();
-                    updateDashboard();
-
-                    await migrateLocalDataToCloud();
-                    await loadCloudOrdersForCurrentUser();
-
-                    updateDashboard();
-                    updateOrders();
-
-                }else{
-
-                    console.warn(
-                        "Firebase user exists but profile document is missing."
-                    );
-                }
-
-            }catch(error){
-
-                console.error(
-                    "User profile load failed:",
-                    error
-                );
-            }
-        }
-    );
-
-    console.log(
-        "KisanMandi V8.4 secure cloud backend connected."
-    );
+function renderFarmerOrder(order){
+const status=order.status||"pending";
+const farmerItems=(order.items||[]).filter(item=>item.farmerId===currentUser.uid);
+if(farmerItems.length===0)return "";
+const itemHTML=farmerItems.map(item=>`<p>🌾 ${escapeHTML(item.name)} — ₹${item.price} × ${item.quantity}</p>`).join("");
+let buttons="";
+if(status==="pending")buttons=`<button class="btn green" onclick="updateOrderStatus('${order.id}','confirmed')">✅ Confirm Order</button><button class="btn red" onclick="updateOrderStatus('${order.id}','rejected')">❌ Reject Order</button>`;
+if(status==="confirmed")buttons=`<button class="btn blue" onclick="updateOrderStatus('${order.id}','delivered')">🚚 Mark Delivered</button>`;
+return `<div class="order"><h3>📦 Order ${escapeHTML(order.id)}</h3><p>👤 Customer: ${escapeHTML(order.customerName||"")}</p><p>📱 ${escapeHTML(order.customerMobile||"")}</p><p>📅 ${formatTimestamp(order.createdAt)}</p><br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemHTML}<h3>Order Total: ₹${Number(order.total||0)}</h3>${buttons}</div>`;
 }
 
+window.updateOrderStatus=async function(orderId,newStatus){
+if(!currentUser||currentProfile?.role!=="farmer"){alert("❌ Farmer login required.");return;}
+try{
+const orderRef=doc(db,"orders",orderId);const snap=await getDoc(orderRef);
+if(!snap.exists()){alert("❌ Order not found.");return;}
+const order=snap.data();const farmerIds=Array.isArray(order.farmerUids)?order.farmerUids:[];
+if(!farmerIds.includes(currentUser.uid)){alert("❌ You are not authorized for this order.");return;}
+await updateDoc(orderRef,{status:newStatus,updatedAt:serverTimestamp()});
+alert("✅ Order status updated to "+newStatus);
+await loadFarmerOrders();await loadOrders();
+}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
+};
 
-// WHATSAPP COMMUNICATION
-// ========================================
-
-function getKisanUsers(){
-    return JSON.parse(localStorage.getItem("kisanMandiUsers")) || [];
+function showMessage(id,message,error=false){
+const element=document.getElementById(id);if(!element)return;
+element.innerHTML=`<div class="${error?"error":"success"}">${message}</div>`;
+}
+function statusLabel(status){return {pending:"⏳ Pending",confirmed:"✅ Confirmed",delivered:"🚚 Delivered",rejected:"❌ Rejected"}[status]||status;}
+function timestampValue(timestamp){return timestamp&&typeof timestamp.toMillis==="function"?timestamp.toMillis():0;}
+function formatTimestamp(timestamp){try{return timestamp?timestamp.toDate().toLocaleString():"Just now";}catch(e){return "Recent";}}
+function escapeHTML(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+function friendlyError(error){
+const code=error?.code||"";
+const messages={
+"auth/email-already-in-use":"This email is already registered.",
+"auth/invalid-email":"Invalid email address.",
+"auth/weak-password":"Password is too weak.",
+"auth/invalid-credential":"Incorrect email or password.",
+"auth/user-not-found":"User account not found.",
+"auth/wrong-password":"Incorrect password.",
+"permission-denied":"Firebase security rules denied this action."
+};
+return messages[code]||error?.message||"Something went wrong.";
 }
 
-function getFarmerPhoneById(farmerId){
-    let farmer = getKisanUsers().find(function(user){
-        return Number(user.id) === Number(farmerId) && user.role === "farmer";
-    });
-    return farmer ? farmer.phone : "";
-}
-
-function whatsappNumber(phone){
-    let digits = String(phone || "").replace(/\D/g,"");
-    if(digits.length === 10) return "91" + digits;
-    return digits;
-}
-
-function openWhatsApp(phone,message){
-    let number = whatsappNumber(phone);
-    let url = number
-        ? "https://wa.me/" + number + "?text=" + encodeURIComponent(message)
-        : "https://wa.me/?text=" + encodeURIComponent(message);
-    window.open(url,"_blank");
-}
-
-function orderWhatsAppMessage(order){
-    let items = order.items.map(function(item){
-        return "• " + item.name + " x " + item.quantity +
-            " = ₹" + (Number(item.price) * Number(item.quantity));
-    }).join("\n");
-
-    return "🌾 KisanMandi Order\n\n" +
-        "Order ID: " + order.id + "\n" +
-        "Customer: " + order.customerName + "\n" +
-        "Phone: " + order.customerPhone + "\n\n" +
-        "Items:\n" + items + "\n\n" +
-        "Total: ₹" + order.total + "\n" +
-        "Address: " + order.customerAddress + "\n" +
-        "Status: " + order.status;
-}
-
-function shareOrderOnWhatsApp(orderId){
-    let order = getOrders().find(function(item){ return item.id === orderId; });
-    if(!order){ alert("⚠️ Order not found."); return; }
-    openWhatsApp("",orderWhatsAppMessage(order));
-}
-
-function messageCustomerOnWhatsApp(orderId){
-    let user = JSON.parse(localStorage.getItem("kisanMandiCurrentUser"));
-    if(!user || user.role !== "farmer"){
-        alert("🔐 Please login as a farmer.");
-        return;
-    }
-
-    let order = getOrders().find(function(item){ return item.id === orderId; });
-    if(!order){ alert("⚠️ Order not found."); return; }
-
-    let owns = order.items.some(function(item){
-        return Number(item.farmerId) === Number(user.id);
-    });
-
-    if(!owns){
-        alert("❌ You are not authorized to contact this customer.");
-        return;
-    }
-
-    openWhatsApp(order.customerPhone,orderWhatsAppMessage(order));
-}
-
-function messageFarmerOnWhatsApp(orderId,farmerId){
-    let order = getOrders().find(function(item){ return item.id === orderId; });
-    if(!order){ alert("⚠️ Order not found."); return; }
-
-    let phone = "";
-    order.items.some(function(item){
-        if(Number(item.farmerId) === Number(farmerId)){
-            phone = item.farmerPhone || getFarmerPhoneById(farmerId);
-            return true;
-        }
-        return false;
-    });
-
-    if(!phone){
-        alert("⚠️ Farmer WhatsApp number is not available.");
-        return;
-    }
-
-    openWhatsApp(phone,orderWhatsAppMessage(order));
-}
-
-// ========================================
-// ORDER MANAGEMENT
-// ========================================
-
-function getOrders(){
-
-    return JSON.parse(
-        localStorage.getItem("kisanMandiOrders")
-    ) || [];
-}
-
-function saveOrders(orders){
-
-    localStorage.setItem(
-        "kisanMandiOrders",
-        JSON.stringify(orders)
-    );
-}
-
-function formatOrderDate(dateString){
-
-    let date = new Date(dateString);
-
-    return date.toLocaleString();
-}
-
-function getOrderStatusClass(status){
-
-    return status === "Delivered"
-        ? "order-status delivered"
-        : "order-status";
-}
-
-function updateOrders(){
-
-    let container =
-        document.getElementById("ordersContent");
-
-    if(!container){
-        return;
-    }
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(!currentUser){
-
-        container.innerHTML =
-            '<div class="order-empty">🔒 Please login to view orders.</div>';
-
-        return;
-    }
-
-    let orders = getOrders();
-
-    if(currentUser.role === "customer"){
-
-        let myOrders =
-            orders.filter(
-                order =>
-                    Number(order.customerId) === Number(currentUser.id)
-            );
-
-        if(myOrders.length === 0){
-
-            container.innerHTML =
-                '<div class="order-empty">📦 You have no orders yet.</div>';
-
-            return;
-        }
-
-        container.innerHTML = "";
-
-        myOrders.slice().reverse().forEach(function(order){
-
-            let itemsHTML = order.items.map(function(item){
-
-                return `
-                    <div class="order-line">
-                        ${escapeHTML(item.name)}
-                        — ₹${item.price} × ${item.quantity}
-                    </div>
-                `;
-
-            }).join("");
-
-            let div = document.createElement("div");
-
-            div.className = "order-card";
-
-            div.innerHTML = `
-                <h3>Order ${escapeHTML(order.id)}</h3>
-
-                <div>
-                    📅 ${escapeHTML(formatOrderDate(order.createdAt))}
-                </div>
-
-                <div class="${getOrderStatusClass(order.status)}">
-                    ${escapeHTML(order.status)}
-                </div>
-
-                <div style="margin-top:10px;">
-                    ${itemsHTML}
-                </div>
-
-                <p style="margin-top:10px;">
-                    <strong>Total: ₹${order.total}</strong>
-                </p>
-
-                <p style="margin-top:6px;">
-                    📍 ${escapeHTML(order.customerAddress)}
-                </p>
-
-                <button class="whatsapp-btn"
-                    onclick="shareOrderOnWhatsApp('${order.id}')">
-                    💬 Share Order on WhatsApp
-                </button>
-
-                ${
-                    [...new Set(order.items.map(item => Number(item.farmerId)).filter(Boolean))]
-                    .map(farmerId => `
-                        <button class="whatsapp-btn"
-                            onclick="messageFarmerOnWhatsApp('${order.id}',${farmerId})">
-                            🧑‍🌾 WhatsApp Farmer
-                        </button>
-                    `).join("")
-                }
-            `;
-
-            container.appendChild(div);
-        });
-
-        return;
-    }
-
-    // Farmer view
-    let farmerOrders = [];
-
-    orders.forEach(function(order){
-
-        let hasFarmerProduct =
-            order.items.some(function(item){
-                return Number(item.farmerId) === Number(currentUser.id);
-            });
-
-        if(hasFarmerProduct){
-            farmerOrders.push(order);
-        }
-    });
-
-    if(farmerOrders.length === 0){
-
-        container.innerHTML =
-            '<div class="order-empty">📦 No orders for your products yet.</div>';
-
-        return;
-    }
-
-    container.innerHTML = "";
-
-    farmerOrders.slice().reverse().forEach(function(order){
-
-        let farmerItems =
-            order.items.filter(function(item){
-                return Number(item.farmerId) === Number(currentUser.id);
-            });
-
-        let farmerTotal =
-            farmerItems.reduce(function(sum,item){
-                return sum + (Number(item.price) * Number(item.quantity));
-            },0);
-
-        let itemsHTML = farmerItems.map(function(item){
-
-            return `
-                <div class="order-line">
-                    ${escapeHTML(item.name)}
-                    — ₹${item.price} × ${item.quantity}
-                </div>
-            `;
-
-        }).join("");
-
-        let div = document.createElement("div");
-
-        div.className = "order-card";
-
-        div.innerHTML = `
-            <h3>Order ${escapeHTML(order.id)}</h3>
-
-            <div>
-                👤 Customer: ${escapeHTML(order.customerName)}
-            </div>
-
-            <div>
-                📱 ${escapeHTML(order.customerPhone)}
-            </div>
-
-            <div>
-                📅 ${escapeHTML(formatOrderDate(order.createdAt))}
-            </div>
-
-            <div class="${getOrderStatusClass(order.status)}">
-                ${escapeHTML(order.status)}
-            </div>
-
-            <div style="margin-top:10px;">
-                ${itemsHTML}
-            </div>
-
-            <p style="margin-top:10px;">
-                <strong>Your products total: ₹${farmerTotal}</strong>
-            </p>
-
-            <p style="margin-top:6px;">
-                📍 ${escapeHTML(order.customerAddress)}
-            </p>
-
-            <div class="order-actions">
-
-                ${
-                    order.status === "Pending"
-                    ? `<button onclick="updateOrderStatus('${order.id}','Accepted')">
-                        ✅ Accept
-                       </button>`
-                    : ""
-                }
-
-                ${
-                    order.status === "Accepted"
-                    ? `<button onclick="updateOrderStatus('${order.id}','Preparing')">
-                        👨‍🌾 Preparing
-                       </button>`
-                    : ""
-                }
-
-                ${
-                    order.status === "Preparing"
-                    ? `<button onclick="updateOrderStatus('${order.id}','Ready')">
-                        📦 Ready
-                       </button>`
-                    : ""
-                }
-
-                ${
-                    order.status === "Ready"
-                    ? `<button onclick="updateOrderStatus('${order.id}','Delivered')">
-                        🚚 Delivered
-                       </button>`
-                    : ""
-                }
-
-            </div>
-
-            <button class="whatsapp-btn"
-                onclick="messageCustomerOnWhatsApp('${order.id}')">
-                💬 Message Customer on WhatsApp
-            </button>
-        `;
-
-        container.appendChild(div);
-    });
-}
-
-async function updateOrderStatus(orderId,newStatus){
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(
-        !currentUser ||
-        currentUser.role !== "farmer" ||
-        !currentUser.uid
-    ){
-        alert("🔐 Please login as a farmer.");
-        return;
-    }
-
-    let orders = getOrders();
-
-    let order =
-        orders.find(
-            item => item.id === orderId
-        );
-
-    if(!order){
-        alert("⚠️ Order not found.");
-        return;
-    }
-
-    let ownsProduct =
-        order.items.some(function(item){
-
-            return (
-                item.farmerUid === currentUser.uid ||
-                Number(item.farmerId) === Number(currentUser.id)
-            );
-
-        });
-
-    if(!ownsProduct){
-        alert(
-            "❌ You are not authorized to update this order."
-        );
-        return;
-    }
-
-    if(kisanCloudReady){
-
-        order.status = newStatus;
-
-        let updated =
-            await cloudUpdateOrder(order);
-
-        if(!updated){
-            return;
-        }
-    }
-
-    order.status = newStatus;
-
-    saveOrders(orders);
-
-    updateOrders();
-
-    alert(
-        "✅ Order " +
-        orderId +
-        " updated to " +
-        newStatus +
-        "."
-    );
-}
-
-
-function scrollToOrders(){
-
-    document
-        .getElementById("ordersSection")
-        .scrollIntoView({
-            behavior:"smooth"
-        });
-}
-
-// ========================================
-// ========================================
-// AUTHENTICATION - V8.4 FIREBASE EMAIL/PASSWORD
-// ========================================
-
-function showAuthForm(type){
-
-    let loginForm = document.getElementById("loginForm");
-    let registerForm = document.getElementById("registerForm");
-    let loginTab = document.getElementById("loginTab");
-    let registerTab = document.getElementById("registerTab");
-    let message = document.getElementById("authMessage");
-
-    message.innerText = "";
-
-    if(type === "register"){
-
-        loginForm.style.display = "none";
-        registerForm.style.display = "block";
-
-        loginTab.classList.remove("active");
-        registerTab.classList.add("active");
-
-    }else{
-
-        loginForm.style.display = "block";
-        registerForm.style.display = "none";
-
-        loginTab.classList.add("active");
-        registerTab.classList.remove("active");
-    }
-}
-
-function ensureKisanAuth(){
-
-    if(!kisanCloudReady || !firebase.apps.length){
-        return false;
-    }
-
-    try{
-        kisanAuth = firebase.auth();
-        return true;
-
-    }catch(error){
-
-        console.error(
-            "Firebase Auth initialization failed:",
-            error
-        );
-
-        return false;
-    }
-}
-
-async function registerUser(){
-
-    let message = document.getElementById("authMessage");
-
-    let name =
-        document.getElementById("registerName")
-            .value.trim();
-
-    let email =
-        document.getElementById("registerEmail")
-            .value.trim()
-            .toLowerCase();
-
-    let password =
-        document.getElementById("registerPassword")
-            .value;
-
-    let phone =
-        document.getElementById("registerPhone")
-            .value.trim();
-
-    let role =
-        document.getElementById("registerRole")
-            .value;
-
-    if(!name || !email || !password){
-
-        message.innerText =
-            "⚠️ Please enter your name, email and password.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    if(password.length < 6){
-
-        message.innerText =
-            "⚠️ Password must contain at least 6 characters.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    if(!ensureKisanAuth()){
-
-        message.innerText =
-            "⚠️ Firebase Authentication is not connected.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    message.innerText =
-        "⏳ Creating your KisanMandi account...";
-
-    message.style.color = "#176b2c";
-
-    try{
-
-        let result =
-            await kisanAuth
-                .createUserWithEmailAndPassword(
-                    email,
-                    password
-                );
-
-        let firebaseUser = result.user;
-
-        let profile = {
-            uid: firebaseUser.uid,
-            id: Date.now(),
-            name: name,
-            email: email,
-            phone: phone,
-            role: role,
-            createdAt: new Date().toISOString()
-        };
-
-        await kisanDB
-            .collection("users")
-            .doc(firebaseUser.uid)
-            .set(profile);
-
-        localStorage.setItem(
-            "kisanMandiCurrentUser",
-            JSON.stringify(profile)
-        );
-
-        message.innerText =
-            "✅ Account created successfully! Welcome to KisanMandi.";
-
-        message.style.color = "#176b2c";
-
-        document.getElementById("registerName").value = "";
-        document.getElementById("registerEmail").value = "";
-        document.getElementById("registerPassword").value = "";
-        document.getElementById("registerPhone").value = "";
-
-        updateUserBar();
-        updateDashboard();
-        updateOrders();
-
-        await migrateLocalDataToCloud();
-        await loadCloudOrdersForCurrentUser();
-
-        updateDashboard();
-        updateOrders();
-
-    }catch(error){
-
-        console.error(
-            "Firebase registration failed:",
-            error
-        );
-
-        let friendly =
-            error.code === "auth/email-already-in-use"
-            ? "⚠️ This email is already registered. Please login."
-            : error.code === "auth/invalid-email"
-            ? "⚠️ Please enter a valid email address."
-            : error.code === "auth/weak-password"
-            ? "⚠️ Password must contain at least 6 characters."
-            : "❌ " + (error.message || "Account creation failed.");
-
-        message.innerText = friendly;
-        message.style.color = "#c62828";
-    }
-}
-
-async function loginUser(){
-
-    let message = document.getElementById("authMessage");
-
-    let email =
-        document.getElementById("loginEmail")
-            .value.trim()
-            .toLowerCase();
-
-    let password =
-        document.getElementById("loginPassword")
-            .value;
-
-    if(!email || !password){
-
-        message.innerText =
-            "⚠️ Enter your email address and password.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    if(!ensureKisanAuth()){
-
-        message.innerText =
-            "⚠️ Firebase Authentication is not connected.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    message.innerText =
-        "⏳ Logging in...";
-
-    message.style.color = "#176b2c";
-
-    try{
-
-        let result =
-            await kisanAuth
-                .signInWithEmailAndPassword(
-                    email,
-                    password
-                );
-
-        let firebaseUser = result.user;
-
-        let doc =
-            await kisanDB
-                .collection("users")
-                .doc(firebaseUser.uid)
-                .get();
-
-        if(!doc.exists){
-
-            message.innerText =
-                "❌ Account profile was not found.";
-
-            message.style.color = "#c62828";
-
-            await kisanAuth.signOut();
-            return;
-        }
-
-        let profile = doc.data();
-
-        profile.uid =
-            firebaseUser.uid;
-
-        localStorage.setItem(
-            "kisanMandiCurrentUser",
-            JSON.stringify(profile)
-        );
-
-        message.innerText =
-            "✅ Login successful! Welcome back.";
-
-        message.style.color = "#176b2c";
-
-        document.getElementById("loginPassword").value = "";
-
-        updateUserBar();
-        updateDashboard();
-
-        await migrateLocalDataToCloud();
-        await loadCloudProducts();
-        await loadCloudOrdersForCurrentUser();
-
-        updateDashboard();
-        updateOrders();
-
-    }catch(error){
-
-        console.error(
-            "Firebase login failed:",
-            error
-        );
-
-        let friendly =
-            error.code === "auth/invalid-credential"
-            ? "❌ Incorrect email or password."
-            : error.code === "auth/user-not-found"
-            ? "❌ No account found with this email."
-            : error.code === "auth/wrong-password"
-            ? "❌ Incorrect password."
-            : error.code === "auth/too-many-requests"
-            ? "⚠️ Too many attempts. Please try again later."
-            : "❌ " + (error.message || "Login failed.");
-
-        message.innerText = friendly;
-        message.style.color = "#c62828";
-    }
-}
-
-async function forgotPassword(){
-
-    let message =
-        document.getElementById("authMessage");
-
-    let email =
-        document.getElementById("loginEmail")
-            .value.trim()
-            .toLowerCase();
-
-    if(!email){
-
-        message.innerText =
-            "⚠️ Enter your email address first.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    if(!ensureKisanAuth()){
-
-        message.innerText =
-            "⚠️ Firebase Authentication is not connected.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    try{
-
-        await kisanAuth
-            .sendPasswordResetEmail(email);
-
-        message.innerText =
-            "📧 Password reset email sent. Please check your inbox.";
-
-        message.style.color = "#176b2c";
-
-    }catch(error){
-
-        console.error(
-            "Password reset failed:",
-            error
-        );
-
-        message.innerText =
-            "❌ " +
-            (
-                error.code === "auth/user-not-found"
-                ? "No account found with this email."
-                : error.message
-            );
-
-        message.style.color = "#c62828";
-    }
-}
-
-function logoutUser(){
-
-    if(kisanAuth){
-
-        kisanAuth
-            .signOut()
-            .catch(function(error){
-                console.error(
-                    "Firebase logout failed:",
-                    error
-                );
-            });
-    }
-
-    localStorage.removeItem(
-        "kisanMandiCurrentUser"
-    );
-
-    localStorage.removeItem(
-        "kisanMandiOrders"
-    );
-
-    updateUserBar();
-    updateDashboard();
-    updateOrders();
-
-    showAuthForm("login");
-
-    document.getElementById("authMessage").innerText =
-        "✅ You have been logged out.";
-
-    document.getElementById("authMessage").style.color =
-        "#176b2c";
-}
-
-
-function updateUserBar(){
-
-    let userBar =
-        document.getElementById("userBar");
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(!currentUser){
-        userBar.style.display = "none";
-        return;
-    }
-
-    userBar.style.display = "block";
-
-    let roleText =
-        currentUser.role === "farmer"
-        ? "Farmer"
-        : "Customer";
-
-    userBar.innerHTML =
-        "👋 Welcome, " +
-        escapeHTML(currentUser.name) +
-        " (" +
-        roleText +
-        ")" +
-        '<button class="logout-btn" onclick="logoutUser()">Logout</button>';
-}
-
-function updateDashboard(){
-
-    let dashboard =
-        document.getElementById("dashboardContent");
-
-    let currentUser =
-        JSON.parse(
-            localStorage.getItem("kisanMandiCurrentUser")
-        );
-
-    if(!currentUser){
-        dashboard.innerHTML =
-            '<div class="dashboard-card">🔒 Please login to view your dashboard.</div>';
-        return;
-    }
-
-    let roleText =
-        currentUser.role === "farmer"
-        ? "Farmer"
-        : "Customer";
-
-    if(currentUser.role === "farmer"){
-
-        let products =
-            JSON.parse(
-                localStorage.getItem("kisanMandiProducts")
-            ) || [];
-
-        let myProducts =
-            products.filter(
-                product =>
-                    Number(product.ownerId) === Number(currentUser.id)
-            );
-
-        let productText =
-            myProducts.length === 0
-            ? "You have not listed any products yet."
-            : "You have listed " + myProducts.length + " product(s).";
-
-        dashboard.innerHTML = `
-            <div class="dashboard-card">
-                👋 <strong>${escapeHTML(currentUser.name)}</strong><br>
-                Account type: ${roleText}<br>
-                Mobile: ${escapeHTML(currentUser.phone)}
-            </div>
-
-            <div class="dashboard-card">
-                🌱 <strong>My Products</strong><br>
-                ${productText}
-            </div>
-
-            <div class="dashboard-actions">
-                <button onclick="scrollToSell()">🌾 List Product</button>
-                <button class="secondary" onclick="scrollToProducts()">🛒 Marketplace</button>
-            </div>
-        `;
-
-    }else{
-
-        dashboard.innerHTML = `
-            <div class="dashboard-card">
-                👋 <strong>${escapeHTML(currentUser.name)}</strong><br>
-                Account type: ${roleText}<br>
-                Mobile: ${escapeHTML(currentUser.phone)}
-            </div>
-
-            <div class="dashboard-card">
-                🛒 <strong>Customer Account</strong><br>
-                Browse products, add items to your cart and place orders.
-            </div>
-
-            <div class="dashboard-actions">
-                <button onclick="scrollToProducts()">🛒 Buy Products</button>
-                <button class="secondary" onclick="scrollToCart()">🧺 My Cart</button>
-            </div>
-        `;
-    }
-}
-
-function scrollToDashboard(){
-
-    document
-        .getElementById("dashboardSection")
-        .scrollIntoView({
-            behavior:"smooth"
-        });
-}
-
-function scrollToAuth(){
-
-    document
-        .getElementById("authSection")
-        .scrollIntoView({
-            behavior:"smooth"
-        });
-}
-
-// ========================================
-// NAVIGATION
-// ========================================
-
-function scrollToProducts(){
-
-    document
-    .getElementById("productsContainer")
-    .scrollIntoView({
-
-        behavior:"smooth"
-
-    });
-
-}
-
-
-function scrollToSell(){
-
-    document
-    .getElementById("sellSection")
-    .scrollIntoView({
-
-        behavior:"smooth"
-
-    });
-
-}
-
-
-function scrollToCart(){
-
-    document
-    .getElementById("cartSection")
-    .scrollIntoView({
-
-        behavior:"smooth"
-
-    });
-
-}
-
-
-function showProducts(){
-
-    window.scrollTo({
-
-        top:0,
-
-        behavior:"smooth"
-
-    });
-
-}
-
-
-// ========================================
-// LANGUAGE
-// ========================================
-
-function changeLanguage(){
-
-    let language =
-        document
-        .getElementById("languageSelect")
-        .value;
-
-
-    let heroTitle =
-        document.getElementById("heroTitle");
-
-
-    let heroText =
-        document.getElementById("heroText");
-
-
-    let tagline =
-        document.getElementById("tagline");
-
-
-    if(language === "hi"){
-
-        heroTitle.innerText =
-        "किसानों से सीधे ताज़ा उत्पाद खरीदें";
-
-
-        heroText.innerText =
-        "उचित कीमत पर किसानों से सीधे ताज़ा कृषि उत्पाद खरीदें।";
-
-
-        tagline.innerText =
-        "किसान से ग्राहक तक — सीधा व्यापार";
-
-    }
-
-    else if(language === "ta"){
-
-        heroTitle.innerText =
-        "விவசாயிகளிடமிருந்து நேரடியாக புதிய பொருட்களை வாங்குங்கள்";
-
-
-        heroText.innerText =
-        "நியாயமான விலையில் விவசாயிகளிடமிருந்து நேரடியாக விவசாய பொருட்களை வாங்குங்கள்.";
-
-
-        tagline.innerText =
-        "விவசாயியிடமிருந்து வாடிக்கையாளருக்கு — நேரடி வர்த்தகம்";
-
-    }
-
-    else{
-
-        heroTitle.innerText =
-        "Fresh Products Directly From Farmers";
-
-
-        heroText.innerText =
-        "Buy fresh agricultural products directly from farmers at fair prices.";
-
-
-        tagline.innerText =
-        "किसान से ग्राहक तक — सीधा व्यापार";
-
-    }
-
-}
-
-
-// ========================================
-// START
-// ========================================
-
-displayFarmerProducts();
-
-updateCart();
-
-updateUserBar();
-
-updateDashboard();
-
-updateOrders();
-
+loadProducts();
+renderCart();
 </script>
-
 </body>
 </html>
-
-
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-    startKisanCloud();
-});
-</script>
