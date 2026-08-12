@@ -1206,16 +1206,19 @@ function addToCart(name,price,id){
 // ADD FARMER PRODUCT TO CART
 // ========================================
 
-function addFarmerProductToCart(index){
+function addFarmerProductToCart(productId){
 
     let products =
         JSON.parse(
             localStorage.getItem("kisanMandiProducts")
         ) || [];
 
-    let product = products[index];
+    let product = products.find(
+        item => Number(item.id) === Number(productId)
+    );
 
     if(!product){
+        alert("⚠️ Product not found.");
         return;
     }
 
@@ -1230,19 +1233,13 @@ function addFarmerProductToCart(index){
     );
 
     if(existing){
-
         existing.quantity += 1;
-
     }else{
-
         cart.push({
-
             name:cartName,
             price:Number(product.price),
             quantity:1
-
         });
-
     }
 
     updateCart();
@@ -1252,7 +1249,6 @@ function addFarmerProductToCart(index){
         product.name +
         " added to your cart!"
     );
-
 }
 
 
@@ -1790,6 +1786,13 @@ function listCrop(){
 
 function displayFarmerProducts(){
 
+    let existingFarmerProducts =
+        document.querySelectorAll('[id^="farmer-product-"]');
+
+    existingFarmerProducts.forEach(function(card){
+        card.remove();
+    });
+
     let container =
         document.getElementById(
             "productsContainer"
@@ -1892,7 +1895,7 @@ function displayFarmerProducts(){
 
             <button
             class="add-btn"
-            onclick="addFarmerProductToCart(${index})">
+            onclick="addFarmerProductToCart(${product.id})">
 
                 🛒 Add to Cart
 
@@ -1900,7 +1903,7 @@ function displayFarmerProducts(){
 
             <button
             class="delete-product"
-            onclick="deleteFarmerProduct(${index})">
+            onclick="deleteFarmerProduct(${product.id})">
 
                 🗑️ Remove Product
 
@@ -1922,49 +1925,38 @@ function displayFarmerProducts(){
 // DELETE FARMER PRODUCT
 // ========================================
 
-function deleteFarmerProduct(index){
+function deleteFarmerProduct(productId){
 
     let products =
         JSON.parse(
-            localStorage.getItem(
-                "kisanMandiProducts"
-            )
+            localStorage.getItem("kisanMandiProducts")
         ) || [];
 
+    let productIndex = products.findIndex(
+        item => Number(item.id) === Number(productId)
+    );
 
-    if(!products[index]){
+    if(productIndex === -1){
         return;
     }
-
 
     let confirmDelete =
         confirm(
             "Are you sure you want to remove " +
-            products[index].name +
+            products[productIndex].name +
             "?"
         );
-
 
     if(!confirmDelete){
         return;
     }
 
-
-    let productId =
-        products[index].id;
-
-
-    products.splice(index,1);
-
+    products.splice(productIndex,1);
 
     localStorage.setItem(
-
         "kisanMandiProducts",
-
         JSON.stringify(products)
-
     );
-
 
     let card =
         document.getElementById(
@@ -1972,16 +1964,13 @@ function deleteFarmerProduct(index){
             productId
         );
 
-
     if(card){
         card.remove();
     }
 
-
     alert(
         "🗑️ Product removed successfully."
     );
-
 }
 
 
