@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>KisanMandi - किसान मंडी</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -17,6 +19,8 @@ body {
     background: #f5f8f3;
     color: #1f3d24;
 }
+
+/* HEADER */
 
 header {
     background: #176b2c;
@@ -44,9 +48,11 @@ nav a {
     font-weight: bold;
 }
 
+/* HERO */
+
 .hero {
     background: linear-gradient(135deg, #dff5d8, #ffffff);
-    padding: 55px 5%;
+    padding: 50px 5%;
     text-align: center;
 }
 
@@ -62,6 +68,24 @@ nav a {
     color: #405b45;
 }
 
+/* LANGUAGE */
+
+.language {
+    margin-bottom: 25px;
+}
+
+.language button {
+    border: 1px solid #176b2c;
+    background: white;
+    padding: 9px 16px;
+    margin: 3px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+/* SEARCH */
+
 .search {
     max-width: 650px;
     margin: auto;
@@ -74,6 +98,7 @@ nav a {
     border: 1px solid #bbb;
     border-radius: 8px 0 0 8px;
     font-size: 16px;
+    outline: none;
 }
 
 .search button {
@@ -85,6 +110,8 @@ nav a {
     cursor: pointer;
     font-weight: bold;
 }
+
+/* BUTTONS */
 
 .buttons {
     margin-top: 25px;
@@ -109,6 +136,8 @@ nav a {
     color: #333;
 }
 
+/* SECTIONS */
+
 section {
     padding: 45px 5%;
 }
@@ -119,6 +148,8 @@ section {
     margin-bottom: 30px;
     color: #176b2c;
 }
+
+/* CATEGORIES */
 
 .categories {
     display: grid;
@@ -136,16 +167,25 @@ section {
     box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     cursor: pointer;
     transition: 0.2s;
+    border: 2px solid transparent;
 }
 
 .category:hover {
     transform: translateY(-4px);
+    border-color: #176b2c;
+}
+
+.category.active {
+    border-color: #176b2c;
+    background: #e8f5e9;
 }
 
 .category .icon {
     font-size: 40px;
     margin-bottom: 10px;
 }
+
+/* PRODUCTS */
 
 .products {
     display: grid;
@@ -160,6 +200,11 @@ section {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    transition: 0.2s;
+}
+
+.product:hover {
+    transform: translateY(-5px);
 }
 
 .product-image {
@@ -191,6 +236,16 @@ section {
     margin: 7px 0;
 }
 
+.product-category {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #176b2c;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
 .buy {
     width: 100%;
     padding: 10px;
@@ -199,7 +254,14 @@ section {
     color: white;
     border-radius: 6px;
     cursor: pointer;
+    font-weight: bold;
 }
+
+.buy:hover {
+    background: #0e5420;
+}
+
+/* FEATURES */
 
 .features {
     background: #176b2c;
@@ -224,19 +286,76 @@ section {
     margin-bottom: 10px;
 }
 
-.language {
-    text-align: center;
-    margin-bottom: 25px;
+/* SELL FORM */
+
+.sell-box {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
-.language button {
-    border: 1px solid #176b2c;
+.form-input {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 12px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.form-input:focus {
+    outline: 2px solid #176b2c;
+}
+
+/* MODAL */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-box {
     background: white;
-    padding: 9px 15px;
-    margin: 3px;
-    border-radius: 20px;
+    width: 100%;
+    max-width: 450px;
+    padding: 25px;
+    border-radius: 15px;
+    position: relative;
+}
+
+.modal-box h2 {
+    color: #176b2c;
+    margin-bottom: 15px;
+}
+
+.close {
+    position: absolute;
+    right: 18px;
+    top: 12px;
+    font-size: 28px;
     cursor: pointer;
 }
+
+.total {
+    font-size: 20px;
+    font-weight: bold;
+    color: #176b2c;
+    margin: 15px 0;
+}
+
+/* FOOTER */
 
 footer {
     background: #102c16;
@@ -249,7 +368,10 @@ footer p {
     margin: 7px;
 }
 
+/* MOBILE */
+
 @media(max-width:700px) {
+
     header {
         justify-content: center;
         gap: 12px;
@@ -272,171 +394,479 @@ footer p {
     .search {
         width: 100%;
     }
+
+    .products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .product-image {
+        height: 120px;
+        font-size: 55px;
+    }
+
+    .product-info {
+        padding: 12px;
+    }
+
+    .product-info h3 {
+        font-size: 16px;
+    }
+
+    .price {
+        font-size: 17px;
+    }
 }
+
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <header>
-    <div class="logo">🌾 Kisan<span>Mandi</span></div>
+
+    <div class="logo">
+        🌾 Kisan<span>Mandi</span>
+    </div>
 
     <nav>
         <a href="#home">Home</a>
         <a href="#categories">Categories</a>
         <a href="#products">Products</a>
+        <a href="#sell">Sell</a>
         <a href="#contact">Contact</a>
     </nav>
+
 </header>
+
+
+<!-- HERO -->
 
 <section class="hero" id="home">
 
     <div class="language">
-        <button onclick="changeLanguage('en')">English</button>
-        <button onclick="changeLanguage('hi')">हिन्दी</button>
-        <button onclick="changeLanguage('ta')">தமிழ்</button>
+
+        <button onclick="changeLanguage('en')">
+            English
+        </button>
+
+        <button onclick="changeLanguage('hi')">
+            हिन्दी
+        </button>
+
+        <button onclick="changeLanguage('ta')">
+            தமிழ்
+        </button>
+
     </div>
 
-    <h1 id="title">KisanMandi</h1>
+    <h1 id="title">
+        KisanMandi
+    </h1>
 
     <p id="subtitle">
         Connecting Farmers Directly With Buyers
     </p>
 
     <div class="search">
-        <input id="searchBox" type="text"
-               placeholder="Search vegetables, fruits, grains...">
-        <button onclick="searchProducts()">Search</button>
+
+        <input
+            id="searchBox"
+            type="text"
+            placeholder="Search vegetables, fruits, grains..."
+            onkeyup="searchProducts()"
+        >
+
+        <button onclick="searchProducts()">
+            Search
+        </button>
+
     </div>
 
     <div class="buttons">
-        <a href="#products" class="btn primary">🛒 Buy Fresh Products</a>
-        <a href="#sell" class="btn secondary">🌾 Sell Your Crops</a>
+
+        <a href="#products" class="btn primary">
+            🛒 Buy Fresh Products
+        </a>
+
+        <a href="#sell" class="btn secondary">
+            🌾 Sell Your Crops
+        </a>
+
     </div>
 
 </section>
+
+
+<!-- CATEGORIES -->
 
 <section id="categories">
 
-    <h2 class="section-title">🌱 Categories</h2>
+    <h2 class="section-title">
+        🌱 Categories
+    </h2>
 
     <div class="categories">
 
-        <div class="category">
+        <div class="category active"
+             onclick="filterCategory('all', this)">
+
+            <div class="icon">🌾</div>
+            <h3>All Products</h3>
+
+        </div>
+
+        <div class="category"
+             onclick="filterCategory('Vegetables', this)">
+
             <div class="icon">🥬</div>
             <h3>Vegetables</h3>
+
         </div>
 
-        <div class="category">
+        <div class="category"
+             onclick="filterCategory('Fruits', this)">
+
             <div class="icon">🍎</div>
             <h3>Fruits</h3>
+
         </div>
 
-        <div class="category">
+        <div class="category"
+             onclick="filterCategory('Grains', this)">
+
             <div class="icon">🌾</div>
             <h3>Grains</h3>
+
         </div>
 
-        <div class="category">
+        <div class="category"
+             onclick="filterCategory('Pulses', this)">
+
             <div class="icon">🫘</div>
             <h3>Pulses</h3>
+
         </div>
 
-        <div class="category">
+        <div class="category"
+             onclick="filterCategory('Spices', this)">
+
             <div class="icon">🌶️</div>
             <h3>Spices</h3>
-        </div>
 
-        <div class="category">
-            <div class="icon">🥛</div>
-            <h3>Dairy</h3>
         </div>
 
     </div>
 
 </section>
+
+
+<!-- PRODUCTS -->
 
 <section id="products">
 
-    <h2 class="section-title">🔥 Today's Mandi Products</h2>
+    <h2 class="section-title">
+        🔥 Today's Mandi Products
+    </h2>
 
     <div class="products">
 
-        <div class="product">
-            <div class="product-image">🥔</div>
+
+        <!-- POTATO -->
+
+        <div class="product" data-category="Vegetables">
+
+            <div class="product-image">
+                🥔
+            </div>
+
             <div class="product-info">
+
+                <span class="product-category">
+                    Vegetables
+                </span>
+
                 <h3>Potato</h3>
-                <div class="price">₹25 / kg</div>
-                <div class="location">📍 Uttar Pradesh</div>
-                <button class="buy" onclick="buyProduct('Potato')">
+
+                <div class="price">
+                    ₹25 / kg
+                </div>
+
+                <div class="location">
+                    📍 Uttar Pradesh
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Potato',25)">
+
                     Buy Now
+
                 </button>
+
             </div>
+
         </div>
 
-        <div class="product">
-            <div class="product-image">🍅</div>
+
+        <!-- TOMATO -->
+
+        <div class="product" data-category="Vegetables">
+
+            <div class="product-image">
+                🍅
+            </div>
+
             <div class="product-info">
+
+                <span class="product-category">
+                    Vegetables
+                </span>
+
                 <h3>Tomato</h3>
-                <div class="price">₹35 / kg</div>
-                <div class="location">📍 Maharashtra</div>
-                <button class="buy" onclick="buyProduct('Tomato')">
+
+                <div class="price">
+                    ₹35 / kg
+                </div>
+
+                <div class="location">
+                    📍 Maharashtra
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Tomato',35)">
+
                     Buy Now
+
                 </button>
+
             </div>
+
         </div>
 
-        <div class="product">
-            <div class="product-image">🌾</div>
+
+        <!-- WHEAT -->
+
+        <div class="product" data-category="Grains">
+
+            <div class="product-image">
+                🌾
+            </div>
+
             <div class="product-info">
+
+                <span class="product-category">
+                    Grains
+                </span>
+
                 <h3>Wheat</h3>
-                <div class="price">₹28 / kg</div>
-                <div class="location">📍 Punjab</div>
-                <button class="buy" onclick="buyProduct('Wheat')">
+
+                <div class="price">
+                    ₹28 / kg
+                </div>
+
+                <div class="location">
+                    📍 Punjab
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Wheat',28)">
+
                     Buy Now
+
                 </button>
+
             </div>
+
         </div>
 
-        <div class="product">
-            <div class="product-image">🧅</div>
+
+        <!-- ONION -->
+
+        <div class="product" data-category="Vegetables">
+
+            <div class="product-image">
+                🧅
+            </div>
+
             <div class="product-info">
+
+                <span class="product-category">
+                    Vegetables
+                </span>
+
                 <h3>Onion</h3>
-                <div class="price">₹30 / kg</div>
-                <div class="location">📍 Maharashtra</div>
-                <button class="buy" onclick="buyProduct('Onion')">
+
+                <div class="price">
+                    ₹30 / kg
+                </div>
+
+                <div class="location">
+                    📍 Maharashtra
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Onion',30)">
+
                     Buy Now
+
                 </button>
+
             </div>
+
         </div>
 
-        <div class="product">
-            <div class="product-image">🥭</div>
+
+        <!-- MANGO -->
+
+        <div class="product" data-category="Fruits">
+
+            <div class="product-image">
+                🥭
+            </div>
+
             <div class="product-info">
+
+                <span class="product-category">
+                    Fruits
+                </span>
+
                 <h3>Mango</h3>
-                <div class="price">₹80 / kg</div>
-                <div class="location">📍 Uttar Pradesh</div>
-                <button class="buy" onclick="buyProduct('Mango')">
+
+                <div class="price">
+                    ₹80 / kg
+                </div>
+
+                <div class="location">
+                    📍 Uttar Pradesh
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Mango',80)">
+
                     Buy Now
+
                 </button>
+
             </div>
+
         </div>
 
-        <div class="product">
-            <div class="product-image">🫘</div>
-            <div class="product-info">
-                <h3>Dal</h3>
-                <div class="price">₹110 / kg</div>
-                <div class="location">📍 Madhya Pradesh</div>
-                <button class="buy" onclick="buyProduct('Dal')">
-                    Buy Now
-                </button>
+
+        <!-- DAL -->
+
+        <div class="product" data-category="Pulses">
+
+            <div class="product-image">
+                🫘
             </div>
+
+            <div class="product-info">
+
+                <span class="product-category">
+                    Pulses
+                </span>
+
+                <h3>Dal</h3>
+
+                <div class="price">
+                    ₹110 / kg
+                </div>
+
+                <div class="location">
+                    📍 Madhya Pradesh
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Dal',110)">
+
+                    Buy Now
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CHILLI -->
+
+        <div class="product" data-category="Spices">
+
+            <div class="product-image">
+                🌶️
+            </div>
+
+            <div class="product-info">
+
+                <span class="product-category">
+                    Spices
+                </span>
+
+                <h3>Red Chilli</h3>
+
+                <div class="price">
+                    ₹140 / kg
+                </div>
+
+                <div class="location">
+                    📍 Andhra Pradesh
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Red Chilli',140)">
+
+                    Buy Now
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BANANA -->
+
+        <div class="product" data-category="Fruits">
+
+            <div class="product-image">
+                🍌
+            </div>
+
+            <div class="product-info">
+
+                <span class="product-category">
+                    Fruits
+                </span>
+
+                <h3>Banana</h3>
+
+                <div class="price">
+                    ₹45 / kg
+                </div>
+
+                <div class="location">
+                    📍 Tamil Nadu
+                </div>
+
+                <button class="buy"
+                        onclick="buyProduct('Banana',45)">
+
+                    Buy Now
+
+                </button>
+
+            </div>
+
         </div>
 
     </div>
 
 </section>
+
+
+<!-- FEATURES -->
 
 <section class="features">
 
@@ -447,129 +877,315 @@ footer p {
     <div class="feature-grid">
 
         <div class="feature">
-            <div class="feature-icon">👨‍🌾</div>
-            <h3>Direct From Farmers</h3>
-            <p>Buy directly from farmers.</p>
+
+            <div class="feature-icon">
+                👨‍🌾
+            </div>
+
+            <h3>
+                Direct From Farmers
+            </h3>
+
+            <p>
+                Buy directly from farmers.
+            </p>
+
         </div>
 
-        <div class="feature">
-            <div class="feature-icon">💰</div>
-            <h3>Fair Prices</h3>
-            <p>Better prices for farmers and buyers.</p>
-        </div>
 
         <div class="feature">
-            <div class="feature-icon">🚚</div>
-            <h3>Easy Delivery</h3>
-            <p>Fresh products delivered to you.</p>
+
+            <div class="feature-icon">
+                💰
+            </div>
+
+            <h3>
+                Fair Prices
+            </h3>
+
+            <p>
+                Better prices for farmers and buyers.
+            </p>
+
         </div>
 
+
         <div class="feature">
-            <div class="feature-icon">🇮🇳</div>
-            <h3>Support Farmers</h3>
-            <p>Helping India's farming community.</p>
+
+            <div class="feature-icon">
+                🚚
+            </div>
+
+            <h3>
+                Easy Delivery
+            </h3>
+
+            <p>
+                Fresh products delivered to you.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🇮🇳
+            </div>
+
+            <h3>
+                Support Farmers
+            </h3>
+
+            <p>
+                Helping India's farming community.
+            </p>
+
         </div>
 
     </div>
 
 </section>
 
+
+<!-- SELL CROPS -->
+
 <section id="sell">
 
-    <h2 class="section-title">🌾 Sell Your Crops</h2>
+    <h2 class="section-title">
+        🌾 Sell Your Crops
+    </h2>
 
-    <div style="max-width:600px;margin:auto;background:white;padding:25px;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08);">
+    <div class="sell-box">
 
-        <p style="margin-bottom:20px;text-align:center;">
+        <p style="text-align:center;margin-bottom:20px;">
             Farmers can list their crops and connect directly with buyers.
         </p>
 
-        <input type="text" placeholder="Farmer Name"
-               style="width:100%;padding:13px;margin-bottom:10px;">
+        <input
+            id="farmerName"
+            class="form-input"
+            type="text"
+            placeholder="Farmer Name"
+        >
 
-        <input type="text" placeholder="Crop Name"
-               style="width:100%;padding:13px;margin-bottom:10px;">
+        <input
+            id="cropName"
+            class="form-input"
+            type="text"
+            placeholder="Crop Name"
+        >
 
-        <input type="text" placeholder="Price per kg"
-               style="width:100%;padding:13px;margin-bottom:10px;">
+        <input
+            id="cropPrice"
+            class="form-input"
+            type="number"
+            placeholder="Price per kg (₹)"
+        >
 
-        <button class="buy" onclick="listCrop()">
+        <input
+            id="cropLocation"
+            class="form-input"
+            type="text"
+            placeholder="Location"
+        >
+
+        <button
+            class="buy"
+            onclick="listCrop()">
+
             🌱 List My Crop
+
         </button>
 
     </div>
 
 </section>
 
+
+<!-- CONTACT -->
+
 <footer id="contact">
 
-    <h2>🌾 KisanMandi</h2>
+    <h2>
+        🌾 KisanMandi
+    </h2>
 
-    <p>Connecting Farmers With Buyers</p>
+    <p>
+        Connecting Farmers With Buyers
+    </p>
 
-    <p>📧 support@kisanmandi.in</p>
+    <p>
+        📧 support@kisanmandi.in
+    </p>
 
-    <p>© 2026 KisanMandi. All Rights Reserved.</p>
+    <p>
+        © 2026 KisanMandi. All Rights Reserved.
+    </p>
 
 </footer>
 
+
+<!-- BUY MODAL -->
+
+<div id="buyModal" class="modal">
+
+    <div class="modal-box">
+
+        <span class="close"
+              onclick="closeModal()">
+            ×
+        </span>
+
+        <h2>
+            🛒 Order Product
+        </h2>
+
+        <p id="selectedProduct"
+           style="margin-bottom:15px;">
+        </p>
+
+        <input
+            id="buyerName"
+            class="form-input"
+            type="text"
+            placeholder="Your Name"
+        >
+
+        <input
+            id="buyerPhone"
+            class="form-input"
+            type="tel"
+            placeholder="Mobile Number"
+        >
+
+        <input
+            id="quantity"
+            class="form-input"
+            type="number"
+            value="1"
+            min="1"
+            oninput="calculateTotal()"
+        >
+
+        <div class="total">
+            Total: ₹<span id="totalPrice">0</span>
+        </div>
+
+        <button
+            class="buy"
+            onclick="placeOrder()">
+
+            ✅ Place Order
+
+        </button>
+
+    </div>
+
+</div>
+
+
 <script>
 
-function buyProduct(product) {
-    alert("Thank you for choosing KisanMandi! You selected: " + product);
-}
+/* CURRENT PRODUCT */
 
-function listCrop() {
-    alert("Thank you! Your crop listing feature will be connected to the KisanMandi system soon.");
-}
+let selectedProductName = "";
+let selectedProductPrice = 0;
+
+
+/* SEARCH */
 
 function searchProducts() {
 
-    let search = document.getElementById("searchBox").value.toLowerCase();
+    let search =
+        document.getElementById("searchBox")
+        .value
+        .toLowerCase()
+        .trim();
 
-    let products = document.querySelectorAll(".product");
+    let products =
+        document.querySelectorAll(".product");
 
     products.forEach(function(product) {
 
-        let name = product.querySelector("h3").innerText.toLowerCase();
+        let name =
+            product.querySelector("h3")
+            .innerText
+            .toLowerCase();
 
-        if (name.includes(search)) {
-            product.style.display = "block";
+        let category =
+            product.dataset.category
+            .toLowerCase();
+
+        if (
+            name.includes(search) ||
+            category.includes(search)
+        ) {
+
+            product.style.display = "";
+
         } else {
+
             product.style.display = "none";
+
         }
 
     });
+
 }
 
-function changeLanguage(language) {
 
-    let title = document.getElementById("title");
-    let subtitle = document.getElementById("subtitle");
-    let search = document.getElementById("searchBox");
+/* CATEGORY FILTER */
 
-    if (language === "hi") {
+function filterCategory(category, element) {
 
-        title.innerText = "किसान मंडी";
-        subtitle.innerText = "किसानों को सीधे खरीदारों से जोड़ना";
-        search.placeholder = "सब्जी, फल, अनाज खोजें...";
+    let products =
+        document.querySelectorAll(".product");
 
-    } else if (language === "ta") {
+    let categories =
+        document.querySelectorAll(".category");
 
-        title.innerText = "கிசான் மண்டி";
-        subtitle.innerText = "விவசாயிகளை நேரடியாக வாங்குபவர்களுடன் இணைத்தல்";
-        search.placeholder = "காய்கறி, பழங்கள், தானியங்கள் தேடுங்கள்...";
+    categories.forEach(function(item) {
 
-    } else {
+        item.classList.remove("active");
 
-        title.innerText = "KisanMandi";
-        subtitle.innerText = "Connecting Farmers Directly With Buyers";
-        search.placeholder = "Search vegetables, fruits, grains...";
+    });
 
-    }
+    element.classList.add("active");
+
+    products.forEach(function(product) {
+
+        if (
+            category === "all" ||
+            product.dataset.category === category
+        ) {
+
+            product.style.display = "";
+
+        } else {
+
+            product.style.display = "none";
+
+        }
+
+    });
+
+    document
+        .getElementById("products")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
 }
 
-</script>
 
-</body>
-</html>
+/* BUY PRODUCT */
+
+function buyProduct(product, price) {
+
+    selectedProductName = product;
+    selectedProductPrice = price;
+
+    document.getElementById("selectedProduct")
+        .innerText =
+        product + " — ₹" + price + " / kg
