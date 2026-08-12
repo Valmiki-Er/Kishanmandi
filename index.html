@@ -671,6 +671,11 @@ footer{
 }
 
 </style>
+
+<!-- KisanMandi V8 - Firebase backend -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
 </head>
 
 <body>
@@ -1288,6 +1293,13 @@ onclick="placeOrder()">
     </div>
 </div>
 
+
+
+<div class="container">
+    <div id="firebaseStatus" class="order-note" style="display:none;margin-top:15px;">
+        ☁️ KisanMandi cloud backend is not configured yet. The website will continue using local storage until Firebase is connected.
+    </div>
+</div>
 
 <!-- ORDER MANAGEMENT -->
 
@@ -1985,6 +1997,8 @@ function placeOrder(){
         JSON.stringify(orders)
     );
 
+    cloudSaveOrder(order);
+
     alert(
         "✅ Order Placed Successfully!\n\n" +
         "Order ID: " + orderId +
@@ -2352,6 +2366,8 @@ function deleteFarmerProduct(productId){
         JSON.stringify(products)
     );
 
+    cloudSaveProduct(newProduct);
+
     let card =
         document.getElementById(
             "farmer-product-" +
@@ -2383,6 +2399,294 @@ function escapeHTML(text){
 
 }
 
+
+// ========================================
+// KISANMANDI V8 - FIREBASE BACKEND
+// ========================================
+//
+// IMPORTANT:
+// Replace the values below with the Web App configuration
+// from your own Firebase project.
+// Do NOT paste a service-account private key here.
+
+const KISAN_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCMFjkYeAq29DqFXYxXqEEtfks-hr9uG_s",
+    authDomain: "kisanmandi-a372a.firebaseapp.com",
+    projectId: "kisanmandi-a372a",
+    storageBucket: "kisanmandi-a372a.firebasestorage.app",
+    messagingSenderId: "562289122561",
+    appId: "1:562289122561:web:55c59c462db40b8f170f00",
+    measurementId: "G-FHCQZCPKLX"
+};
+
+let kisanCloudReady = false;
+let kisanDB = null;
+
+function firebaseConfigReady(){
+
+    return KISAN_FIREBASE_CONFIG.apiKey &&
+        !KISAN_FIREBASE_CONFIG.apiKey.startsWith("PASTE_") &&
+        KISAN_FIREBASE_CONFIG.projectId &&
+        !KISAN_FIREBASE_CONFIG.projectId.startsWith("PASTE_");
+}
+
+function initKisanFirebase(){
+
+    if(!firebaseConfigReady()){
+
+        let status =
+            document.getElementById("firebaseStatus");
+
+        if(status){
+            status.style.display = "block";
+        }
+
+        return false;
+    }
+
+    try{
+
+        if(!firebase.apps.length){
+            firebase.initializeApp(
+                KISAN_FIREBASE_CONFIG
+            );
+        }
+
+        kisanDB =
+            firebase.firestore();
+
+        kisanCloudReady = true;
+
+        let status =
+            document.getElementById("firebaseStatus");
+
+        if(status){
+            status.style.display = "none";
+        }
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Firebase initialization failed:",
+            error
+        );
+
+        let status =
+            document.getElementById("firebaseStatus");
+
+        if(status){
+            status.style.display = "block";
+            status.innerText =
+                "⚠️ Firebase could not be connected. Local mode is still active.";
+        }
+
+        return false;
+    }
+}
+
+async function cloudSaveProduct(product){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    try{
+
+        await kisanDB
+            .collection("products")
+            .doc(String(product.id))
+            .set(product);
+
+    }catch(error){
+
+        console.error(
+            "Cloud product save failed:",
+            error
+        );
+    }
+}
+
+async function cloudDeleteProduct(productId){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    try{
+
+        await kisanDB
+            .collection("products")
+            .doc(String(productId))
+            .delete();
+
+    }catch(error){
+
+        console.error(
+            "Cloud product delete failed:",
+            error
+        );
+    }
+}
+
+async function cloudSaveOrder(order){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    try{
+
+        await kisanDB
+            .collection("orders")
+            .doc(String(order.id))
+            .set(order);
+
+    }catch(error){
+
+        console.error(
+            "Cloud order save failed:",
+            error
+        );
+    }
+}
+
+async function cloudUpdateOrder(order){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    try{
+
+        await kisanDB
+            .collection("orders")
+            .doc(String(order.id))
+            .set(order,{
+                merge:true
+            });
+
+    }catch(error){
+
+        console.error(
+            "Cloud order update failed:",
+            error
+        );
+    }
+}
+
+async function loadCloudProducts(){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    try{
+
+        let snapshot =
+            await kisanDB
+                .collection("products")
+                .get();
+
+        let products = [];
+
+        snapshot.forEach(function(doc){
+            products.push(doc.data());
+        });
+
+        localStorage.setItem(
+            "kisanMandiProducts",
+            JSON.stringify(products)
+        );
+
+        displayFarmerProducts();
+
+    }catch(error){
+
+        console.error(
+            "Cloud product load failed:",
+            error
+        );
+    }
+}
+
+async function loadCloudOrders(){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    try{
+
+        let snapshot =
+            await kisanDB
+                .collection("orders")
+                .get();
+
+        let orders = [];
+
+        snapshot.forEach(function(doc){
+            orders.push(doc.data());
+        });
+
+        localStorage.setItem(
+            "kisanMandiOrders",
+            JSON.stringify(orders)
+        );
+
+        updateOrders();
+
+    }catch(error){
+
+        console.error(
+            "Cloud order load failed:",
+            error
+        );
+    }
+}
+
+async function migrateLocalDataToCloud(){
+
+    if(!kisanCloudReady){
+        return;
+    }
+
+    let products =
+        JSON.parse(
+            localStorage.getItem("kisanMandiProducts")
+        ) || [];
+
+    for(let product of products){
+        await cloudSaveProduct(product);
+    }
+
+    let orders =
+        JSON.parse(
+            localStorage.getItem("kisanMandiOrders")
+        ) || [];
+
+    for(let order of orders){
+        await cloudSaveOrder(order);
+    }
+}
+
+async function startKisanCloud(){
+
+    if(!initKisanFirebase()){
+        return;
+    }
+
+    await migrateLocalDataToCloud();
+
+    await loadCloudProducts();
+
+    await loadCloudOrders();
+
+    console.log(
+        "KisanMandi cloud backend connected."
+    );
+}
 
 // ========================================
 // WHATSAPP COMMUNICATION
@@ -2781,6 +3085,8 @@ function updateOrderStatus(orderId,newStatus){
     order.status = newStatus;
 
     saveOrders(orders);
+
+    cloudUpdateOrder(order);
 
     updateOrders();
 
@@ -3260,3 +3566,10 @@ updateOrders();
 
 </body>
 </html>
+
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+    startKisanCloud();
+});
+</script>
