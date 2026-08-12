@@ -619,6 +619,11 @@ nav button{
 }
 
 
+
+/* WhatsApp communication */
+.whatsapp-btn{display:inline-block;margin:8px 6px 0 0;padding:10px 14px;border:0;border-radius:7px;background:#25D366;color:#fff;text-decoration:none;cursor:pointer;font-weight:bold}
+.order-note{margin-top:8px;padding:9px;border-radius:7px;background:#fff8df;color:#6b5200;font-size:13px}
+
 footer{
     margin-top:40px;
     background:#0f5421;
@@ -1614,7 +1619,8 @@ function addFarmerProductToCart(productId){
             quantity:1,
             productId:product.id,
             farmerId:product.ownerId || null,
-            farmer:product.farmer
+            farmer:product.farmer,
+            farmerPhone:getFarmerPhoneById(product.ownerId)
         });
     }
 
@@ -1952,7 +1958,11 @@ function placeOrder(){
         return {
             name:item.name,
             price:Number(item.price),
-            quantity:Number(item.quantity)
+            quantity:Number(item.quantity),
+            productId:item.productId || null,
+            farmerId:item.farmerId || null,
+            farmer:item.farmer || "",
+            farmerPhone:item.farmerPhone || getFarmerPhoneById(item.farmerId)
         };
     });
 
@@ -2375,6 +2385,100 @@ function escapeHTML(text){
 
 
 // ========================================
+// WHATSAPP COMMUNICATION
+// ========================================
+
+function getKisanUsers(){
+    return JSON.parse(localStorage.getItem("kisanMandiUsers")) || [];
+}
+
+function getFarmerPhoneById(farmerId){
+    let farmer = getKisanUsers().find(function(user){
+        return Number(user.id) === Number(farmerId) && user.role === "farmer";
+    });
+    return farmer ? farmer.phone : "";
+}
+
+function whatsappNumber(phone){
+    let digits = String(phone || "").replace(/\D/g,"");
+    if(digits.length === 10) return "91" + digits;
+    return digits;
+}
+
+function openWhatsApp(phone,message){
+    let number = whatsappNumber(phone);
+    let url = number
+        ? "https://wa.me/" + number + "?text=" + encodeURIComponent(message)
+        : "https://wa.me/?text=" + encodeURIComponent(message);
+    window.open(url,"_blank");
+}
+
+function orderWhatsAppMessage(order){
+    let items = order.items.map(function(item){
+        return "• " + item.name + " x " + item.quantity +
+            " = ₹" + (Number(item.price) * Number(item.quantity));
+    }).join("\n");
+
+    return "🌾 KisanMandi Order\n\n" +
+        "Order ID: " + order.id + "\n" +
+        "Customer: " + order.customerName + "\n" +
+        "Phone: " + order.customerPhone + "\n\n" +
+        "Items:\n" + items + "\n\n" +
+        "Total: ₹" + order.total + "\n" +
+        "Address: " + order.customerAddress + "\n" +
+        "Status: " + order.status;
+}
+
+function shareOrderOnWhatsApp(orderId){
+    let order = getOrders().find(function(item){ return item.id === orderId; });
+    if(!order){ alert("⚠️ Order not found."); return; }
+    openWhatsApp("",orderWhatsAppMessage(order));
+}
+
+function messageCustomerOnWhatsApp(orderId){
+    let user = JSON.parse(localStorage.getItem("kisanMandiCurrentUser"));
+    if(!user || user.role !== "farmer"){
+        alert("🔐 Please login as a farmer.");
+        return;
+    }
+
+    let order = getOrders().find(function(item){ return item.id === orderId; });
+    if(!order){ alert("⚠️ Order not found."); return; }
+
+    let owns = order.items.some(function(item){
+        return Number(item.farmerId) === Number(user.id);
+    });
+
+    if(!owns){
+        alert("❌ You are not authorized to contact this customer.");
+        return;
+    }
+
+    openWhatsApp(order.customerPhone,orderWhatsAppMessage(order));
+}
+
+function messageFarmerOnWhatsApp(orderId,farmerId){
+    let order = getOrders().find(function(item){ return item.id === orderId; });
+    if(!order){ alert("⚠️ Order not found."); return; }
+
+    let phone = "";
+    order.items.some(function(item){
+        if(Number(item.farmerId) === Number(farmerId)){
+            phone = item.farmerPhone || getFarmerPhoneById(farmerId);
+            return true;
+        }
+        return false;
+    });
+
+    if(!phone){
+        alert("⚠️ Farmer WhatsApp number is not available.");
+        return;
+    }
+
+    openWhatsApp(phone,orderWhatsAppMessage(order));
+}
+
+// ========================================
 // ORDER MANAGEMENT
 // ========================================
 
@@ -2488,6 +2592,21 @@ function updateOrders(){
                 <p style="margin-top:6px;">
                     📍 ${escapeHTML(order.customerAddress)}
                 </p>
+
+                <button class="whatsapp-btn"
+                    onclick="shareOrderOnWhatsApp('${order.id}')">
+                    💬 Share Order on WhatsApp
+                </button>
+
+                ${
+                    [...new Set(order.items.map(item => Number(item.farmerId)).filter(Boolean))]
+                    .map(farmerId => `
+                        <button class="whatsapp-btn"
+                            onclick="messageFarmerOnWhatsApp('${order.id}',${farmerId})">
+                            🧑‍🌾 WhatsApp Farmer
+                        </button>
+                    `).join("")
+                }
             `;
 
             container.appendChild(div);
@@ -2614,6 +2733,11 @@ function updateOrders(){
                 }
 
             </div>
+
+            <button class="whatsapp-btn"
+                onclick="messageCustomerOnWhatsApp('${order.id}')">
+                💬 Message Customer on WhatsApp
+            </button>
         `;
 
         container.appendChild(div);
