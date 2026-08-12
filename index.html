@@ -675,6 +675,7 @@ footer{
 <!-- KisanMandi V8 - Firebase backend -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
 </head>
 
@@ -1350,14 +1351,8 @@ onclick="placeOrder()">
             placeholder="Mobile Number"
         >
 
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Password"
-        >
-
         <button onclick="loginUser()">
-            🔐 Login
+            📱 Send OTP & Login
         </button>
 
     </div>
@@ -1381,25 +1376,15 @@ onclick="placeOrder()">
             <option value="farmer">Farmer</option>
         </select>
 
-        <input
-            type="password"
-            id="registerPassword"
-            placeholder="Create Password"
-        >
-
-        <input
-            type="password"
-            id="registerConfirmPassword"
-            placeholder="Confirm Password"
-        >
-
         <button onclick="registerUser()">
-            📝 Create Account
+            📝 Create Account & Verify
         </button>
 
     </div>
 
-    <div id="authMessage" class="auth-message"></div>
+    <div id="recaptcha-container"></div>
+<div class="order-note" style="margin-top:10px;">📱 V8.2 uses Firebase phone OTP for secure login. Your mobile number is verified by Firebase.</div>
+<div id="authMessage" class="auth-message"></div>
 
 </div>
 
@@ -2460,6 +2445,9 @@ function initKisanFirebase(){
         kisanDB =
             firebase.firestore();
 
+        kisanAuth =
+            firebase.auth();
+
         kisanCloudReady = true;
 
         let status =
@@ -2687,6 +2675,32 @@ async function startKisanCloud(){
     await loadCloudProducts();
 
     await loadCloudOrders();
+
+    if(kisanAuth){
+        kisanAuth.onAuthStateChanged(async function(firebaseUser){
+            if(!firebaseUser){
+                return;
+            }
+
+            try{
+                let profileDoc = await kisanDB.collection("users")
+                    .doc(firebaseUser.uid)
+                    .get();
+
+                if(profileDoc.exists){
+                    localStorage.setItem(
+                        "kisanMandiCurrentUser",
+                        JSON.stringify(profileDoc.data())
+                    );
+                    updateUserBar();
+                    updateDashboard();
+                    updateOrders();
+                }
+            }catch(error){
+                console.error("User profile load failed:", error);
+            }
+        });
+    }
 
     console.log(
         "KisanMandi cloud backend connected."
@@ -3114,8 +3128,13 @@ function scrollToOrders(){
 }
 
 // ========================================
-// AUTHENTICATION
+// AUTHENTICATION - V8.2 FIREBASE PHONE AUTH
 // ========================================
+
+let kisanAuth = null;
+let kisanRecaptchaVerifier = null;
+let kisanConfirmationResult = null;
+let kisanAuthMode = null;
 
 function getUsers(){
     return JSON.parse(
@@ -3156,131 +3175,204 @@ function showAuthForm(type){
     }
 }
 
-function registerUser(){
+function getAuthPhone(phone){
+    let digits = String(phone || "").replace(/\D/g, "");
+    if(digits.length === 10){
+        return "+91" + digits;
+    }
+    if(digits.startsWith("91") && digits.length === 12){
+        return "+" + digits;
+    }
+    if(digits.startsWith("+") && digits.length >= 10){
+        return digits;
+    }
+    return null;
+}
 
-    let name =
-        document.getElementById("registerName").value.trim();
+function ensureKisanAuth(){
+    if(!kisanCloudReady || !firebase.apps.length){
+        return false;
+    }
+    try{
+        kisanAuth = firebase.auth();
+        return true;
+    }catch(error){
+        console.error("Firebase Auth initialization failed:", error);
+        return false;
+    }
+}
 
-    let phone =
-        document.getElementById("registerPhone").value.trim();
+function setupRecaptcha(){
+    if(!ensureKisanAuth()) return false;
 
-    let role =
-        document.getElementById("registerRole").value;
+    if(kisanRecaptchaVerifier){
+        return true;
+    }
 
-    let password =
-        document.getElementById("registerPassword").value;
+    try{
+        kisanRecaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+            "recaptcha-container",
+            {
+                size: "invisible",
+                callback: function(){
+                    console.log("reCAPTCHA solved.");
+                },
+                "expired-callback": function(){
+                    kisanRecaptchaVerifier = null;
+                }
+            },
+            kisanAuth.app
+        );
 
-    let confirmPassword =
-        document.getElementById("registerConfirmPassword").value;
+        kisanRecaptchaVerifier.render();
+        return true;
+    }catch(error){
+        console.error("reCAPTCHA setup failed:", error);
+        kisanRecaptchaVerifier = null;
+        return false;
+    }
+}
 
-    let message =
-        document.getElementById("authMessage");
+async function sendKisanOTP(mode){
 
-    if(name === "" || phone === "" || password === ""){
-        message.innerText = "⚠️ Please fill all required fields.";
+    let phoneId = mode === "register"
+        ? "registerPhone"
+        : "loginPhone";
+
+    let phone = document.getElementById(phoneId).value.trim();
+    let message = document.getElementById("authMessage");
+
+    let authPhone = getAuthPhone(phone);
+
+    if(!authPhone){
+        message.innerText = "⚠️ Enter a valid 10-digit Indian mobile number.";
         message.style.color = "#c62828";
         return;
     }
 
-    if(!/^[0-9]{10}$/.test(phone)){
-        message.innerText = "⚠️ Enter a valid 10-digit mobile number.";
+    if(!ensureKisanAuth()){
+        message.innerText = "⚠️ Firebase Authentication is not connected yet.";
         message.style.color = "#c62828";
         return;
     }
 
-    if(password.length < 4){
-        message.innerText = "⚠️ Password must contain at least 4 characters.";
+    if(!setupRecaptcha()){
+        message.innerText = "⚠️ Could not start phone verification. Please refresh and try again.";
         message.style.color = "#c62828";
         return;
     }
 
-    if(password !== confirmPassword){
-        message.innerText = "⚠️ Passwords do not match.";
-        message.style.color = "#c62828";
-        return;
-    }
-
-    let users = getUsers();
-
-    let existingUser = users.find(
-        user => user.phone === phone
-    );
-
-    if(existingUser){
-        message.innerText = "⚠️ This mobile number is already registered.";
-        message.style.color = "#c62828";
-        return;
-    }
-
-    let newUser = {
-        id:Date.now(),
-        name:name,
-        phone:phone,
-        role:role,
-        password:password
-    };
-
-    users.push(newUser);
-    saveUsers(users);
-
-    message.innerText =
-        "✅ Account created successfully. You can now login.";
-
+    kisanAuthMode = mode;
+    message.innerText = "📱 Sending OTP...";
     message.style.color = "#176b2c";
 
-    document.getElementById("registerName").value = "";
-    document.getElementById("registerPhone").value = "";
-    document.getElementById("registerPassword").value = "";
-    document.getElementById("registerConfirmPassword").value = "";
+    try{
+        kisanConfirmationResult = await kisanAuth.signInWithPhoneNumber(
+            authPhone,
+            kisanRecaptchaVerifier
+        );
 
-    showAuthForm("login");
+        let otp = prompt("Enter the 6-digit OTP sent to " + authPhone);
+        if(!otp){
+            message.innerText = "⚠️ OTP verification cancelled.";
+            return;
+        }
 
-    document.getElementById("loginPhone").value = phone;
+        let result = await kisanConfirmationResult.confirm(otp.trim());
+        let firebaseUser = result.user;
+
+        if(mode === "register"){
+            let name = document.getElementById("registerName").value.trim();
+            let role = document.getElementById("registerRole").value;
+
+            if(!name){
+                message.innerText = "⚠️ Enter your name before verification.";
+                message.style.color = "#c62828";
+                await firebaseUser.delete().catch(()=>{});
+                return;
+            }
+
+            let profile = {
+                uid: firebaseUser.uid,
+                id: Date.now(),
+                name: name,
+                phone: authPhone.replace("+91", ""),
+                role: role,
+                createdAt: new Date().toISOString()
+            };
+
+            await kisanDB.collection("users")
+                .doc(firebaseUser.uid)
+                .set(profile, {merge:true});
+
+            localStorage.setItem("kisanMandiCurrentUser", JSON.stringify(profile));
+
+            message.innerText = "✅ Firebase account created successfully!";
+            message.style.color = "#176b2c";
+
+        }else{
+            let doc = await kisanDB.collection("users")
+                .doc(firebaseUser.uid)
+                .get();
+
+            let profile = doc.exists
+                ? doc.data()
+                : {
+                    uid: firebaseUser.uid,
+                    id: Date.now(),
+                    name: "KisanMandi User",
+                    phone: authPhone.replace("+91", ""),
+                    role: "customer"
+                };
+
+            if(!doc.exists){
+                await kisanDB.collection("users")
+                    .doc(firebaseUser.uid)
+                    .set(profile, {merge:true});
+            }
+
+            localStorage.setItem("kisanMandiCurrentUser", JSON.stringify(profile));
+
+            message.innerText = "✅ Firebase login successful!";
+            message.style.color = "#176b2c";
+        }
+
+        updateUserBar();
+        updateDashboard();
+        updateOrders();
+
+        document.getElementById("registerName").value = "";
+        document.getElementById("registerPhone").value = "";
+        
+    }catch(error){
+        console.error("Firebase phone authentication failed:", error);
+        message.innerText = "❌ " + (error.message || "OTP verification failed.");
+        message.style.color = "#c62828";
+
+        try{
+            if(kisanRecaptchaVerifier){
+                kisanRecaptchaVerifier.clear();
+            }
+        }catch(e){}
+        kisanRecaptchaVerifier = null;
+    }
+}
+
+function registerUser(){
+    sendKisanOTP("register");
 }
 
 function loginUser(){
-
-    let phone =
-        document.getElementById("loginPhone").value.trim();
-
-    let password =
-        document.getElementById("loginPassword").value;
-
-    let message =
-        document.getElementById("authMessage");
-
-    let users = getUsers();
-
-    let user = users.find(
-        item =>
-            item.phone === phone &&
-            item.password === password
-    );
-
-    if(!user){
-        message.innerText =
-            "❌ Mobile number or password is incorrect.";
-
-        message.style.color = "#c62828";
-        return;
-    }
-
-    localStorage.setItem(
-        "kisanMandiCurrentUser",
-        JSON.stringify(user)
-    );
-
-    message.innerText =
-        "✅ Login successful!";
-
-    message.style.color = "#176b2c";
-
-    updateUserBar();
-    updateDashboard();
-    updateOrders();
+    sendKisanOTP("login");
 }
 
 function logoutUser(){
+
+    if(kisanAuth){
+        kisanAuth.signOut().catch(function(error){
+            console.error("Firebase logout failed:", error);
+        });
+    }
 
     localStorage.removeItem("kisanMandiCurrentUser");
 
@@ -3292,7 +3384,6 @@ function logoutUser(){
 
     document.getElementById("authMessage").innerText =
         "✅ You have been logged out.";
-
     document.getElementById("authMessage").style.color =
         "#176b2c";
 }
