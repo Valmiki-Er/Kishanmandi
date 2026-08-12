@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KisanMandi - किसान मंडी | V8.3</title>
+<title>KisanMandi - किसान मंडी | V8.4</title>
 
 <style>
 
@@ -672,7 +672,7 @@ footer{
 
 </style>
 
-<!-- KisanMandi V8 - Firebase backend -->
+<!-- KisanMandi V8.4 - Firebase backend -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -1298,7 +1298,7 @@ onclick="placeOrder()">
 
 <div class="container">
     <div id="firebaseStatus" class="order-note" style="display:none;margin-top:15px;">
-        ☁️ KisanMandi cloud backend is not configured yet. The website will continue using local storage until Firebase is connected.
+        🔐 KisanMandi V8.4 secure cloud backend status.
     </div>
 </div>
 
@@ -1342,18 +1342,27 @@ onclick="placeOrder()">
             Register
         </button>
     </div>
-
     <div id="loginForm" class="auth-form">
 
-        <input type="email" id="loginEmail" placeholder="Email Address" autocomplete="email">
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Email Address"
+            autocomplete="email"
+        >
 
-        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
 
         <button onclick="loginUser()">
             🔐 Login
         </button>
 
-        <button type="button" onclick="resetPassword()" style="background:#e58b00;">
+        <button type="button" onclick="forgotPassword()" style="background:#e58b00;">
             🔑 Forgot Password?
         </button>
 
@@ -1361,13 +1370,33 @@ onclick="placeOrder()">
 
     <div id="registerForm" class="auth-form" style="display:none;">
 
-        <input type="text" id="registerName" placeholder="Full Name" autocomplete="name">
+        <input
+            type="text"
+            id="registerName"
+            placeholder="Full Name"
+            autocomplete="name"
+        >
 
-        <input type="email" id="registerEmail" placeholder="Email Address" autocomplete="email">
+        <input
+            type="email"
+            id="registerEmail"
+            placeholder="Email Address"
+            autocomplete="email"
+        >
 
-        <input type="password" id="registerPassword" placeholder="Create Password (minimum 6 characters)" autocomplete="new-password">
+        <input
+            type="password"
+            id="registerPassword"
+            placeholder="Create Password (minimum 6 characters)"
+            autocomplete="new-password"
+        >
 
-        <input type="tel" id="registerPhone" placeholder="Mobile Number (optional)" autocomplete="tel">
+        <input
+            type="tel"
+            id="registerPhone"
+            placeholder="Mobile Number (optional)"
+            autocomplete="tel"
+        >
 
         <select id="registerRole">
             <option value="customer">Customer</option>
@@ -1380,8 +1409,12 @@ onclick="placeOrder()">
 
     </div>
 
-    <div class="order-note" style="margin-top:10px;">📧 KisanMandi uses Firebase Email/Password login. No SMS OTP or billing account is required.</div>
+    <div class="order-note" style="margin-top:10px;">
+        📧 KisanMandi uses Firebase Email/Password login. No SMS OTP or billing account is required.
+    </div>
     <div id="authMessage" class="auth-message"></div>
+
+</div>
 
 <div id="userBar" class="user-bar" style="display:none;"></div>
 
@@ -1611,6 +1644,7 @@ function addFarmerProductToCart(productId){
             quantity:1,
             productId:product.id,
             farmerId:product.ownerId || null,
+            farmerUid:product.ownerUid || null,
             farmer:product.farmer,
             farmerPhone:getFarmerPhoneById(product.ownerId)
         });
@@ -1953,18 +1987,31 @@ function placeOrder(){
             quantity:Number(item.quantity),
             productId:item.productId || null,
             farmerId:item.farmerId || null,
+            farmerUid:item.farmerUid || null,
             farmer:item.farmer || "",
             farmerPhone:item.farmerPhone || getFarmerPhoneById(item.farmerId)
         };
     });
 
+    let farmerUids = [
+        ...new Set(
+            orderItems
+                .map(function(item){
+                    return item.farmerUid;
+                })
+                .filter(Boolean)
+        )
+    ];
+
     let order = {
         id:orderId,
         customerId:currentUser.id,
+        customerUid:currentUser.uid || null,
         customerName:name,
         customerPhone:phone,
         customerAddress:address,
         items:orderItems,
+        farmerUids:farmerUids,
         total:Number(total),
         status:"Pending",
         createdAt:new Date().toISOString()
@@ -2102,6 +2149,7 @@ function listCrop(){
         id:Date.now(),
 
         ownerId:currentUser.id,
+        ownerUid:currentUser.uid,
 
         farmer:farmer,
 
@@ -2113,7 +2161,9 @@ function listCrop(){
 
         price:Number(price),
 
-        quantity:Number(quantity)
+        quantity:Number(quantity),
+
+        createdAt:new Date().toISOString()
 
     };
 
@@ -2317,7 +2367,23 @@ function displayFarmerProducts(){
 // DELETE FARMER PRODUCT
 // ========================================
 
-function deleteFarmerProduct(productId){
+async function deleteFarmerProduct(productId){
+
+    let currentUser =
+        JSON.parse(
+            localStorage.getItem("kisanMandiCurrentUser")
+        );
+
+    if(
+        !currentUser ||
+        currentUser.role !== "farmer" ||
+        !currentUser.uid
+    ){
+        alert(
+            "🔐 Please login as a farmer before removing a product."
+        );
+        return;
+    }
 
     let products =
         JSON.parse(
@@ -2332,15 +2398,37 @@ function deleteFarmerProduct(productId){
         return;
     }
 
+    let product = products[productIndex];
+
+    if(
+        product.ownerUid &&
+        product.ownerUid !== currentUser.uid
+    ){
+        alert(
+            "❌ You are not authorized to remove this product."
+        );
+        return;
+    }
+
     let confirmDelete =
         confirm(
             "Are you sure you want to remove " +
-            products[productIndex].name +
+            product.name +
             "?"
         );
 
     if(!confirmDelete){
         return;
+    }
+
+    if(product.ownerUid){
+
+        let cloudDeleted =
+            await cloudDeleteProduct(productId);
+
+        if(!cloudDeleted){
+            return;
+        }
     }
 
     products.splice(productIndex,1);
@@ -2349,9 +2437,6 @@ function deleteFarmerProduct(productId){
         "kisanMandiProducts",
         JSON.stringify(products)
     );
-
-    // V8.1: Delete the product from Firebase as well
-    cloudDeleteProduct(productId);
 
     let card =
         document.getElementById(
@@ -2366,8 +2451,9 @@ function deleteFarmerProduct(productId){
     alert(
         "🗑️ Product removed successfully."
     );
-}
 
+    updateDashboard();
+}
 
 // ========================================
 // SAFE TEXT
@@ -2386,13 +2472,10 @@ function escapeHTML(text){
 
 
 // ========================================
-// KISANMANDI V8 - FIREBASE BACKEND
 // ========================================
-//
-// IMPORTANT:
-// Replace the values below with the Web App configuration
-// from your own Firebase project.
-// Do NOT paste a service-account private key here.
+// KISANMANDI V8.4 - FIREBASE BACKEND
+// SECURITY-COMPATIBLE VERSION
+// ========================================
 
 const KISAN_FIREBASE_CONFIG = {
     apiKey: "AIzaSyCMFjkYeAq29DqFXYxXqEEtfks-hr9uG_s",
@@ -2406,24 +2489,22 @@ const KISAN_FIREBASE_CONFIG = {
 
 let kisanCloudReady = false;
 let kisanDB = null;
+let kisanAuth = null;
 
 function firebaseConfigReady(){
-
     return KISAN_FIREBASE_CONFIG.apiKey &&
-        !KISAN_FIREBASE_CONFIG.apiKey.startsWith("PASTE_") &&
-        KISAN_FIREBASE_CONFIG.projectId &&
-        !KISAN_FIREBASE_CONFIG.projectId.startsWith("PASTE_");
+        KISAN_FIREBASE_CONFIG.projectId;
 }
 
 function initKisanFirebase(){
 
     if(!firebaseConfigReady()){
-
-        let status =
-            document.getElementById("firebaseStatus");
+        let status = document.getElementById("firebaseStatus");
 
         if(status){
             status.style.display = "block";
+            status.innerText =
+                "⚠️ Firebase configuration is incomplete.";
         }
 
         return false;
@@ -2432,21 +2513,14 @@ function initKisanFirebase(){
     try{
 
         if(!firebase.apps.length){
-            firebase.initializeApp(
-                KISAN_FIREBASE_CONFIG
-            );
+            firebase.initializeApp(KISAN_FIREBASE_CONFIG);
         }
 
-        kisanDB =
-            firebase.firestore();
-
-        kisanAuth =
-            firebase.auth();
-
+        kisanDB = firebase.firestore();
+        kisanAuth = firebase.auth();
         kisanCloudReady = true;
 
-        let status =
-            document.getElementById("firebaseStatus");
+        let status = document.getElementById("firebaseStatus");
 
         if(status){
             status.style.display = "none";
@@ -2461,13 +2535,12 @@ function initKisanFirebase(){
             error
         );
 
-        let status =
-            document.getElementById("firebaseStatus");
+        let status = document.getElementById("firebaseStatus");
 
         if(status){
             status.style.display = "block";
             status.innerText =
-                "⚠️ Firebase could not be connected. Local mode is still active.";
+                "⚠️ Firebase connection failed. Please refresh.";
         }
 
         return false;
@@ -2476,30 +2549,35 @@ function initKisanFirebase(){
 
 async function cloudSaveProduct(product){
 
-    if(!kisanCloudReady){
-        return;
+    if(!kisanCloudReady || !product){
+        return false;
     }
 
     try{
+
+        if(!product.ownerUid){
+            console.warn("Product not saved: ownerUid is missing.");
+            return false;
+        }
 
         await kisanDB
             .collection("products")
             .doc(String(product.id))
             .set(product);
 
+        return true;
+
     }catch(error){
 
-        console.error(
-            "Cloud product save failed:",
-            error
-        );
+        console.error("Cloud product save failed:", error);
+        return false;
     }
 }
 
 async function cloudDeleteProduct(productId){
 
     if(!kisanCloudReady){
-        return;
+        return false;
     }
 
     try{
@@ -2509,58 +2587,18 @@ async function cloudDeleteProduct(productId){
             .doc(String(productId))
             .delete();
 
-    }catch(error){
-
-        console.error(
-            "Cloud product delete failed:",
-            error
-        );
-    }
-}
-
-async function cloudSaveOrder(order){
-
-    if(!kisanCloudReady){
-        return;
-    }
-
-    try{
-
-        await kisanDB
-            .collection("orders")
-            .doc(String(order.id))
-            .set(order);
+        return true;
 
     }catch(error){
 
-        console.error(
-            "Cloud order save failed:",
-            error
+        console.error("Cloud product delete failed:", error);
+
+        alert(
+            "❌ Firebase rejected the product deletion. " +
+            "Publish the V8.4 Security Rules first."
         );
-    }
-}
 
-async function cloudUpdateOrder(order){
-
-    if(!kisanCloudReady){
-        return;
-    }
-
-    try{
-
-        await kisanDB
-            .collection("orders")
-            .doc(String(order.id))
-            .set(order,{
-                merge:true
-            });
-
-    }catch(error){
-
-        console.error(
-            "Cloud order update failed:",
-            error
-        );
+        return false;
     }
 }
 
@@ -2592,31 +2630,139 @@ async function loadCloudProducts(){
 
     }catch(error){
 
-        console.error(
-            "Cloud product load failed:",
-            error
-        );
+        console.error("Cloud product load failed:", error);
     }
 }
 
-async function loadCloudOrders(){
+async function cloudSaveOrder(order){
 
-    if(!kisanCloudReady){
+    if(!kisanCloudReady || !order){
+        return false;
+    }
+
+    try{
+
+        if(!order.customerUid){
+            console.warn("Order not saved: customerUid is missing.");
+            return false;
+        }
+
+        await kisanDB
+            .collection("orders")
+            .doc(String(order.id))
+            .set(order);
+
+        return true;
+
+    }catch(error){
+
+        console.error("Cloud order save failed:", error);
+
+        alert(
+            "❌ Firebase rejected the order. " +
+            "Publish the V8.4 Security Rules first."
+        );
+
+        return false;
+    }
+}
+
+async function cloudUpdateOrder(order){
+
+    if(!kisanCloudReady || !order){
+        return false;
+    }
+
+    try{
+
+        await kisanDB
+            .collection("orders")
+            .doc(String(order.id))
+            .set(
+                {
+                    status: order.status,
+                    updatedAt: new Date().toISOString()
+                },
+                {
+                    merge:true
+                }
+            );
+
+        return true;
+
+    }catch(error){
+
+        console.error("Cloud order update failed:", error);
+
+        alert(
+            "❌ Firebase rejected this status update. " +
+            "Please check the V8.4 Security Rules."
+        );
+
+        return false;
+    }
+}
+
+async function loadCloudOrdersForCurrentUser(){
+
+    if(!kisanCloudReady || !kisanAuth){
+        return;
+    }
+
+    let firebaseUser = kisanAuth.currentUser;
+
+    if(!firebaseUser){
+        localStorage.setItem(
+            "kisanMandiOrders",
+            JSON.stringify([])
+        );
+
+        updateOrders();
         return;
     }
 
     try{
 
-        let snapshot =
-            await kisanDB
-                .collection("orders")
-                .get();
+        let profile = JSON.parse(
+            localStorage.getItem("kisanMandiCurrentUser")
+        ) || {};
 
-        let orders = [];
+        let ordersMap = {};
 
-        snapshot.forEach(function(doc){
-            orders.push(doc.data());
-        });
+        if(profile.role === "farmer"){
+
+            let farmerSnapshot =
+                await kisanDB
+                    .collection("orders")
+                    .where(
+                        "farmerUids",
+                        "array-contains",
+                        firebaseUser.uid
+                    )
+                    .get();
+
+            farmerSnapshot.forEach(function(doc){
+                ordersMap[doc.id] = doc.data();
+            });
+
+        }else{
+
+            let customerSnapshot =
+                await kisanDB
+                    .collection("orders")
+                    .where(
+                        "customerUid",
+                        "==",
+                        firebaseUser.uid
+                    )
+                    .get();
+
+            customerSnapshot.forEach(function(doc){
+                ordersMap[doc.id] = doc.data();
+            });
+        }
+
+        let orders = Object.values(ordersMap);
 
         localStorage.setItem(
             "kisanMandiOrders",
@@ -2627,16 +2773,33 @@ async function loadCloudOrders(){
 
     }catch(error){
 
-        console.error(
-            "Cloud order load failed:",
-            error
-        );
+        console.error("Secure cloud order load failed:", error);
+
+        let message =
+            document.getElementById("firebaseStatus");
+
+        if(message){
+            message.style.display = "block";
+            message.innerText =
+                "⚠️ Orders could not be loaded. " +
+                "Publish the V8.4 Security Rules.";
+        }
     }
 }
 
 async function migrateLocalDataToCloud(){
 
-    if(!kisanCloudReady){
+    if(!kisanCloudReady || !kisanAuth || !kisanAuth.currentUser){
+        return;
+    }
+
+    let firebaseUser = kisanAuth.currentUser;
+
+    let currentUser = JSON.parse(
+        localStorage.getItem("kisanMandiCurrentUser")
+    );
+
+    if(!currentUser){
         return;
     }
 
@@ -2646,8 +2809,25 @@ async function migrateLocalDataToCloud(){
         ) || [];
 
     for(let product of products){
-        await cloudSaveProduct(product);
+
+        let belongsToCurrentFarmer =
+            Number(product.ownerId) === Number(currentUser.id);
+
+        if(
+            currentUser.role === "farmer" &&
+            belongsToCurrentFarmer
+        ){
+
+            product.ownerUid = firebaseUser.uid;
+
+            await cloudSaveProduct(product);
+        }
     }
+
+    localStorage.setItem(
+        "kisanMandiProducts",
+        JSON.stringify(products)
+    );
 
     let orders =
         JSON.parse(
@@ -2655,8 +2835,52 @@ async function migrateLocalDataToCloud(){
         ) || [];
 
     for(let order of orders){
-        await cloudSaveOrder(order);
+
+        let belongsToCurrentCustomer =
+            currentUser.role === "customer" &&
+            Number(order.customerId) === Number(currentUser.id);
+
+        if(belongsToCurrentCustomer){
+
+            order.customerUid = firebaseUser.uid;
+
+            let farmerUids = [];
+
+            order.items = order.items.map(function(item){
+
+                let productsLocal =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "kisanMandiProducts"
+                        )
+                    ) || [];
+
+                let product = productsLocal.find(function(p){
+                    return Number(p.id) === Number(item.productId);
+                });
+
+                if(product && product.ownerUid){
+
+                    item.farmerUid = product.ownerUid;
+
+                    if(!farmerUids.includes(product.ownerUid)){
+                        farmerUids.push(product.ownerUid);
+                    }
+                }
+
+                return item;
+            });
+
+            order.farmerUids = farmerUids;
+
+            await cloudSaveOrder(order);
+        }
     }
+
+    localStorage.setItem(
+        "kisanMandiOrders",
+        JSON.stringify(orders)
+    );
 }
 
 async function startKisanCloud(){
@@ -2665,44 +2889,81 @@ async function startKisanCloud(){
         return;
     }
 
-    await migrateLocalDataToCloud();
-
     await loadCloudProducts();
 
-    await loadCloudOrders();
+    kisanAuth.onAuthStateChanged(
+        async function(firebaseUser){
 
-    if(kisanAuth){
-        kisanAuth.onAuthStateChanged(async function(firebaseUser){
             if(!firebaseUser){
+
+                localStorage.removeItem(
+                    "kisanMandiCurrentUser"
+                );
+
+                localStorage.removeItem(
+                    "kisanMandiOrders"
+                );
+
+                updateUserBar();
+                updateDashboard();
+                updateOrders();
+
                 return;
             }
 
             try{
-                let profileDoc = await kisanDB.collection("users")
-                    .doc(firebaseUser.uid)
-                    .get();
+
+                let profileDoc =
+                    await kisanDB
+                        .collection("users")
+                        .doc(firebaseUser.uid)
+                        .get();
 
                 if(profileDoc.exists){
+
+                    let profile =
+                        profileDoc.data();
+
+                    profile.uid =
+                        firebaseUser.uid;
+
                     localStorage.setItem(
                         "kisanMandiCurrentUser",
-                        JSON.stringify(profileDoc.data())
+                        JSON.stringify(profile)
                     );
+
                     updateUserBar();
                     updateDashboard();
+
+                    await migrateLocalDataToCloud();
+                    await loadCloudOrdersForCurrentUser();
+
+                    updateDashboard();
                     updateOrders();
+
+                }else{
+
+                    console.warn(
+                        "Firebase user exists but profile document is missing."
+                    );
                 }
+
             }catch(error){
-                console.error("User profile load failed:", error);
+
+                console.error(
+                    "User profile load failed:",
+                    error
+                );
             }
-        });
-    }
+        }
+    );
 
     console.log(
-        "KisanMandi cloud backend connected."
+        "KisanMandi V8.4 secure cloud backend connected."
     );
 }
 
-// ========================================
+
 // WHATSAPP COMMUNICATION
 // ========================================
 
@@ -3062,14 +3323,18 @@ function updateOrders(){
     });
 }
 
-function updateOrderStatus(orderId,newStatus){
+async function updateOrderStatus(orderId,newStatus){
 
     let currentUser =
         JSON.parse(
             localStorage.getItem("kisanMandiCurrentUser")
         );
 
-    if(!currentUser || currentUser.role !== "farmer"){
+    if(
+        !currentUser ||
+        currentUser.role !== "farmer" ||
+        !currentUser.uid
+    ){
         alert("🔐 Please login as a farmer.");
         return;
     }
@@ -3088,19 +3353,36 @@ function updateOrderStatus(orderId,newStatus){
 
     let ownsProduct =
         order.items.some(function(item){
-            return Number(item.farmerId) === Number(currentUser.id);
+
+            return (
+                item.farmerUid === currentUser.uid ||
+                Number(item.farmerId) === Number(currentUser.id)
+            );
+
         });
 
     if(!ownsProduct){
-        alert("❌ You are not authorized to update this order.");
+        alert(
+            "❌ You are not authorized to update this order."
+        );
         return;
+    }
+
+    if(kisanCloudReady){
+
+        order.status = newStatus;
+
+        let updated =
+            await cloudUpdateOrder(order);
+
+        if(!updated){
+            return;
+        }
     }
 
     order.status = newStatus;
 
     saveOrders(orders);
-
-    cloudUpdateOrder(order);
 
     updateOrders();
 
@@ -3113,6 +3395,7 @@ function updateOrderStatus(orderId,newStatus){
     );
 }
 
+
 function scrollToOrders(){
 
     document
@@ -3123,142 +3406,394 @@ function scrollToOrders(){
 }
 
 // ========================================
-// AUTHENTICATION - V8.3 FIREBASE EMAIL/PASSWORD AUTH
+// ========================================
+// AUTHENTICATION - V8.4 FIREBASE EMAIL/PASSWORD
 // ========================================
 
-let kisanAuth = null;
-
-function getUsers(){
-    return JSON.parse(localStorage.getItem("kisanMandiUsers")) || [];
-}
-
-function saveUsers(users){
-    localStorage.setItem("kisanMandiUsers",JSON.stringify(users));
-}
-
-function cacheUserProfile(profile){
-    let users = getUsers();
-    let index = users.findIndex(function(user){ return user.uid === profile.uid; });
-    if(index === -1) users.push(profile);
-    else users[index] = Object.assign({},users[index],profile);
-    saveUsers(users);
-}
-
 function showAuthForm(type){
-    let loginForm=document.getElementById("loginForm");
-    let registerForm=document.getElementById("registerForm");
-    let loginTab=document.getElementById("loginTab");
-    let registerTab=document.getElementById("registerTab");
-    let message=document.getElementById("authMessage");
-    message.innerText="";
+
+    let loginForm = document.getElementById("loginForm");
+    let registerForm = document.getElementById("registerForm");
+    let loginTab = document.getElementById("loginTab");
+    let registerTab = document.getElementById("registerTab");
+    let message = document.getElementById("authMessage");
+
+    message.innerText = "";
+
     if(type === "register"){
-        loginForm.style.display="none";
-        registerForm.style.display="block";
+
+        loginForm.style.display = "none";
+        registerForm.style.display = "block";
+
         loginTab.classList.remove("active");
         registerTab.classList.add("active");
+
     }else{
-        loginForm.style.display="block";
-        registerForm.style.display="none";
+
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+
         loginTab.classList.add("active");
         registerTab.classList.remove("active");
     }
 }
 
 function ensureKisanAuth(){
-    if(!kisanCloudReady || !firebase.apps.length) return false;
-    try{ kisanAuth=firebase.auth(); return true; }
-    catch(error){ console.error("Firebase Auth initialization failed:",error); return false; }
-}
 
-function authErrorMessage(error){
-    let code=error && error.code ? error.code : "";
-    const messages={
-        "auth/invalid-email":"⚠️ Please enter a valid email address.",
-        "auth/missing-password":"⚠️ Please enter your password.",
-        "auth/weak-password":"⚠️ Password must be at least 6 characters.",
-        "auth/email-already-in-use":"⚠️ This email is already registered. Please login.",
-        "auth/invalid-credential":"❌ Email or password is incorrect.",
-        "auth/user-not-found":"❌ No account was found with this email.",
-        "auth/wrong-password":"❌ Email or password is incorrect.",
-        "auth/too-many-requests":"⚠️ Too many attempts. Please try again later.",
-        "auth/network-request-failed":"⚠️ Network error. Please check your internet connection.",
-        "auth/operation-not-allowed":"⚠️ Email/Password sign-in is not enabled in Firebase."
-    };
-    return messages[code] || "❌ " + ((error && error.message) || "Authentication failed.");
+    if(!kisanCloudReady || !firebase.apps.length){
+        return false;
+    }
+
+    try{
+        kisanAuth = firebase.auth();
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Firebase Auth initialization failed:",
+            error
+        );
+
+        return false;
+    }
 }
 
 async function registerUser(){
-    let name=document.getElementById("registerName").value.trim();
-    let email=document.getElementById("registerEmail").value.trim().toLowerCase();
-    let password=document.getElementById("registerPassword").value;
-    let phone=document.getElementById("registerPhone").value.trim();
-    let role=document.getElementById("registerRole").value;
-    let message=document.getElementById("authMessage");
-    if(!name || !email || !password){ message.innerText="⚠️ Please enter your name, email and password."; message.style.color="#c62828"; return; }
-    if(password.length<6){ message.innerText="⚠️ Password must be at least 6 characters."; message.style.color="#c62828"; return; }
-    if(!ensureKisanAuth()){ message.innerText="⚠️ Firebase Authentication is not connected yet."; message.style.color="#c62828"; return; }
-    message.innerText="⏳ Creating your account..."; message.style.color="#176b2c";
+
+    let message = document.getElementById("authMessage");
+
+    let name =
+        document.getElementById("registerName")
+            .value.trim();
+
+    let email =
+        document.getElementById("registerEmail")
+            .value.trim()
+            .toLowerCase();
+
+    let password =
+        document.getElementById("registerPassword")
+            .value;
+
+    let phone =
+        document.getElementById("registerPhone")
+            .value.trim();
+
+    let role =
+        document.getElementById("registerRole")
+            .value;
+
+    if(!name || !email || !password){
+
+        message.innerText =
+            "⚠️ Please enter your name, email and password.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(password.length < 6){
+
+        message.innerText =
+            "⚠️ Password must contain at least 6 characters.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(!ensureKisanAuth()){
+
+        message.innerText =
+            "⚠️ Firebase Authentication is not connected.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    message.innerText =
+        "⏳ Creating your KisanMandi account...";
+
+    message.style.color = "#176b2c";
+
     try{
-        let result=await kisanAuth.createUserWithEmailAndPassword(email,password);
-        let firebaseUser=result.user;
-        await firebaseUser.updateProfile({displayName:name});
-        let profile={uid:firebaseUser.uid,id:Date.now(),name:name,email:email,phone:phone,role:role,createdAt:new Date().toISOString()};
-        await kisanDB.collection("users").doc(firebaseUser.uid).set(profile,{merge:true});
-        localStorage.setItem("kisanMandiCurrentUser",JSON.stringify(profile));
-        cacheUserProfile(profile);
-        message.innerText="✅ Account created successfully! Welcome to KisanMandi."; message.style.color="#176b2c";
-        document.getElementById("registerName").value="";
-        document.getElementById("registerEmail").value="";
-        document.getElementById("registerPassword").value="";
-        document.getElementById("registerPhone").value="";
-        updateUserBar(); updateDashboard(); updateOrders();
-    }catch(error){ console.error("Firebase email registration failed:",error); message.innerText=authErrorMessage(error); message.style.color="#c62828"; }
+
+        let result =
+            await kisanAuth
+                .createUserWithEmailAndPassword(
+                    email,
+                    password
+                );
+
+        let firebaseUser = result.user;
+
+        let profile = {
+            uid: firebaseUser.uid,
+            id: Date.now(),
+            name: name,
+            email: email,
+            phone: phone,
+            role: role,
+            createdAt: new Date().toISOString()
+        };
+
+        await kisanDB
+            .collection("users")
+            .doc(firebaseUser.uid)
+            .set(profile);
+
+        localStorage.setItem(
+            "kisanMandiCurrentUser",
+            JSON.stringify(profile)
+        );
+
+        message.innerText =
+            "✅ Account created successfully! Welcome to KisanMandi.";
+
+        message.style.color = "#176b2c";
+
+        document.getElementById("registerName").value = "";
+        document.getElementById("registerEmail").value = "";
+        document.getElementById("registerPassword").value = "";
+        document.getElementById("registerPhone").value = "";
+
+        updateUserBar();
+        updateDashboard();
+        updateOrders();
+
+        await migrateLocalDataToCloud();
+        await loadCloudOrdersForCurrentUser();
+
+        updateDashboard();
+        updateOrders();
+
+    }catch(error){
+
+        console.error(
+            "Firebase registration failed:",
+            error
+        );
+
+        let friendly =
+            error.code === "auth/email-already-in-use"
+            ? "⚠️ This email is already registered. Please login."
+            : error.code === "auth/invalid-email"
+            ? "⚠️ Please enter a valid email address."
+            : error.code === "auth/weak-password"
+            ? "⚠️ Password must contain at least 6 characters."
+            : "❌ " + (error.message || "Account creation failed.");
+
+        message.innerText = friendly;
+        message.style.color = "#c62828";
+    }
 }
 
 async function loginUser(){
-    let email=document.getElementById("loginEmail").value.trim().toLowerCase();
-    let password=document.getElementById("loginPassword").value;
-    let message=document.getElementById("authMessage");
-    if(!email || !password){ message.innerText="⚠️ Please enter your email and password."; message.style.color="#c62828"; return; }
-    if(!ensureKisanAuth()){ message.innerText="⚠️ Firebase Authentication is not connected yet."; message.style.color="#c62828"; return; }
-    message.innerText="⏳ Logging in..."; message.style.color="#176b2c";
+
+    let message = document.getElementById("authMessage");
+
+    let email =
+        document.getElementById("loginEmail")
+            .value.trim()
+            .toLowerCase();
+
+    let password =
+        document.getElementById("loginPassword")
+            .value;
+
+    if(!email || !password){
+
+        message.innerText =
+            "⚠️ Enter your email address and password.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(!ensureKisanAuth()){
+
+        message.innerText =
+            "⚠️ Firebase Authentication is not connected.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    message.innerText =
+        "⏳ Logging in...";
+
+    message.style.color = "#176b2c";
+
     try{
-        let result=await kisanAuth.signInWithEmailAndPassword(email,password);
-        let firebaseUser=result.user;
-        let doc=await kisanDB.collection("users").doc(firebaseUser.uid).get();
-        let profile;
-        if(doc.exists){ profile=doc.data(); }
-        else{
-            profile={uid:firebaseUser.uid,id:Date.now(),name:firebaseUser.displayName || "KisanMandi User",email:firebaseUser.email || email,phone:"",role:"customer",createdAt:new Date().toISOString()};
-            await kisanDB.collection("users").doc(firebaseUser.uid).set(profile,{merge:true});
+
+        let result =
+            await kisanAuth
+                .signInWithEmailAndPassword(
+                    email,
+                    password
+                );
+
+        let firebaseUser = result.user;
+
+        let doc =
+            await kisanDB
+                .collection("users")
+                .doc(firebaseUser.uid)
+                .get();
+
+        if(!doc.exists){
+
+            message.innerText =
+                "❌ Account profile was not found.";
+
+            message.style.color = "#c62828";
+
+            await kisanAuth.signOut();
+            return;
         }
-        localStorage.setItem("kisanMandiCurrentUser",JSON.stringify(profile));
-        cacheUserProfile(profile);
-        message.innerText="✅ Login successful! Welcome back."; message.style.color="#176b2c";
-        document.getElementById("loginEmail").value="";
-        document.getElementById("loginPassword").value="";
-        updateUserBar(); updateDashboard(); updateOrders();
-    }catch(error){ console.error("Firebase email login failed:",error); message.innerText=authErrorMessage(error); message.style.color="#c62828"; }
+
+        let profile = doc.data();
+
+        profile.uid =
+            firebaseUser.uid;
+
+        localStorage.setItem(
+            "kisanMandiCurrentUser",
+            JSON.stringify(profile)
+        );
+
+        message.innerText =
+            "✅ Login successful! Welcome back.";
+
+        message.style.color = "#176b2c";
+
+        document.getElementById("loginPassword").value = "";
+
+        updateUserBar();
+        updateDashboard();
+
+        await migrateLocalDataToCloud();
+        await loadCloudProducts();
+        await loadCloudOrdersForCurrentUser();
+
+        updateDashboard();
+        updateOrders();
+
+    }catch(error){
+
+        console.error(
+            "Firebase login failed:",
+            error
+        );
+
+        let friendly =
+            error.code === "auth/invalid-credential"
+            ? "❌ Incorrect email or password."
+            : error.code === "auth/user-not-found"
+            ? "❌ No account found with this email."
+            : error.code === "auth/wrong-password"
+            ? "❌ Incorrect password."
+            : error.code === "auth/too-many-requests"
+            ? "⚠️ Too many attempts. Please try again later."
+            : "❌ " + (error.message || "Login failed.");
+
+        message.innerText = friendly;
+        message.style.color = "#c62828";
+    }
 }
 
-async function resetPassword(){
-    let email=document.getElementById("loginEmail").value.trim().toLowerCase();
-    let message=document.getElementById("authMessage");
-    if(!email){ message.innerText="⚠️ Enter your email address first, then tap Forgot Password."; message.style.color="#c62828"; return; }
-    if(!ensureKisanAuth()){ message.innerText="⚠️ Firebase Authentication is not connected yet."; message.style.color="#c62828"; return; }
+async function forgotPassword(){
+
+    let message =
+        document.getElementById("authMessage");
+
+    let email =
+        document.getElementById("loginEmail")
+            .value.trim()
+            .toLowerCase();
+
+    if(!email){
+
+        message.innerText =
+            "⚠️ Enter your email address first.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
+    if(!ensureKisanAuth()){
+
+        message.innerText =
+            "⚠️ Firebase Authentication is not connected.";
+
+        message.style.color = "#c62828";
+        return;
+    }
+
     try{
-        await kisanAuth.sendPasswordResetEmail(email);
-        message.innerText="📧 Password reset email sent. Please check your inbox."; message.style.color="#176b2c";
-    }catch(error){ console.error("Password reset failed:",error); message.innerText=authErrorMessage(error); message.style.color="#c62828"; }
+
+        await kisanAuth
+            .sendPasswordResetEmail(email);
+
+        message.innerText =
+            "📧 Password reset email sent. Please check your inbox.";
+
+        message.style.color = "#176b2c";
+
+    }catch(error){
+
+        console.error(
+            "Password reset failed:",
+            error
+        );
+
+        message.innerText =
+            "❌ " +
+            (
+                error.code === "auth/user-not-found"
+                ? "No account found with this email."
+                : error.message
+            );
+
+        message.style.color = "#c62828";
+    }
 }
 
 function logoutUser(){
-    if(kisanAuth){ kisanAuth.signOut().catch(function(error){ console.error("Firebase logout failed:",error); }); }
-    localStorage.removeItem("kisanMandiCurrentUser");
-    updateUserBar(); updateDashboard(); updateOrders(); showAuthForm("login");
-    document.getElementById("authMessage").innerText="✅ You have been logged out.";
-    document.getElementById("authMessage").style.color="#176b2c";
+
+    if(kisanAuth){
+
+        kisanAuth
+            .signOut()
+            .catch(function(error){
+                console.error(
+                    "Firebase logout failed:",
+                    error
+                );
+            });
+    }
+
+    localStorage.removeItem(
+        "kisanMandiCurrentUser"
+    );
+
+    localStorage.removeItem(
+        "kisanMandiOrders"
+    );
+
+    updateUserBar();
+    updateDashboard();
+    updateOrders();
+
+    showAuthForm("login");
+
+    document.getElementById("authMessage").innerText =
+        "✅ You have been logged out.";
+
+    document.getElementById("authMessage").style.color =
+        "#176b2c";
 }
+
 
 function updateUserBar(){
 
@@ -3334,7 +3869,7 @@ function updateDashboard(){
             <div class="dashboard-card">
                 👋 <strong>${escapeHTML(currentUser.name)}</strong><br>
                 Account type: ${roleText}<br>
-                Email: ${escapeHTML(currentUser.email || "")}<br>Mobile: ${escapeHTML(currentUser.phone || "Not provided")}
+                Mobile: ${escapeHTML(currentUser.phone)}
             </div>
 
             <div class="dashboard-card">
@@ -3354,7 +3889,7 @@ function updateDashboard(){
             <div class="dashboard-card">
                 👋 <strong>${escapeHTML(currentUser.name)}</strong><br>
                 Account type: ${roleText}<br>
-                Email: ${escapeHTML(currentUser.email || "")}<br>Mobile: ${escapeHTML(currentUser.phone || "Not provided")}
+                Mobile: ${escapeHTML(currentUser.phone)}
             </div>
 
             <div class="dashboard-card">
