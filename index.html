@@ -542,6 +542,83 @@ nav button{
 }
 
 
+/* ========================================
+   ORDER MANAGEMENT
+======================================== */
+
+.orders-section{
+    margin-top:35px;
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 15px rgba(0,0,0,.1);
+}
+
+.order-card{
+    background:#f8fbf6;
+    border:1px solid #dfe9dc;
+    border-radius:10px;
+    padding:16px;
+    margin:12px 0;
+}
+
+.order-card h3{
+    color:#176b2c;
+    margin-bottom:8px;
+}
+
+.order-line{
+    padding:8px 0;
+    border-bottom:1px solid #e2e2e2;
+}
+
+.order-line:last-child{
+    border-bottom:none;
+}
+
+.order-status{
+    display:inline-block;
+    margin-top:8px;
+    padding:5px 9px;
+    border-radius:12px;
+    background:#fff0c2;
+    color:#8a5b00;
+    font-weight:bold;
+    font-size:13px;
+}
+
+.order-status.delivered{
+    background:#dff1dc;
+    color:#176b2c;
+}
+
+.order-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:12px;
+}
+
+.order-actions button{
+    border:none;
+    border-radius:7px;
+    padding:9px 12px;
+    background:#176b2c;
+    color:white;
+    cursor:pointer;
+}
+
+.order-actions button.reject{
+    background:#c62828;
+}
+
+.order-empty{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+
 footer{
     margin-top:40px;
     background:#0f5421;
@@ -640,6 +717,10 @@ footer{
 
 <button onclick="scrollToDashboard()">
 📊 Dashboard
+</button>
+
+<button onclick="scrollToOrders()">
+📦 My Orders
 </button>
 
 </nav>
@@ -1203,6 +1284,27 @@ onclick="placeOrder()">
 </div>
 
 
+<!-- ORDER MANAGEMENT -->
+
+<div class="container">
+    <div class="orders-section" id="ordersSection">
+
+        <h2>📦 Orders</h2>
+
+        <p class="dashboard-subtitle">
+            Customers can track orders and farmers can manage orders for their products.
+        </p>
+
+        <div id="ordersContent">
+            <div class="order-empty">
+                🔒 Please login to view orders.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
 <!-- AUTHENTICATION -->
 
 <div class="auth-panel" id="authSection">
@@ -1509,7 +1611,10 @@ function addFarmerProductToCart(productId){
         cart.push({
             name:cartName,
             price:Number(product.price),
-            quantity:1
+            quantity:1,
+            productId:product.id,
+            farmerId:product.ownerId || null,
+            farmer:product.farmer
         });
     }
 
@@ -1806,112 +1911,86 @@ function placeOrder(){
     }
 
     if(cart.length === 0){
-
-        alert(
-            "🛒 Please add a product to your cart first."
-        );
-
+        alert("🛒 Please add a product to your cart first.");
         return;
-
     }
 
-
     let name =
-        document
-        .getElementById("customerName")
-        .value
-        .trim();
-
+        document.getElementById("customerName").value.trim();
 
     let phone =
-        document
-        .getElementById("customerPhone")
-        .value
-        .trim();
-
+        document.getElementById("customerPhone").value.trim();
 
     let address =
-        document
-        .getElementById("customerAddress")
-        .value
-        .trim();
+        document.getElementById("customerAddress").value.trim();
 
-
-    if(
-
-        name === "" ||
-        phone === "" ||
-        address === ""
-
-    ){
-
+    if(name === "" || phone === "" || address === ""){
         alert(
             "⚠️ Please enter your name, mobile number and delivery address."
         );
-
         return;
-
     }
-
 
     let total =
         cart.reduce(
-
             function(sum,item){
-
-                return sum +
-                    (item.price * item.quantity);
-
+                return sum + (item.price * item.quantity);
             },
-
             0
-
         );
 
+    let orders =
+        JSON.parse(
+            localStorage.getItem("kisanMandiOrders")
+        ) || [];
 
-    let orderDetails =
-        cart.map(
+    let orderId =
+        "KM" +
+        Date.now().toString().slice(-8);
 
-            item =>
-                item.name +
-                " × " +
-                item.quantity
+    let orderItems = cart.map(function(item){
+        return {
+            name:item.name,
+            price:Number(item.price),
+            quantity:Number(item.quantity)
+        };
+    });
 
-        ).join(", ");
+    let order = {
+        id:orderId,
+        customerId:currentUser.id,
+        customerName:name,
+        customerPhone:phone,
+        customerAddress:address,
+        items:orderItems,
+        total:Number(total),
+        status:"Pending",
+        createdAt:new Date().toISOString()
+    };
 
+    orders.push(order);
 
-    alert(
-
-        "✅ Order Placed Successfully!\n\n" +
-
-        "Customer: " +
-        name +
-
-        "\nMobile: " +
-        phone +
-
-        "\nProducts: " +
-        orderDetails +
-
-        "\nTotal: ₹" +
-        total +
-
-        "\n\nThank you for using KisanMandi 🌾"
-
+    localStorage.setItem(
+        "kisanMandiOrders",
+        JSON.stringify(orders)
     );
 
+    alert(
+        "✅ Order Placed Successfully!\n\n" +
+        "Order ID: " + orderId +
+        "\nTotal: ₹" + total +
+        "\n\nThank you for using KisanMandi 🌾"
+    );
 
     cart = [];
-
     updateCart();
 
-
     document.getElementById("customerName").value = "";
-
     document.getElementById("customerPhone").value = "";
-
     document.getElementById("customerAddress").value = "";
 
+    updateOrders();
+    scrollToOrders();
 }
 
 
@@ -2296,6 +2375,310 @@ function escapeHTML(text){
 
 
 // ========================================
+// ORDER MANAGEMENT
+// ========================================
+
+function getOrders(){
+
+    return JSON.parse(
+        localStorage.getItem("kisanMandiOrders")
+    ) || [];
+}
+
+function saveOrders(orders){
+
+    localStorage.setItem(
+        "kisanMandiOrders",
+        JSON.stringify(orders)
+    );
+}
+
+function formatOrderDate(dateString){
+
+    let date = new Date(dateString);
+
+    return date.toLocaleString();
+}
+
+function getOrderStatusClass(status){
+
+    return status === "Delivered"
+        ? "order-status delivered"
+        : "order-status";
+}
+
+function updateOrders(){
+
+    let container =
+        document.getElementById("ordersContent");
+
+    if(!container){
+        return;
+    }
+
+    let currentUser =
+        JSON.parse(
+            localStorage.getItem("kisanMandiCurrentUser")
+        );
+
+    if(!currentUser){
+
+        container.innerHTML =
+            '<div class="order-empty">🔒 Please login to view orders.</div>';
+
+        return;
+    }
+
+    let orders = getOrders();
+
+    if(currentUser.role === "customer"){
+
+        let myOrders =
+            orders.filter(
+                order =>
+                    Number(order.customerId) === Number(currentUser.id)
+            );
+
+        if(myOrders.length === 0){
+
+            container.innerHTML =
+                '<div class="order-empty">📦 You have no orders yet.</div>';
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        myOrders.slice().reverse().forEach(function(order){
+
+            let itemsHTML = order.items.map(function(item){
+
+                return `
+                    <div class="order-line">
+                        ${escapeHTML(item.name)}
+                        — ₹${item.price} × ${item.quantity}
+                    </div>
+                `;
+
+            }).join("");
+
+            let div = document.createElement("div");
+
+            div.className = "order-card";
+
+            div.innerHTML = `
+                <h3>Order ${escapeHTML(order.id)}</h3>
+
+                <div>
+                    📅 ${escapeHTML(formatOrderDate(order.createdAt))}
+                </div>
+
+                <div class="${getOrderStatusClass(order.status)}">
+                    ${escapeHTML(order.status)}
+                </div>
+
+                <div style="margin-top:10px;">
+                    ${itemsHTML}
+                </div>
+
+                <p style="margin-top:10px;">
+                    <strong>Total: ₹${order.total}</strong>
+                </p>
+
+                <p style="margin-top:6px;">
+                    📍 ${escapeHTML(order.customerAddress)}
+                </p>
+            `;
+
+            container.appendChild(div);
+        });
+
+        return;
+    }
+
+    // Farmer view
+    let farmerOrders = [];
+
+    orders.forEach(function(order){
+
+        let hasFarmerProduct =
+            order.items.some(function(item){
+                return Number(item.farmerId) === Number(currentUser.id);
+            });
+
+        if(hasFarmerProduct){
+            farmerOrders.push(order);
+        }
+    });
+
+    if(farmerOrders.length === 0){
+
+        container.innerHTML =
+            '<div class="order-empty">📦 No orders for your products yet.</div>';
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    farmerOrders.slice().reverse().forEach(function(order){
+
+        let farmerItems =
+            order.items.filter(function(item){
+                return Number(item.farmerId) === Number(currentUser.id);
+            });
+
+        let farmerTotal =
+            farmerItems.reduce(function(sum,item){
+                return sum + (Number(item.price) * Number(item.quantity));
+            },0);
+
+        let itemsHTML = farmerItems.map(function(item){
+
+            return `
+                <div class="order-line">
+                    ${escapeHTML(item.name)}
+                    — ₹${item.price} × ${item.quantity}
+                </div>
+            `;
+
+        }).join("");
+
+        let div = document.createElement("div");
+
+        div.className = "order-card";
+
+        div.innerHTML = `
+            <h3>Order ${escapeHTML(order.id)}</h3>
+
+            <div>
+                👤 Customer: ${escapeHTML(order.customerName)}
+            </div>
+
+            <div>
+                📱 ${escapeHTML(order.customerPhone)}
+            </div>
+
+            <div>
+                📅 ${escapeHTML(formatOrderDate(order.createdAt))}
+            </div>
+
+            <div class="${getOrderStatusClass(order.status)}">
+                ${escapeHTML(order.status)}
+            </div>
+
+            <div style="margin-top:10px;">
+                ${itemsHTML}
+            </div>
+
+            <p style="margin-top:10px;">
+                <strong>Your products total: ₹${farmerTotal}</strong>
+            </p>
+
+            <p style="margin-top:6px;">
+                📍 ${escapeHTML(order.customerAddress)}
+            </p>
+
+            <div class="order-actions">
+
+                ${
+                    order.status === "Pending"
+                    ? `<button onclick="updateOrderStatus('${order.id}','Accepted')">
+                        ✅ Accept
+                       </button>`
+                    : ""
+                }
+
+                ${
+                    order.status === "Accepted"
+                    ? `<button onclick="updateOrderStatus('${order.id}','Preparing')">
+                        👨‍🌾 Preparing
+                       </button>`
+                    : ""
+                }
+
+                ${
+                    order.status === "Preparing"
+                    ? `<button onclick="updateOrderStatus('${order.id}','Ready')">
+                        📦 Ready
+                       </button>`
+                    : ""
+                }
+
+                ${
+                    order.status === "Ready"
+                    ? `<button onclick="updateOrderStatus('${order.id}','Delivered')">
+                        🚚 Delivered
+                       </button>`
+                    : ""
+                }
+
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+function updateOrderStatus(orderId,newStatus){
+
+    let currentUser =
+        JSON.parse(
+            localStorage.getItem("kisanMandiCurrentUser")
+        );
+
+    if(!currentUser || currentUser.role !== "farmer"){
+        alert("🔐 Please login as a farmer.");
+        return;
+    }
+
+    let orders = getOrders();
+
+    let order =
+        orders.find(
+            item => item.id === orderId
+        );
+
+    if(!order){
+        alert("⚠️ Order not found.");
+        return;
+    }
+
+    let ownsProduct =
+        order.items.some(function(item){
+            return Number(item.farmerId) === Number(currentUser.id);
+        });
+
+    if(!ownsProduct){
+        alert("❌ You are not authorized to update this order.");
+        return;
+    }
+
+    order.status = newStatus;
+
+    saveOrders(orders);
+
+    updateOrders();
+
+    alert(
+        "✅ Order " +
+        orderId +
+        " updated to " +
+        newStatus +
+        "."
+    );
+}
+
+function scrollToOrders(){
+
+    document
+        .getElementById("ordersSection")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+}
+
+// ========================================
 // AUTHENTICATION
 // ========================================
 
@@ -2459,6 +2842,7 @@ function loginUser(){
 
     updateUserBar();
     updateDashboard();
+    updateOrders();
 }
 
 function logoutUser(){
@@ -2467,6 +2851,7 @@ function logoutUser(){
 
     updateUserBar();
     updateDashboard();
+    updateOrders();
 
     showAuthForm("login");
 
@@ -2744,6 +3129,8 @@ updateCart();
 updateUserBar();
 
 updateDashboard();
+
+updateOrders();
 
 </script>
 
