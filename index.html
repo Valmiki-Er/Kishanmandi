@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V8.9 - किसान मंडी</title>
+<title>KisanMandi V9.0 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -22,6 +22,12 @@ nav button{border:0;border-radius:20px;padding:9px 15px;background:white;color:#
 input,select,textarea{width:100%;padding:14px;margin:7px 0;border:1px solid #bbb;border-radius:12px;font-size:16px}
 button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;margin-top:8px;font-size:17px;font-weight:bold}
 .green{background:#176b2c;color:white}.red{background:#d52b2b;color:white}.orange{background:#ed9400;color:white}.blue{background:#2777c9;color:white}.outline{background:white;color:#176b2c;border:2px solid #176b2c}
+
+.checkout-overlay{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:150}
+.checkout-modal{background:white;border-radius:22px;padding:22px;width:min(94%,560px);max-height:92vh;overflow:auto;box-shadow:0 18px 60px #0006}
+.checkout-modal h2{color:#176b2c;margin-bottom:8px}
+.checkout-note{background:#fff8d8;border:1px solid #f0df8a;border-radius:12px;padding:12px;margin:10px 0;color:#5c4b12}
+.receipt-btn{display:inline-block!important;width:auto!important;padding:10px 14px!important;margin:6px 6px 0 0!important;font-size:14px!important}
 .product{overflow:hidden;border:1px solid #e2e8df;border-radius:20px;margin:18px 0;background:white}
 .product-img{height:190px;background:#edf7e9;display:flex;align-items:center;justify-content:center;font-size:90px}
 .product-body{padding:20px}.price{font-size:27px;font-weight:bold;color:#176b2c;margin:10px 0}
@@ -301,7 +307,7 @@ footer{text-align:center;padding:30px;color:#607060}
 <h2 data-i18n="yourCart">🛒 Your Cart</h2>
 <div id="cartList"><p>Your cart is empty.</p></div>
 <div id="cartTotal" class="total"></div>
-<button id="checkoutButton" class="btn green hidden" onclick="checkout()">📦 Place Order</button>
+<button id="checkoutButton" class="btn green hidden" onclick="openCheckout()">📦 Place Order</button>
 </section>
 
 <section id="ordersSection" class="card">
@@ -338,13 +344,37 @@ footer{text-align:center;padding:30px;color:#607060}
 </select>
 <button class="btn green" onclick="addProduct()" data-i18n="listProduct">➕ List Product</button>
 <div class="info" style="margin-top:10px">
-📸 V8.6 uses built-in product visuals. No Firebase Storage or billing is required.
+📸 V9.0 uses built-in product visuals. No Firebase Storage or billing is required.
 </div>
 </div>
 
 <h2 data-i18n="myProducts">📋 My Products</h2><div id="myProducts"></div>
 <h2 data-i18n="incomingOrders">📥 Incoming Orders</h2><div id="farmerOrders"></div>
 </section>
+</div>
+
+
+<div id="checkoutModal" class="checkout-overlay hidden">
+  <div class="checkout-modal">
+    <h2>🧾 Confirm Your Order</h2>
+    <p>Please enter your delivery details before placing the order.</p>
+    <div id="checkoutMessage"></div>
+    <label><strong>📍 Delivery Address</strong></label>
+    <textarea id="checkoutAddress" rows="4" placeholder="House / Village / Street / District / PIN code"></textarea>
+    <label><strong>📞 Contact Number</strong></label>
+    <input id="checkoutMobile" type="tel" placeholder="Mobile number">
+    <label><strong>💳 Payment Method</strong></label>
+    <select id="checkoutPayment">
+      <option value="cod">💵 Cash on Delivery</option>
+    </select>
+    <label><strong>📝 Delivery Notes (optional)</strong></label>
+    <textarea id="checkoutNotes" rows="3" placeholder="Any delivery instruction"></textarea>
+    <div class="checkout-note">🔒 V9.0 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
+    <div class="action-row">
+      <button class="btn green" onclick="confirmCheckout()">✅ Confirm Order</button>
+      <button class="btn red" onclick="closeCheckout()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
@@ -375,7 +405,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V8.9</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V9.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -745,33 +775,76 @@ totalBox.innerHTML=`💰 Cart Total: ₹${total}`;
 checkoutButton.classList.remove("hidden");
 }
 
-window.checkout=async function(){
+window.openCheckout=function(){
 if(!currentUser){alert("🔒 Please login before placing an order.");showSection("accountSection");return;}
 if(cart.length===0){alert("🛒 Your cart is empty.");return;}
 if(currentProfile?.role==="farmer"){alert("👨‍🌾 Farmer accounts cannot place customer orders.");return;}
+const savedAddress=localStorage.getItem("kisanMandiDeliveryAddress")||currentProfile?.address||"";
+const savedMobile=localStorage.getItem("kisanMandiDeliveryMobile")||currentProfile?.mobile||"";
+document.getElementById("checkoutAddress").value=savedAddress;
+document.getElementById("checkoutMobile").value=savedMobile;
+document.getElementById("checkoutNotes").value="";
+document.getElementById("checkoutMessage").innerHTML="";
+document.getElementById("checkoutModal").classList.remove("hidden");
+};
+
+window.closeCheckout=function(){
+document.getElementById("checkoutModal").classList.add("hidden");
+};
+
+window.confirmCheckout=async function(){
+if(!currentUser){alert("🔒 Please login before placing an order.");return;}
+const address=document.getElementById("checkoutAddress").value.trim();
+const mobile=document.getElementById("checkoutMobile").value.trim();
+const paymentMethod=document.getElementById("checkoutPayment").value;
+const notes=document.getElementById("checkoutNotes").value.trim();
+if(!address){showMessage("checkoutMessage","❌ Please enter your delivery address.",true);return;}
+if(!mobile){showMessage("checkoutMessage","❌ Please enter your contact number.",true);return;}
+if(cart.length===0){closeCheckout();alert("🛒 Your cart is empty.");return;}
+
 try{
 let total=0;
-cart.forEach(item=>total+=item.price*item.quantity);
+cart.forEach(item=>total+=Number(item.price||0)*Number(item.quantity||1));
 const verifiedItems=[];
 for(const item of cart){
 const snap=await getDoc(doc(db,"products",item.productId));
-if(!snap.exists()){throw new Error("A product in your cart is no longer available.");}
+if(!snap.exists())throw new Error("A product in your cart is no longer available.");
 const data=snap.data();
 const liveStock=Number(data.stock||0);
-if(liveStock<item.quantity){throw new Error(`${data.name||item.name} has only ${liveStock} kg available.`);}
-verifiedItems.push({...item,price:Number(data.price||item.price),name:data.name||item.name,farmerId:data.ownerUid||data.farmerUid||item.farmerId,farmerName:data.farmerName||item.farmerName,farmerMobile:data.farmerMobile||""});
+if(liveStock<item.quantity)throw new Error(`${data.name||item.name} has only ${liveStock} kg available.`);
+verifiedItems.push({
+...item,
+price:Number(data.price||item.price),
+name:data.name||item.name,
+farmerId:data.ownerUid||data.farmerUid||item.farmerId,
+farmerName:data.farmerName||item.farmerName,
+farmerMobile:data.farmerMobile||""
+});
 }
-const orderItems=verifiedItems.map(item=>({productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,farmerId:item.farmerId,farmerName:item.farmerName,farmerMobile:item.farmerMobile}));
+const orderItems=verifiedItems.map(item=>({
+productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,
+farmerId:item.farmerId,farmerName:item.farmerName,farmerMobile:item.farmerMobile
+}));
 const farmerIds=[...new Set(verifiedItems.map(item=>item.farmerId).filter(Boolean))];
 const farmerMobiles=[...new Set(verifiedItems.map(item=>item.farmerMobile).filter(Boolean))];
+
 const orderRef=await addDoc(collection(db,"orders"),{
 customerUid:currentUser.uid,
 customerName:currentProfile?.name||currentUser.displayName||"",
 customerEmail:currentUser.email||"",
-customerMobile:currentProfile?.mobile||"",
-items:orderItems,farmerUids:farmerIds,farmerMobiles,total,status:"pending",
-createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+customerMobile:mobile,
+deliveryAddress:address,
+deliveryNotes:notes,
+paymentMethod:paymentMethod==="cod"?"cod":"cod",
+items:orderItems,
+farmerUids:farmerIds,
+farmerMobiles,
+total,
+status:"pending",
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
 });
+
 for(const item of cart){
 try{
 const productRef=doc(db,"products",item.productId);
@@ -782,11 +855,19 @@ await updateDoc(productRef,{stock:Math.max(0,oldStock-item.quantity)});
 }
 }catch(stockError){console.warn("Stock update failed:",stockError);}
 }
+
+localStorage.setItem("kisanMandiDeliveryAddress",address);
+localStorage.setItem("kisanMandiDeliveryMobile",mobile);
 cart=[];saveCart();renderCart();await loadProducts();await loadOrders();
+closeCheckout();
 alert("✅ Order placed successfully!\n\nOrder ID: "+orderRef.id);
 showSection("ordersSection");
-}catch(error){alert("❌ Order failed:\n"+friendlyError(error));}
+}catch(error){
+showMessage("checkoutMessage","❌ Order failed: "+friendlyError(error),true);
+}
 };
+
+window.checkout=window.confirmCheckout;
 
 
 async function updateOrderNotifications(){
@@ -840,10 +921,34 @@ let wa="";
 const farmerMobile=order.farmerMobile||"";
 if(farmerMobile){
 const link=whatsappLink(farmerMobile,`Hello, I am ${order.customerName||"a KisanMandi customer"}. Regarding order ${order.id}.`);
-if(link)wa=`<a class="btn green" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Farmer</a>`;
+if(link)wa=`<a class="btn green receipt-btn" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Farmer</a>`;
 }
-return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3>${wa}</div>`;
+const address=order.deliveryAddress?`<p>📍 <strong>Delivery:</strong> ${safeText(order.deliveryAddress)}</p>`:"";
+const notes=order.deliveryNotes?`<p>📝 <strong>Notes:</strong> ${safeText(order.deliveryNotes)}</p>`:"";
+const payment=order.paymentMethod==="cod"?"💵 Cash on Delivery":"💳 Payment";
+const receipt=`<button class="btn outline receipt-btn" onclick="printOrderReceipt('${safeText(order.id)}')">🧾 Receipt</button>`;
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3><p>${payment}</p>${address}${notes}<div>${receipt}${wa}</div></div>`;
 }
+
+window.printOrderReceipt=async function(orderId){
+if(!currentUser)return;
+try{
+const snap=await getDoc(doc(db,"orders",orderId));
+if(!snap.exists()){alert("❌ Order not found.");return;}
+const order={id:snap.id,...snap.data()};
+const isCustomer=order.customerUid===currentUser.uid;
+const isFarmer=Array.isArray(order.farmerUids)&&order.farmerUids.includes(currentUser.uid);
+if(!isCustomer&&!isFarmer){alert("❌ You are not authorized to view this receipt.");return;}
+const items=Array.isArray(order.items)?order.items:[];
+const rows=items.map(i=>`<tr><td>${escapeHTML(i.name||"Product")}</td><td>${Number(i.quantity||1)}</td><td>₹${Number(i.price||0)}</td><td>₹${Number(i.price||0)*Number(i.quantity||1)}</td></tr>`).join("");
+const w=window.open("","_blank");
+if(!w){alert("Please allow pop-ups to print the receipt.");return;}
+w.document.write(`<!doctype html><html><head><title>KisanMandi Receipt ${escapeHTML(order.id)}</title><style>
+body{font-family:Arial,sans-serif;padding:24px;color:#263b28}h1{color:#176b2c}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ccc;padding:9px;text-align:left}.total{font-size:20px;font-weight:bold;margin-top:16px}.box{background:#f4f8f1;padding:14px;border-radius:10px;margin-top:12px}
+</style></head><body><h1>🌾 KisanMandi</h1><h2>Order Receipt</h2><p><strong>Order ID:</strong> ${escapeHTML(order.id)}</p><p><strong>Date:</strong> ${escapeHTML(formatTimestamp(order.createdAt))}</p><p><strong>Status:</strong> ${escapeHTML(statusLabel(order.status||"pending"))}</p><div class="box"><strong>Customer:</strong> ${escapeHTML(order.customerName||"")}<br><strong>Mobile:</strong> ${escapeHTML(order.customerMobile||"")}<br><strong>Delivery:</strong> ${escapeHTML(order.deliveryAddress||"")}</div><table><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><p class="total">Total: ₹${Number(order.total||0)}</p><p><strong>Payment:</strong> Cash on Delivery</p><p>Thank you for using KisanMandi.</p><script>window.onload=()=>window.print();<\/script></body></html>`);
+w.document.close();
+}catch(error){alert("❌ Could not create receipt:\n"+friendlyError(error));}
+};
 
 async function loadFarmerDashboard(){
 if(!currentUser||currentProfile?.role!=="farmer"){document.getElementById("farmerSection").classList.add("hidden");return;}
@@ -989,7 +1094,7 @@ if(status==="confirmed")buttons=`<button class="btn blue" onclick="updateOrderSt
 const mobile=order.customerMobile||"";
 const link=whatsappLink(mobile,`Hello ${order.customerName||"Customer"}, this is your KisanMandi farmer regarding order ${order.id}.`);
 const whatsapp=link?`<a class="btn green" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Customer</a>`:"";
-return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>👤 Customer: ${safeText(order.customerName||"")}</p><p>📱 ${safeText(order.customerMobile||"")}</p><p>📅 ${formatTimestamp(order.createdAt)}</p><br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemHTML}<h3>Order Total: ₹${Number(order.total||0)}</h3><div class="action-row">${buttons}${whatsapp}</div></div>`;
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>👤 Customer: ${safeText(order.customerName||"")}</p><p>📱 ${safeText(order.customerMobile||"")}</p><p>📅 ${formatTimestamp(order.createdAt)}</p>${order.deliveryAddress?`<p>📍 Delivery: ${safeText(order.deliveryAddress)}</p>`:""}${order.deliveryNotes?`<p>📝 Notes: ${safeText(order.deliveryNotes)}</p>`:""}<br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemHTML}<h3>Order Total: ₹${Number(order.total||0)}</h3><div class="action-row">${buttons}${whatsapp}</div></div>`;
 }
 
 window.updateOrderStatus=async function(orderId,newStatus){
@@ -1007,8 +1112,7 @@ await loadFarmerOrders();await loadFarmerStats();await loadOrders();
 
 
 /* =========================
-   KisanMandi V8.9 LANGUAGE
-   English + Hindi + Tamil
+   KisanMandi V9.0 LANGUAGE
    English + Hindi + Tamil
    ========================= */
 const translations={
