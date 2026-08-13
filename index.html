@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V9.3 - किसान मंडी</title>
+<title>KisanMandi V9.4 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -207,7 +207,7 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
 
-/* ===== KisanMandi V9.3 upgrades ===== */
+/* ===== KisanMandi V9.4 upgrades ===== */
 .wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
 .wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
 .wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
@@ -232,6 +232,18 @@ footer{text-align:center;padding:30px;color:#607060}
 .timeline span.active{background:#176b2c;color:white}
 .status-updated{font-size:13px;color:#657065;margin-top:5px}
 .refresh-orders{margin:8px 0 14px}
+
+
+.order-tools{margin:12px 0 16px;padding:12px;border:1px solid #dce8dc;border-radius:14px;background:#f7fbf6}
+.order-tools-row{display:flex;gap:8px;flex-wrap:wrap}
+.order-tools input,.order-tools select{flex:1;min-width:150px;padding:11px 12px;border:1px solid #cfd8cf;border-radius:10px;background:white;font-size:15px}
+.order-summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.order-summary span{padding:7px 10px;border-radius:14px;background:#eef4ee;font-size:13px;font-weight:bold;color:#365b3b}
+.order-action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.order-action-row .btn{margin:0;flex:1;min-width:130px}
+@media(max-width:520px){
+  .order-tools input,.order-tools select{min-width:100%;width:100%}
+}
 
 </style>
 </head>
@@ -354,6 +366,21 @@ footer{text-align:center;padding:30px;color:#607060}
 <p data-i18n="ordersSubtitle">Customers can track orders and farmers can manage orders for their products.</p>
 <div class="order-live"><span class="live-dot"></span><span data-i18n="orderLive">🟢 Live order tracking</span></div>
 <button class="btn outline refresh-orders" onclick="refreshOrdersNow()" data-i18n="refreshOrders">🔄 Refresh Orders</button>
+<div class="order-tools">
+  <div class="order-tools-row">
+    <input id="orderSearchInput" type="search" placeholder="🔎 Search order ID or product..." oninput="filterOrdersUI()">
+    <select id="orderStatusFilter" onchange="filterOrdersUI()">
+      <option value="all">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="processing">Processing</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+  <div id="orderSummary" class="order-summary"></div>
+</div>
 <div id="ordersList"><div class="info">🔒 Please login to view orders.</div></div>
 </section>
 
@@ -447,7 +474,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V9.3</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V9.4</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -946,6 +973,47 @@ window.checkout=window.confirmCheckout;
 let orderStatusUnsubscribe=null;
 let orderListenerPrimed=false;
 
+
+
+window.updateOrderSummary=function(){
+  const root=document.getElementById("ordersList");
+  const summary=document.getElementById("orderSummary");
+  if(!root||!summary)return;
+  const cards=[...root.querySelectorAll(".order")];
+  const counts={pending:0,confirmed:0,processing:0,shipped:0,delivered:0,cancelled:0};
+  cards.forEach(card=>{
+    const text=(card.innerText||"").toLowerCase();
+    Object.keys(counts).forEach(k=>{if(text.includes(k))counts[k]++;});
+  });
+  summary.innerHTML=
+    `<span>📦 ${cards.length} total</span>`+
+    `<span>⏳ ${counts.pending} pending</span>`+
+    `<span>🚚 ${counts.shipped+counts.processing} active</span>`+
+    `<span>✅ ${counts.delivered} delivered</span>`;
+};
+
+window.filterOrdersUI=function(){
+  const root=document.getElementById("ordersList");
+  if(!root)return;
+  const search=(document.getElementById("orderSearchInput")?.value||"").trim().toLowerCase();
+  const status=(document.getElementById("orderStatusFilter")?.value||"all").toLowerCase();
+  const cards=[...root.querySelectorAll(".order")];
+  let visible=0;
+  cards.forEach(card=>{
+    const text=(card.innerText||"").toLowerCase();
+    const matchesSearch=!search||text.includes(search);
+    const matchesStatus=status==="all"||text.includes(status);
+    const show=matchesSearch&&matchesStatus;
+    card.style.display=show?"":"none";
+    if(show)visible++;
+  });
+  const summary=document.getElementById("orderSummary");
+  updateOrderSummary();
+  if(summary){
+    summary.innerHTML=`<span>📦 ${visible} shown</span><span>🔎 ${search||"All orders"}</span><span>📋 ${status==="all"?"All statuses":status}</span>`;
+  }
+};
+
 window.refreshOrdersNow=async function(){
   if(!currentUser){
     alert("🔒 Please login first.");
@@ -953,6 +1021,7 @@ window.refreshOrdersNow=async function(){
   }
   await loadOrders();
   await updateOrderNotifications();
+  filterOrdersUI();
 };
 
 window.startOrderStatusListener=function(){
@@ -986,7 +1055,7 @@ window.startOrderStatusListener=function(){
       // Refresh the visible order list immediately when a status changes.
       if(document.getElementById("ordersSection") &&
          !document.getElementById("ordersSection").classList.contains("hidden")){
-        loadOrders();
+        loadOrders().then(()=>filterOrdersUI());
       }
       updateOrderNotifications();
     },(error)=>{
@@ -1252,7 +1321,7 @@ await loadFarmerOrders();await loadFarmerStats();await loadOrders();
    English + Hindi + Tamil
    ========================= */
 const translations={
-en:{
+en:{orderSearch:"🔎 Search order ID or product...",orderAll:"All statuses",orderPending:"Pending",orderConfirmed:"Confirmed",orderProcessing:"Processing",orderShipped:"Shipped",orderDelivered:"Delivered",orderCancelled:"Cancelled",
 tagline:"किसान मंडी • Direct Farmer Marketplace",home:"🏠 Home",products:"🌾 Products",cart:"🛒 Cart",orders:"📦 Orders",account:"👤 Account",
 welcome:"Welcome to KisanMandi",heroText:"Buy directly from farmers and sell your agricultural products.",browseProducts:"🌱 Browse Products",loginRegister:"👤 Login / Register",
 accountTitle:"👤 KisanMandi Account",accountSubtitle:"Login as a customer or farmer",email:"Email Address",password:"Password",loginButton:"🔐 Login",
@@ -1265,7 +1334,7 @@ yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders
 farmerDashboard:"👨‍🌾 Farmer Dashboard",addProduct:"🌱 Add Product",productName:"Product / Crop Name",pricePerKg:"Price per kg",availableStock:"Available Stock",location:"Location",
 vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders",totalOrders:"Total Orders",pendingOrders:"Pending",deliveredOrders:"Delivered",salesTotal:"My Sales",edit:"Edit",stock:"Stock",delete:"Delete",editProduct:"✏️ Edit Product",saveChanges:"💾 Save Changes",cancel:"Cancel"
 },
-hi:{
+hi:{orderSearch:"🔎 ऑर्डर ID या उत्पाद खोजें...",orderAll:"सभी स्थिति",orderPending:"लंबित",orderConfirmed:"पुष्टि",orderProcessing:"प्रोसेसिंग",orderShipped:"भेजा गया",orderDelivered:"डिलीवर",orderCancelled:"रद्द",
 tagline:"किसान मंडी • सीधे किसान से बाज़ार",home:"🏠 होम",products:"🌾 उत्पाद",cart:"🛒 कार्ट",orders:"📦 ऑर्डर",account:"👤 खाता",
 welcome:"किसान मंडी में आपका स्वागत है",heroText:"किसानों से सीधे खरीदें और अपने कृषि उत्पाद बेचें।",browseProducts:"🌱 उत्पाद देखें",loginRegister:"👤 लॉगिन / रजिस्टर",
 accountTitle:"👤 किसान मंडी खाता",accountSubtitle:"ग्राहक या किसान के रूप में लॉगिन करें",email:"ईमेल पता",password:"पासवर्ड",loginButton:"🔐 लॉगिन",
@@ -1278,7 +1347,7 @@ yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर �
 farmerDashboard:"👨‍🌾 किसान डैशबोर्ड",addProduct:"🌱 उत्पाद जोड़ें",productName:"उत्पाद / फसल का नाम",pricePerKg:"प्रति किलो कीमत",availableStock:"उपलब्ध स्टॉक",location:"स्थान",
 vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर",totalOrders:"कुल ऑर्डर",pendingOrders:"लंबित",deliveredOrders:"डिलीवर",salesTotal:"मेरी बिक्री",edit:"संपादित करें",stock:"स्टॉक",delete:"हटाएं",editProduct:"✏️ उत्पाद संपादित करें",saveChanges:"💾 बदलाव सहेजें",cancel:"रद्द करें"
 },
-ta:{
+ta:{orderSearch:"🔎 ஆர்டர் ID அல்லது பொருளை தேடுங்கள்...",orderAll:"அனைத்து நிலைகள்",orderPending:"நிலுவையில்",orderConfirmed:"உறுதி",orderProcessing:"செயலாக்கம்",orderShipped:"அனுப்பப்பட்டது",orderDelivered:"வழங்கப்பட்டது",orderCancelled:"ரத்து",
 tagline:"கிசான் மண்டி • விவசாயியிடமிருந்து நேரடி சந்தை",home:"🏠 முகப்பு",products:"🌾 பொருட்கள்",cart:"🛒 கார்ட்",orders:"📦 ஆர்டர்கள்",account:"👤 கணக்கு",
 welcome:"கிசான் மண்டிக்கு வரவேற்கிறோம்",heroText:"விவசாயிகளிடமிருந்து நேரடியாக வாங்கி உங்கள் விவசாயப் பொருட்களை விற்கவும்.",browseProducts:"🌱 பொருட்களைப் பார்க்க",loginRegister:"👤 உள்நுழைவு / பதிவு",
 accountTitle:"👤 கிசான் மண்டி கணக்கு",accountSubtitle:"வாடிக்கையாளர் அல்லது விவசாயியாக உள்நுழையவும்",email:"மின்னஞ்சல் முகவரி",password:"கடவுச்சொல்",loginButton:"🔐 உள்நுழைவு",
