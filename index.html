@@ -206,6 +206,13 @@ footer{text-align:center;padding:30px;color:#607060}
 .timeline .active{background:#dff2df;color:#176b2c}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
+
+/* ===== KisanMandi V9.1 upgrades ===== */
+.wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
+.wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
+.wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
+.saved-count{font-weight:bold;color:#176b2c}
+.profile-address{min-height:90px}
 </style>
 </head>
 <body>
@@ -300,6 +307,11 @@ footer{text-align:center;padding:30px;color:#607060}
     </div>
 </div>
 
+<div class="wishlist-toolbar">
+  <span class="saved-count" id="savedCount">❤️ 0 saved</span>
+  <button class="wishlist-btn" onclick="showSavedProducts()" data-i18n="viewSaved">❤️ View Saved Products</button>
+</div>
+
 <div id="productsList" class="product-grid"><p>Loading products...</p></div>
 </section>
 
@@ -344,7 +356,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </select>
 <button class="btn green" onclick="addProduct()" data-i18n="listProduct">➕ List Product</button>
 <div class="info" style="margin-top:10px">
-📸 V9.0 uses built-in product visuals. No Firebase Storage or billing is required.
+📸 V9.1 uses built-in product visuals. No Firebase Storage or billing is required.
 </div>
 </div>
 
@@ -369,7 +381,7 @@ footer{text-align:center;padding:30px;color:#607060}
     </select>
     <label><strong>📝 Delivery Notes (optional)</strong></label>
     <textarea id="checkoutNotes" rows="3" placeholder="Any delivery instruction"></textarea>
-    <div class="checkout-note">🔒 V9.0 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
+    <div class="checkout-note">🔒 V9.1 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
     <div class="action-row">
       <button class="btn green" onclick="confirmCheckout()">✅ Confirm Order</button>
       <button class="btn red" onclick="closeCheckout()">Cancel</button>
@@ -399,13 +411,14 @@ footer{text-align:center;padding:30px;color:#607060}
 <div id="profileMessage"></div>
 <input id="profileName" data-i18n-placeholder="fullName" placeholder="Full Name">
 <input id="profileMobile" data-i18n-placeholder="mobileNumber" placeholder="Mobile Number">
+<textarea id="profileAddress" class="profile-address" placeholder="Default Delivery Address"></textarea>
 <div class="action-row">
 <button class="btn green" onclick="saveProfile()" data-i18n="saveProfile">💾 Save Profile</button>
 <button class="btn red" onclick="closeProfileModal()" data-i18n="cancel">Cancel</button>
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V9.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V9.1</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -435,6 +448,7 @@ let currentUser=null;
 let currentProfile=null;
 let products=[];
 let cart=JSON.parse(localStorage.getItem("kisanMandiCart")||"[]");
+let wishlist=JSON.parse(localStorage.getItem("kisanMandiWishlist")||"[]");
 
 window.showSection=function(id){
 ["home","productsSection","cartSection","ordersSection","accountSection","farmerSection"].forEach(s=>{
@@ -519,6 +533,7 @@ window.openProfileModal=function(){
 if(!currentUser){showSection("accountSection");return;}
 document.getElementById("profileName").value=currentProfile?.name||currentUser.displayName||"";
 document.getElementById("profileMobile").value=currentProfile?.mobile||"";
+document.getElementById("profileAddress").value=currentProfile?.address||localStorage.getItem("kisanMandiDeliveryAddress")||"";
 document.getElementById("profileMessage").innerHTML="";
 document.getElementById("profileModal").classList.remove("hidden");
 applyLanguage();
@@ -528,10 +543,13 @@ window.saveProfile=async function(){
 if(!currentUser){alert("🔒 Please login first.");return;}
 const name=document.getElementById("profileName").value.trim();
 const mobile=document.getElementById("profileMobile").value.trim();
+const address=document.getElementById("profileAddress").value.trim();
 if(!name){showMessage("profileMessage","❌ Please enter your name.",true);return;}
 try{
 await updateProfile(currentUser,{displayName:name});
-await updateDoc(doc(db,"users",currentUser.uid),{name,mobile});
+await updateDoc(doc(db,"users",currentUser.uid),{name,mobile,address});
+localStorage.setItem("kisanMandiDeliveryAddress",address);
+if(mobile)localStorage.setItem("kisanMandiDeliveryMobile",mobile);
 await loadCurrentProfile();
 document.getElementById("welcomeUser").textContent="👋 Welcome, "+name;
 showMessage("profileMessage","✅ Profile updated successfully!");
@@ -653,6 +671,7 @@ window.renderProducts=function(){
         return timestampValue(b.createdAt)-timestampValue(a.createdAt);
     });
 
+    document.getElementById("savedCount").textContent=`❤️ ${wishlist.length} saved`;
     document.getElementById("productCount").textContent=currentLanguage==="hi"?`${filtered.length} उत्पाद मिले`:currentLanguage==="ta"?`${filtered.length} பொருட்கள் கிடைத்தன`:`${filtered.length} product${filtered.length===1?"":"s"} found`;
 
     if(filtered.length===0){
@@ -704,6 +723,10 @@ window.renderProducts=function(){
                     ₹${Number(product.price||0)} / kg
                 </div>
 
+                <button class="wishlist-btn ${wishlist.includes(product.id)?"saved":""}" onclick="toggleWishlist('${product.id}')">
+                    ${wishlist.includes(product.id)?"❤️ Saved":"🤍 Save"}
+                </button>
+
                 ${
                     stock>0
                     ?
@@ -720,6 +743,24 @@ window.renderProducts=function(){
             </div>
         </div>`;
     }).join("");
+};
+
+window.toggleWishlist=function(productId){
+if(!products.some(p=>p.id===productId))return;
+if(wishlist.includes(productId)) wishlist=wishlist.filter(id=>id!==productId);
+else wishlist.push(productId);
+localStorage.setItem("kisanMandiWishlist",JSON.stringify(wishlist));
+renderProducts();
+};
+
+window.showSavedProducts=function(){
+const saved=products.filter(p=>wishlist.includes(p.id));
+const list=document.getElementById("productsList");
+if(saved.length===0){list.innerHTML='<div class="info">❤️ You have no saved products yet. Tap 🤍 Save on any product.</div>';return;}
+list.innerHTML=saved.map(product=>{
+const stock=Number(product.stock||0);
+const emoji=productEmoji(String(product.category||"other"),product.name);
+return `<div class="product"><div class="product-img"><span class="product-emoji">${emoji}</span><span class="product-category-label">${categoryLabel(String(product.category||"other"))}</span></div><div class="product-body"><span class="badge">❤️ Saved</span><h2>${escapeHTML(product.name||"Product")}</h2><p class="product-meta">👨‍🌾 ${escapeHTML(product.farmerName||"Farmer")}</p><p class="product-meta">📍 ${escapeHTML(product.location||"India")}</p><p class="stock">📦 Available: ${stock}</p><div class="price">₹${Number(product.price||0)} / kg</div><button class="wishlist-btn saved" onclick="toggleWishlist('${product.id}')">❤️ Remove Saved</button>${stock>0?`<button class="btn green" onclick="addToCart('${product.id}')">🛒 Add to Cart</button>`:`<button class="btn red" disabled>❌ Out of Stock</button>`}</div></div>`;}).join("");
 };
 
 window.addToCart=function(productId){
@@ -1124,7 +1165,7 @@ forgotPassword:"🔑 Forgot Password?",createAccount:"📝 Create New Account",f
 customer:"Customer",farmer:"Farmer",createAccountButton:"📋 Create Account",backLogin:"🔐 Back to Login",loggedIn:"✅ You are logged in.",
 myOrders:"📦 My Orders",editProfile:"👤 Edit Profile",saveProfile:"💾 Save Profile",refreshDashboard:"🔄 Refresh Dashboard",activeProducts:"Active Products",mobileNumber:"Mobile Number",notifications:"Notifications",noNotifications:"No active notifications.",latestOrder:"Latest order",remove:"Remove",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
 all:"🌾 All",vegetables:"🥬 Vegetables",fruits:"🍎 Fruits",grains:"🌾 Grains",dairy:"🥛 Dairy",other:"🌱 Other",newest:"↕ Newest",
-priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",
+priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",saved:"❤️ Saved",viewSaved:"❤️ View Saved Products",save:"🤍 Save",removeSaved:"❤️ Remove Saved",defaultAddress:"Default Delivery Address",
 yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders",ordersSubtitle:"Customers can track orders and farmers can manage orders for their products.",
 farmerDashboard:"👨‍🌾 Farmer Dashboard",addProduct:"🌱 Add Product",productName:"Product / Crop Name",pricePerKg:"Price per kg",availableStock:"Available Stock",location:"Location",
 vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders",totalOrders:"Total Orders",pendingOrders:"Pending",deliveredOrders:"Delivered",salesTotal:"My Sales",edit:"Edit",stock:"Stock",delete:"Delete",editProduct:"✏️ Edit Product",saveChanges:"💾 Save Changes",cancel:"Cancel"
@@ -1137,7 +1178,7 @@ forgotPassword:"🔑 पासवर्ड भूल गए?",createAccount:"�
 customer:"ग्राहक",farmer:"किसान",createAccountButton:"📋 खाता बनाएं",backLogin:"🔐 लॉगिन पर वापस",loggedIn:"✅ आप लॉगिन हैं।",
 myOrders:"📦 मेरे ऑर्डर",editProfile:"👤 प्रोफ़ाइल संपादित करें",saveProfile:"💾 प्रोफ़ाइल सहेजें",refreshDashboard:"🔄 डैशबोर्ड रीफ्रेश करें",activeProducts:"सक्रिय उत्पाद",mobileNumber:"मोबाइल नंबर",notifications:"सूचनाएं",noNotifications:"कोई सक्रिय सूचना नहीं है।",latestOrder:"नवीनतम ऑर्डर",remove:"हटाएं",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
 all:"🌾 सभी",vegetables:"🥬 सब्ज़ियां",fruits:"🍎 फल",grains:"🌾 अनाज",dairy:"🥛 डेयरी",other:"🌱 अन्य",newest:"↕ नवीनतम",
-priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",
+priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",saved:"❤️ सहेजे गए",viewSaved:"❤️ सहेजे उत्पाद देखें",save:"🤍 सहेजें",removeSaved:"❤️ सहेजा हटाएं",defaultAddress:"डिफ़ॉल्ट डिलीवरी पता",
 yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर करें",ordersTitle:"📦 ऑर्डर",ordersSubtitle:"ग्राहक ऑर्डर ट्रैक कर सकते हैं और किसान अपने उत्पादों के ऑर्डर संभाल सकते हैं।",
 farmerDashboard:"👨‍🌾 किसान डैशबोर्ड",addProduct:"🌱 उत्पाद जोड़ें",productName:"उत्पाद / फसल का नाम",pricePerKg:"प्रति किलो कीमत",availableStock:"उपलब्ध स्टॉक",location:"स्थान",
 vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर",totalOrders:"कुल ऑर्डर",pendingOrders:"लंबित",deliveredOrders:"डिलीवर",salesTotal:"मेरी बिक्री",edit:"संपादित करें",stock:"स्टॉक",delete:"हटाएं",editProduct:"✏️ उत्पाद संपादित करें",saveChanges:"💾 बदलाव सहेजें",cancel:"रद्द करें"
@@ -1150,7 +1191,7 @@ forgotPassword:"🔑 கடவுச்சொல் மறந்துவிட�
 customer:"வாடிக்கையாளர்",farmer:"விவசாயி",createAccountButton:"📋 கணக்கு உருவாக்கவும்",backLogin:"🔐 உள்நுழைவுக்கு திரும்ப",loggedIn:"✅ நீங்கள் உள்நுழைந்துள்ளீர்கள்.",
 myOrders:"📦 என் ஆர்டர்கள்",editProfile:"👤 சுயவிவரத்தைத் திருத்து",saveProfile:"💾 சுயவிவரத்தைச் சேமி",refreshDashboard:"🔄 டாஷ்போர்டைப் புதுப்பி",activeProducts:"செயலில் உள்ள பொருட்கள்",mobileNumber:"மொபைல் எண்",notifications:"அறிவிப்புகள்",noNotifications:"செயலில் உள்ள அறிவிப்புகள் இல்லை.",latestOrder:"சமீபத்திய ஆர்டர்",remove:"நீக்கு",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
 all:"🌾 அனைத்தும்",vegetables:"🥬 காய்கறிகள்",fruits:"🍎 பழங்கள்",grains:"🌾 தானியங்கள்",dairy:"🥛 பால் பொருட்கள்",other:"🌱 மற்றவை",newest:"↕ புதியது",
-priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",
+priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",saved:"❤️ சேமிக்கப்பட்டவை",viewSaved:"❤️ சேமித்த பொருட்களைப் பார்க்க",save:"🤍 சேமி",removeSaved:"❤️ சேமித்ததை நீக்கு",defaultAddress:"இயல்புநிலை விநியோக முகவரி",
 yourCart:"🛒 உங்கள் கார்ட்",placeOrder:"📦 ஆர்டர் செய்யவும்",ordersTitle:"📦 ஆர்டர்கள்",ordersSubtitle:"வாடிக்கையாளர்கள் ஆர்டர்களை கண்காணிக்கலாம்; விவசாயிகள் தங்கள் பொருட்களின் ஆர்டர்களை நிர்வகிக்கலாம்.",
 farmerDashboard:"👨‍🌾 விவசாயி டாஷ்போர்டு",addProduct:"🌱 பொருள் சேர்க்கவும்",productName:"பொருள் / பயிர் பெயர்",pricePerKg:"ஒரு கிலோ விலை",availableStock:"கிடைக்கும் இருப்பு",location:"இடம்",
 vegetable:"🥬 காய்கறி",fruit:"🍎 பழம்",grain:"🌾 தானியம்",listProduct:"➕ பொருளைப் பட்டியலிடவும்",myProducts:"📋 என் பொருட்கள்",incomingOrders:"📥 வரும் ஆர்டர்கள்",totalOrders:"மொத்த ஆர்டர்கள்",pendingOrders:"நிலுவை",deliveredOrders:"வழங்கப்பட்டது",salesTotal:"என் விற்பனை",edit:"திருத்து",stock:"இருப்பு",delete:"நீக்கு",editProduct:"✏️ பொருளைத் திருத்து",saveChanges:"💾 மாற்றங்களைச் சேமி",cancel:"ரத்து"
@@ -1178,6 +1219,7 @@ if(currentProfile?.role==="farmer")loadFarmerDashboard();
 };
 
 function applyLanguage(){
+const addr=document.getElementById("profileAddress");if(addr)addr.placeholder=t("defaultAddress");
 document.documentElement.lang=currentLanguage==="hi"?"hi":currentLanguage==="ta"?"ta":"en";
 document.querySelectorAll("[data-i18n]").forEach(el=>{
 const key=el.getAttribute("data-i18n");
