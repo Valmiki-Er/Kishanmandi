@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V9.0 - किसान मंडी</title>
+<title>KisanMandi V9.3 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -207,7 +207,7 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
 
-/* ===== KisanMandi V9.2 upgrades ===== */
+/* ===== KisanMandi V9.3 upgrades ===== */
 .wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
 .wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
 .wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
@@ -223,6 +223,15 @@ footer{text-align:center;padding:30px;color:#607060}
 .review-item:last-child{border-bottom:0}
 .rating-summary{font-weight:bold;color:#176b2c;margin:6px 0}
 .notification-badge{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;border-radius:12px;background:#d62828;color:#fff;font-size:12px;font-weight:700;vertical-align:middle;margin-left:4px}
+
+
+.order-live{display:flex;align-items:center;gap:8px;margin:10px 0;padding:10px 12px;border-radius:12px;background:#eef8ee;color:#176b2c;font-weight:bold}
+.live-dot{width:10px;height:10px;border-radius:50%;background:#1b8f3a;display:inline-block;box-shadow:0 0 0 4px #d9f0dd}
+.timeline{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.timeline span{padding:7px 10px;border-radius:14px;background:#edf0ed;color:#667066;font-size:13px;font-weight:bold}
+.timeline span.active{background:#176b2c;color:white}
+.status-updated{font-size:13px;color:#657065;margin-top:5px}
+.refresh-orders{margin:8px 0 14px}
 
 </style>
 </head>
@@ -343,6 +352,8 @@ footer{text-align:center;padding:30px;color:#607060}
 <section id="ordersSection" class="card">
 <h2 data-i18n="ordersTitle">📦 Orders</h2>
 <p data-i18n="ordersSubtitle">Customers can track orders and farmers can manage orders for their products.</p>
+<div class="order-live"><span class="live-dot"></span><span data-i18n="orderLive">🟢 Live order tracking</span></div>
+<button class="btn outline refresh-orders" onclick="refreshOrdersNow()" data-i18n="refreshOrders">🔄 Refresh Orders</button>
 <div id="ordersList"><div class="info">🔒 Please login to view orders.</div></div>
 </section>
 
@@ -374,7 +385,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </select>
 <button class="btn green" onclick="addProduct()" data-i18n="listProduct">➕ List Product</button>
 <div class="info" style="margin-top:10px">
-📸 V9.2 uses built-in product visuals. No Firebase Storage or billing is required.
+📸 V9.3 uses built-in product visuals. No Firebase Storage or billing is required.
 </div>
 </div>
 
@@ -399,7 +410,7 @@ footer{text-align:center;padding:30px;color:#607060}
     </select>
     <label><strong>📝 Delivery Notes (optional)</strong></label>
     <textarea id="checkoutNotes" rows="3" placeholder="Any delivery instruction"></textarea>
-    <div class="checkout-note">🔒 V9.2 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
+    <div class="checkout-note">🔒 V9.3 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
     <div class="action-row">
       <button class="btn green" onclick="confirmCheckout()">✅ Confirm Order</button>
       <button class="btn red" onclick="closeCheckout()">Cancel</button>
@@ -436,12 +447,12 @@ footer{text-align:center;padding:30px;color:#607060}
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V9.2</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V9.3</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,deleteDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,deleteDoc,query,where,serverTimestamp,onSnapshot} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 /*
 IMPORTANT:
@@ -523,7 +534,7 @@ showMessage("accountMessage","✅ Password reset email sent.");
 }catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
 };
 
-window.logoutUser=async function(){await signOut(auth);};
+window.logoutUser=async function(){stopOrderStatusListener();await signOut(auth);};
 
 onAuthStateChanged(auth,async user=>{
 currentUser=user;
@@ -535,7 +546,9 @@ document.getElementById("loggedBox").classList.remove("hidden");
 document.getElementById("welcomeUser").textContent="👋 Welcome, "+(currentProfile?.name||user.displayName||"KisanMandi User");
 if(currentProfile?.role==="farmer")document.getElementById("farmerDashboardButton").classList.remove("hidden");
 else document.getElementById("farmerDashboardButton").classList.add("hidden");
+startOrderStatusListener();
 }else{
+stopOrderStatusListener();
 currentProfile=null;
 document.getElementById("loginBox").classList.remove("hidden");
 document.getElementById("registerBox").classList.add("hidden");
@@ -929,6 +942,69 @@ showMessage("checkoutMessage","❌ Order failed: "+friendlyError(error),true);
 window.checkout=window.confirmCheckout;
 
 
+
+let orderStatusUnsubscribe=null;
+let orderListenerPrimed=false;
+
+window.refreshOrdersNow=async function(){
+  if(!currentUser){
+    alert("🔒 Please login first.");
+    return;
+  }
+  await loadOrders();
+  await updateOrderNotifications();
+};
+
+window.startOrderStatusListener=function(){
+  if(orderStatusUnsubscribe)orderStatusUnsubscribe();
+  orderStatusUnsubscribe=null;
+  orderListenerPrimed=false;
+  if(!currentUser)return;
+
+  try{
+    const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+    orderStatusUnsubscribe=onSnapshot(q,(snap)=>{
+      const previous=JSON.parse(localStorage.getItem("kisanMandiOrderStatuses")||"{}");
+      const next={...previous};
+
+      snap.forEach(d=>{
+        const data=d.data();
+        const status=data.status||"pending";
+        const old=next[d.id];
+
+        // First snapshot establishes the baseline without creating noisy alerts.
+        if(orderListenerPrimed && old && old!==status){
+          const readable=statusLabel(status);
+          addKisanNotification("📦 Order status updated",`Order ${d.id} is now ${readable}.`);
+        }
+        next[d.id]=status;
+      });
+
+      localStorage.setItem("kisanMandiOrderStatuses",JSON.stringify(next));
+      orderListenerPrimed=true;
+
+      // Refresh the visible order list immediately when a status changes.
+      if(document.getElementById("ordersSection") &&
+         !document.getElementById("ordersSection").classList.contains("hidden")){
+        loadOrders();
+      }
+      updateOrderNotifications();
+    },(error)=>{
+      console.warn("Live order tracking unavailable:",error);
+    });
+  }catch(error){
+    console.warn("Could not start live order tracking:",error);
+  }
+};
+
+window.stopOrderStatusListener=function(){
+  if(orderStatusUnsubscribe){
+    orderStatusUnsubscribe();
+    orderStatusUnsubscribe=null;
+  }
+  orderListenerPrimed=false;
+};
+
 async function updateOrderNotifications(){
 const badge=document.getElementById("orderBadge");
 const box=document.getElementById("notificationBox");
@@ -986,7 +1062,8 @@ const address=order.deliveryAddress?`<p>📍 <strong>Delivery:</strong> ${safeTe
 const notes=order.deliveryNotes?`<p>📝 <strong>Notes:</strong> ${safeText(order.deliveryNotes)}</p>`:"";
 const payment=order.paymentMethod==="cod"?"💵 Cash on Delivery":"💳 Payment";
 const receipt=`<button class="btn outline receipt-btn" onclick="printOrderReceipt('${safeText(order.id)}')">🧾 Receipt</button>`;
-return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3><p>${payment}</p>${address}${notes}<div>${receipt}${wa}</div></div>`;
+const updated=order.updatedAt||order.createdAt;
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><div class="status-updated">${t("lastUpdated")}: ${formatTimestamp(updated)}</div><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3><p>${payment}</p>${address}${notes}<div>${receipt}${wa}</div></div>`;
 }
 
 window.printOrderReceipt=async function(orderId){
@@ -1181,7 +1258,7 @@ welcome:"Welcome to KisanMandi",heroText:"Buy directly from farmers and sell you
 accountTitle:"👤 KisanMandi Account",accountSubtitle:"Login as a customer or farmer",email:"Email Address",password:"Password",loginButton:"🔐 Login",
 forgotPassword:"🔑 Forgot Password?",createAccount:"📝 Create New Account",fullName:"Full Name",createPassword:"Create Password (minimum 6 characters)",
 customer:"Customer",farmer:"Farmer",createAccountButton:"📋 Create Account",backLogin:"🔐 Back to Login",loggedIn:"✅ You are logged in.",
-myOrders:"📦 My Orders",editProfile:"👤 Edit Profile",saveProfile:"💾 Save Profile",refreshDashboard:"🔄 Refresh Dashboard",activeProducts:"Active Products",mobileNumber:"Mobile Number",notifications:"Notifications",noNotifications:"No active notifications.",latestOrder:"Latest order",remove:"Remove",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
+myOrders:"📦 My Orders",editProfile:"👤 Edit Profile",saveProfile:"💾 Save Profile",refreshDashboard:"🔄 Refresh Dashboard",activeProducts:"Active Products",mobileNumber:"Mobile Number",orderLive:"🟢 Live order tracking",refreshOrders:"🔄 Refresh Orders",lastUpdated:"Last updated",statusChanged:"Order status changed",notifications:"Notifications",noNotifications:"No active notifications.",latestOrder:"Latest order",remove:"Remove",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
 all:"🌾 All",vegetables:"🥬 Vegetables",fruits:"🍎 Fruits",grains:"🌾 Grains",dairy:"🥛 Dairy",other:"🌱 Other",newest:"↕ Newest",
 priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",saved:"❤️ Saved",viewSaved:"❤️ View Saved Products",save:"🤍 Save",removeSaved:"❤️ Remove Saved",defaultAddress:"Default Delivery Address",
 yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders",ordersSubtitle:"Customers can track orders and farmers can manage orders for their products.",
@@ -1194,7 +1271,7 @@ welcome:"किसान मंडी में आपका स्वागत 
 accountTitle:"👤 किसान मंडी खाता",accountSubtitle:"ग्राहक या किसान के रूप में लॉगिन करें",email:"ईमेल पता",password:"पासवर्ड",loginButton:"🔐 लॉगिन",
 forgotPassword:"🔑 पासवर्ड भूल गए?",createAccount:"📝 नया खाता बनाएं",fullName:"पूरा नाम",createPassword:"पासवर्ड बनाएं (कम से कम 6 अक्षर)",
 customer:"ग्राहक",farmer:"किसान",createAccountButton:"📋 खाता बनाएं",backLogin:"🔐 लॉगिन पर वापस",loggedIn:"✅ आप लॉगिन हैं।",
-myOrders:"📦 मेरे ऑर्डर",editProfile:"👤 प्रोफ़ाइल संपादित करें",saveProfile:"💾 प्रोफ़ाइल सहेजें",refreshDashboard:"🔄 डैशबोर्ड रीफ्रेश करें",activeProducts:"सक्रिय उत्पाद",mobileNumber:"मोबाइल नंबर",notifications:"सूचनाएं",noNotifications:"कोई सक्रिय सूचना नहीं है।",latestOrder:"नवीनतम ऑर्डर",remove:"हटाएं",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
+myOrders:"📦 मेरे ऑर्डर",editProfile:"👤 प्रोफ़ाइल संपादित करें",saveProfile:"💾 प्रोफ़ाइल सहेजें",refreshDashboard:"🔄 डैशबोर्ड रीफ्रेश करें",activeProducts:"सक्रिय उत्पाद",mobileNumber:"मोबाइल नंबर",orderLive:"🟢 ऑर्डर लाइव ट्रैकिंग",refreshOrders:"🔄 ऑर्डर रीफ्रेश करें",lastUpdated:"अंतिम अपडेट",statusChanged:"ऑर्डर स्थिति बदली",notifications:"सूचनाएं",noNotifications:"कोई सक्रिय सूचना नहीं है।",latestOrder:"नवीनतम ऑर्डर",remove:"हटाएं",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
 all:"🌾 सभी",vegetables:"🥬 सब्ज़ियां",fruits:"🍎 फल",grains:"🌾 अनाज",dairy:"🥛 डेयरी",other:"🌱 अन्य",newest:"↕ नवीनतम",
 priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",saved:"❤️ सहेजे गए",viewSaved:"❤️ सहेजे उत्पाद देखें",save:"🤍 सहेजें",removeSaved:"❤️ सहेजा हटाएं",defaultAddress:"डिफ़ॉल्ट डिलीवरी पता",
 yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर करें",ordersTitle:"📦 ऑर्डर",ordersSubtitle:"ग्राहक ऑर्डर ट्रैक कर सकते हैं और किसान अपने उत्पादों के ऑर्डर संभाल सकते हैं।",
@@ -1207,7 +1284,7 @@ welcome:"கிசான் மண்டிக்கு வரவேற்கி
 accountTitle:"👤 கிசான் மண்டி கணக்கு",accountSubtitle:"வாடிக்கையாளர் அல்லது விவசாயியாக உள்நுழையவும்",email:"மின்னஞ்சல் முகவரி",password:"கடவுச்சொல்",loginButton:"🔐 உள்நுழைவு",
 forgotPassword:"🔑 கடவுச்சொல் மறந்துவிட்டதா?",createAccount:"📝 புதிய கணக்கு உருவாக்கவும்",fullName:"முழுப் பெயர்",createPassword:"கடவுச்சொல் உருவாக்கவும் (குறைந்தது 6 எழுத்துகள்)",
 customer:"வாடிக்கையாளர்",farmer:"விவசாயி",createAccountButton:"📋 கணக்கு உருவாக்கவும்",backLogin:"🔐 உள்நுழைவுக்கு திரும்ப",loggedIn:"✅ நீங்கள் உள்நுழைந்துள்ளீர்கள்.",
-myOrders:"📦 என் ஆர்டர்கள்",editProfile:"👤 சுயவிவரத்தைத் திருத்து",saveProfile:"💾 சுயவிவரத்தைச் சேமி",refreshDashboard:"🔄 டாஷ்போர்டைப் புதுப்பி",activeProducts:"செயலில் உள்ள பொருட்கள்",mobileNumber:"மொபைல் எண்",notifications:"அறிவிப்புகள்",noNotifications:"செயலில் உள்ள அறிவிப்புகள் இல்லை.",latestOrder:"சமீபத்திய ஆர்டர்",remove:"நீக்கு",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
+myOrders:"📦 என் ஆர்டர்கள்",editProfile:"👤 சுயவிவரத்தைத் திருத்து",saveProfile:"💾 சுயவிவரத்தைச் சேமி",refreshDashboard:"🔄 டாஷ்போர்டைப் புதுப்பி",activeProducts:"செயலில் உள்ள பொருட்கள்",mobileNumber:"மொபைல் எண்",orderLive:"🟢 நேரடி ஆர்டர் கண்காணிப்பு",refreshOrders:"🔄 ஆர்டர்களை புதுப்பிக்கவும்",lastUpdated:"கடைசியாக புதுப்பிக்கப்பட்டது",statusChanged:"ஆர்டர் நிலை மாற்றப்பட்டது",notifications:"அறிவிப்புகள்",noNotifications:"செயலில் உள்ள அறிவிப்புகள் இல்லை.",latestOrder:"சமீபத்திய ஆர்டர்",remove:"நீக்கு",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
 all:"🌾 அனைத்தும்",vegetables:"🥬 காய்கறிகள்",fruits:"🍎 பழங்கள்",grains:"🌾 தானியங்கள்",dairy:"🥛 பால் பொருட்கள்",other:"🌱 மற்றவை",newest:"↕ புதியது",
 priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",saved:"❤️ சேமிக்கப்பட்டவை",viewSaved:"❤️ சேமித்த பொருட்களைப் பார்க்க",save:"🤍 சேமி",removeSaved:"❤️ சேமித்ததை நீக்கு",defaultAddress:"இயல்புநிலை விநியோக முகவரி",
 yourCart:"🛒 உங்கள் கார்ட்",placeOrder:"📦 ஆர்டர் செய்யவும்",ordersTitle:"📦 ஆர்டர்கள்",ordersSubtitle:"வாடிக்கையாளர்கள் ஆர்டர்களை கண்காணிக்கலாம்; விவசாயிகள் தங்கள் பொருட்களின் ஆர்டர்களை நிர்வகிக்கலாம்.",
