@@ -33,11 +33,6 @@ button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;m
 .success{background:#e5f5e3;color:#176b2c;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
 .error{background:#ffe3e3;color:#a51d1d;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
 .info{background:#fff8d9;color:#675613;padding:14px;border-radius:12px;margin:10px 0}.center{text-align:center}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}
-.stat-card{background:#f4f8f1;border:1px solid #dfe9dc;border-radius:16px;padding:16px;text-align:center}
-.stat-card .stat-icon{font-size:28px}.stat-card strong{display:block;font-size:24px;color:#176b2c;margin-top:4px}
-.product-manage{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.product-manage button{flex:1;min-width:120px;border:0;border-radius:10px;padding:10px;font-weight:bold}
-@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
 .hero{text-align:center;padding:30px 10px}.hero .emoji{font-size:75px}
 footer{text-align:center;padding:30px;color:#607060}
 
@@ -187,6 +182,7 @@ footer{text-align:center;padding:30px;color:#607060}
 }
 
 @media(max-width:600px){.card{padding:18px}header h1{font-size:25px}.product-img{height:160px}}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat-card{background:#f4f8f1;border:1px solid #dce8d8;border-radius:16px;padding:16px;text-align:center}.stat-card span{display:block;color:#666;font-size:14px}.stat-card strong{display:block;color:#176b2c;font-size:25px}.product-manage{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.product-manage button{border:0;border-radius:9px;padding:10px;color:white;font-weight:bold}.product-manage .blue{background:#2777c9}.product-manage .orange{background:#ed9400}.product-manage .red{background:#d52b2b}@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.product-manage{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -298,13 +294,7 @@ footer{text-align:center;padding:30px;color:#607060}
 <section id="farmerSection" class="card hidden">
 <h2 data-i18n="farmerDashboard">👨‍🌾 Farmer Dashboard</h2>
 <div id="farmerMessage"></div>
-
-<div class="stats-grid" id="farmerStats">
-<div class="stat-card"><div class="stat-icon">📦</div><span data-i18n="totalOrders">Total Orders</span><strong id="statOrders">0</strong></div>
-<div class="stat-card"><div class="stat-icon">⏳</div><span data-i18n="pendingOrders">Pending</span><strong id="statPending">0</strong></div>
-<div class="stat-card"><div class="stat-icon">🚚</div><span data-i18n="deliveredOrders">Delivered</span><strong id="statDelivered">0</strong></div>
-<div class="stat-card"><div class="stat-icon">💰</div><span data-i18n="salesTotal">My Sales</span><strong id="statSales">₹0</strong></div>
-</div>
+<div class="stats-grid"><div class="stat-card"><div>📦</div><span data-i18n="totalOrders">Total Orders</span><strong id="statOrders">0</strong></div><div class="stat-card"><div>⏳</div><span data-i18n="pendingOrders">Pending</span><strong id="statPending">0</strong></div><div class="stat-card"><div>🚚</div><span data-i18n="deliveredOrders">Delivered</span><strong id="statDelivered">0</strong></div><div class="stat-card"><div>💰</div><span data-i18n="salesTotal">My Sales</span><strong id="statSales">₹0</strong></div></div>
 
 <div class="card">
 <h2 data-i18n="addProduct">🌱 Add Product</h2>
@@ -330,15 +320,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </section>
 </div>
 
-<div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
-<h2 data-i18n="editProduct">✏️ Edit Product</h2>
-<input id="editProductId" type="hidden">
-<input id="editProductName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
-<input id="editProductPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg">
-<input id="editProductStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock">
-<input id="editProductLocation" data-i18n-placeholder="location" placeholder="Location">
-<div class="row"><button class="btn green" onclick="saveProductEdit()" data-i18n="saveChanges">💾 Save Changes</button><button class="btn red" onclick="closeProductEdit()" data-i18n="cancel">Cancel</button></div>
-</div>
+<div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005"><h2 data-i18n="editProduct">✏️ Edit Product</h2><input id="editProductId" type="hidden"><input id="editProductName" data-i18n-placeholder="productName" placeholder="Product / Crop Name"><input id="editProductPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg"><input id="editProductStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock"><input id="editProductLocation" data-i18n-placeholder="location" placeholder="Location"><div class="row"><button class="btn green" onclick="saveProductEdit()" data-i18n="saveChanges">💾 Save Changes</button><button class="btn red" onclick="closeProductEdit()" data-i18n="cancel">Cancel</button></div></div>
 <footer><p>🌾 KisanMandi V8.8</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
@@ -732,9 +714,7 @@ return `<div class="order"><h3>📦 Order ${escapeHTML(order.id)}</h3><p>📅 ${
 
 async function loadFarmerDashboard(){
 if(!currentUser||currentProfile?.role!=="farmer"){document.getElementById("farmerSection").classList.add("hidden");return;}
-await loadMyProducts();
-await loadFarmerOrders();
-await loadFarmerStats();
+await loadMyProducts();await loadFarmerOrders();await loadFarmerStats();
 }
 
 window.addProduct=async function(){
@@ -760,82 +740,25 @@ const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
 const snap=await getDocs(q);const list=[];
 snap.forEach(item=>list.push({id:item.id,...item.data()}));
 if(list.length===0){box.innerHTML='<div class="info">🌱 You have not listed any products.</div>';return;}
-box.innerHTML=list.map(product=>`<div class="order">
-<h3>${escapeHTML(product.name)}</h3>
-<p>💰 ₹${Number(product.price||0)} / kg</p>
-<p>📦 Stock: <strong>${Number(product.stock||0)}</strong></p>
-<p>📍 ${escapeHTML(product.location||"")}</p>
-<div class="product-manage">
-<button class="blue" onclick="openProductEdit('${product.id}')">✏️ ${t("edit")}</button>
-<button class="orange" onclick="quickStock('${product.id}',1)">➕ ${t("stock")}</button>
-<button class="red" onclick="deleteMyProduct('${product.id}')">🗑️ ${t("delete")}</button>
-</div>
-</div>`).join("");
-}catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';}
+box.innerHTML=list.map(product=>`<div class="order"><h3>${escapeHTML(product.name)}</h3><p>💰 ₹${Number(product.price||0)} / kg</p><p>📦 Stock: <strong>${Number(product.stock||0)}</strong></p><p>📍 ${escapeHTML(product.location||"")}</p><div class="product-manage"><button class="blue" onclick="openProductEdit('${product.id}')">✏️ ${t("edit")}</button><button class="orange" onclick="quickStock('${product.id}')">➕ ${t("stock")}</button><button class="red" onclick="deleteMyProduct('${product.id}')">🗑️ ${t("delete")}</button></div></div>`).join("");
+}catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';console.error(error);}
 }
 window.openProductEdit=async function(productId){
 if(!currentUser||currentProfile?.role!=="farmer")return;
-try{
-const snap=await getDoc(doc(db,"products",productId));
-if(!snap.exists()){alert("❌ Product not found.");return;}
-const product=snap.data();
-if(product.ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
-document.getElementById("editProductId").value=productId;
-document.getElementById("editProductName").value=product.name||"";
-document.getElementById("editProductPrice").value=product.price||0;
-document.getElementById("editProductStock").value=product.stock||0;
-document.getElementById("editProductLocation").value=product.location||"";
-document.getElementById("editProductModal").classList.remove("hidden");
-}catch(error){alert("❌ Could not open product.");}
+try{const snap=await getDoc(doc(db,"products",productId));if(!snap.exists()){alert("❌ Product not found.");return;}const product=snap.data();if(product.ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}document.getElementById("editProductId").value=productId;document.getElementById("editProductName").value=product.name||"";document.getElementById("editProductPrice").value=product.price||0;document.getElementById("editProductStock").value=product.stock||0;document.getElementById("editProductLocation").value=product.location||"";document.getElementById("editProductModal").classList.remove("hidden");}catch(error){alert("❌ Could not open product.\n"+friendlyError(error));}
 };
 window.closeProductEdit=function(){document.getElementById("editProductModal").classList.add("hidden");};
 window.saveProductEdit=async function(){
-const id=document.getElementById("editProductId").value;
-const name=document.getElementById("editProductName").value.trim();
-const price=Number(document.getElementById("editProductPrice").value);
-const stock=Number(document.getElementById("editProductStock").value);
-const location=document.getElementById("editProductLocation").value.trim();
-if(!id||!name||price<=0||stock<0){alert("❌ Please enter valid product details.");return;}
-try{
-const ref=doc(db,"products",id);const snap=await getDoc(ref);
-if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
-await updateDoc(ref,{name,price,stock,location:location||"Maharajganj"});
-closeProductEdit();
-showMessage("farmerMessage","✅ Product updated successfully!");
-await loadProducts();await loadMyProducts();
-}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
+if(!currentUser||currentProfile?.role!=="farmer")return;const id=document.getElementById("editProductId").value;const name=document.getElementById("editProductName").value.trim();const price=Number(document.getElementById("editProductPrice").value);const stock=Number(document.getElementById("editProductStock").value);const location=document.getElementById("editProductLocation").value.trim();if(!id||!name||price<=0||stock<0){alert("❌ Please enter valid product details.");return;}try{const ref=doc(db,"products",id);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}await updateDoc(ref,{name,price,stock,location:location||"Maharajganj"});closeProductEdit();showMessage("farmerMessage","✅ Product updated successfully!");await loadProducts();await loadMyProducts();}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
-window.quickStock=async function(productId,delta){
-try{
-const ref=doc(db,"products",productId);const snap=await getDoc(ref);
-if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
-const oldStock=Number(snap.data().stock||0);const amount=Math.max(1,Number(prompt(currentLanguage==="hi"?"कितना स्टॉक जोड़ना है?":currentLanguage==="ta"?"எவ்வளவு இருப்பை சேர்க்க வேண்டும்?":"How much stock to add?", "10"))||0);
-if(amount<=0)return;
-await updateDoc(ref,{stock:oldStock+amount});
-await loadProducts();await loadMyProducts();
-}catch(error){alert("❌ Stock update failed:\n"+friendlyError(error));}
+window.quickStock=async function(productId){
+if(!currentUser||currentProfile?.role!=="farmer")return;const amount=Number(prompt(currentLanguage==="hi"?"कितना स्टॉक जोड़ना है?":currentLanguage==="ta"?"எவ்வளவு இருப்பை சேர்க்க வேண்டும்?":"How much stock to add?","10"));if(!Number.isFinite(amount)||amount<=0)return;try{const ref=doc(db,"products",productId);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}await updateDoc(ref,{stock:Number(snap.data().stock||0)+amount});await loadProducts();await loadMyProducts();}catch(error){alert("❌ Stock update failed:\n"+friendlyError(error));}
 };
 window.deleteMyProduct=async function(productId){
-if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;
-try{
-const ref=doc(db,"products",productId);const snap=await getDoc(ref);
-if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
-await deleteDoc(ref);
-showMessage("farmerMessage","✅ Product deleted.");
-await loadProducts();await loadMyProducts();
-}catch(error){alert("❌ Delete failed:\n"+friendlyError(error));}
+if(!currentUser||currentProfile?.role!=="farmer")return;if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;try{const ref=doc(db,"products",productId);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}await deleteDoc(ref);showMessage("farmerMessage","✅ Product deleted.");await loadProducts();await loadMyProducts();}catch(error){alert("❌ Delete failed:\n"+friendlyError(error));}
 };
-
 async function loadFarmerStats(){
-try{
-const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));
-const snap=await getDocs(q);let total=0,pending=0,delivered=0,sales=0;
-snap.forEach(d=>{const o=d.data();total++;const s=o.status||"pending";if(s==="pending")pending++;if(s==="delivered")delivered++;(o.items||[]).forEach(item=>{if(item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid)sales+=Number(item.price||0)*Number(item.quantity||0);});});
-document.getElementById("statOrders").textContent=total;
-document.getElementById("statPending").textContent=pending;
-document.getElementById("statDelivered").textContent=delivered;
-document.getElementById("statSales").textContent="₹"+sales;
-}catch(error){console.error("Farmer stats:",error);}
+try{const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));const snap=await getDocs(q);let total=0,pending=0,delivered=0,sales=0;snap.forEach(d=>{const o=d.data();total++;const st=o.status||"pending";if(st==="pending")pending++;if(st==="delivered")delivered++;(o.items||[]).forEach(item=>{if(item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid)sales+=Number(item.price||0)*Number(item.quantity||0);});});document.getElementById("statOrders").textContent=total;document.getElementById("statPending").textContent=pending;document.getElementById("statDelivered").textContent=delivered;document.getElementById("statSales").textContent="₹"+sales;}catch(error){console.error("Farmer stats:",error);}
 }
 
 async function loadFarmerOrders(){
@@ -876,7 +799,7 @@ const order=snap.data();const farmerIds=Array.isArray(order.farmerUids)?order.fa
 if(!farmerIds.includes(currentUser.uid)){alert("❌ You are not authorized for this order.");return;}
 await updateDoc(orderRef,{status:newStatus,updatedAt:serverTimestamp()});
 alert("✅ Order status updated to "+newStatus);
-await loadFarmerOrders();await loadFarmerStats();await loadOrders();
+await loadFarmerOrders();await loadOrders();
 }catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
 
