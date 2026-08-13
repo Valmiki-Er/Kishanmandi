@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V8.6 - किसान मंडी</title>
+<title>KisanMandi V8.7 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -11,6 +11,10 @@ header{background:#176b2c;color:white;padding:20px;text-align:center;position:st
 header h1{font-size:30px}
 header p{font-size:15px;margin-top:4px}
 nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.language-box{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:12px}
+.language-box label{font-weight:bold}
+.language-select{width:auto;min-width:150px;margin:0;padding:9px 12px;border:0;border-radius:20px;background:white;color:#176b2c;font-weight:bold;font-size:15px}
+@media(max-width:600px){.language-select{min-width:145px}}
 nav button{border:0;border-radius:20px;padding:9px 15px;background:white;color:#176b2c;font-weight:bold}
 .container{width:min(950px,94%);margin:25px auto}
 .card{background:white;border-radius:22px;padding:24px;margin-bottom:22px;box-shadow:0 8px 25px #00000012}
@@ -184,13 +188,21 @@ footer{text-align:center;padding:30px;color:#607060}
 
 <header>
 <h1>🌾 KisanMandi</h1>
-<p>किसान मंडी • Direct Farmer Marketplace</p>
+<p data-i18n="tagline">किसान मंडी • Direct Farmer Marketplace</p>
+<div class="language-box">
+<label for="languageSelect">🌐</label>
+<select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)" aria-label="Language">
+<option value="en">🇬🇧 English</option>
+<option value="hi">🇮🇳 हिंदी</option>
+<option value="ta">🇮🇳 தமிழ்</option>
+</select>
+</div>
 <nav>
-<button onclick="showSection('home')">🏠 Home</button>
-<button onclick="showSection('productsSection')">🌾 Products</button>
-<button onclick="showSection('cartSection')">🛒 Cart</button>
-<button onclick="showSection('ordersSection')">📦 Orders</button>
-<button onclick="showSection('accountSection')">👤 Account</button>
+<button onclick="showSection('home')" data-i18n="home">🏠 Home</button>
+<button onclick="showSection('productsSection')" data-i18n="products">🌾 Products</button>
+<button onclick="showSection('cartSection')" data-i18n="cart">🛒 Cart</button>
+<button onclick="showSection('ordersSection')" data-i18n="orders">📦 Orders</button>
+<button onclick="showSection('accountSection')" data-i18n="account">👤 Account</button>
 </nav>
 </header>
 
@@ -198,66 +210,66 @@ footer{text-align:center;padding:30px;color:#607060}
 
 <section id="home" class="card hero">
 <div class="emoji">🌾</div>
-<h2>Welcome to KisanMandi</h2>
-<p>Buy directly from farmers and sell your agricultural products.</p>
-<button class="btn green" onclick="showSection('productsSection')">🌱 Browse Products</button>
-<button class="btn outline" onclick="showSection('accountSection')">👤 Login / Register</button>
+<h2 data-i18n="welcome">Welcome to KisanMandi</h2>
+<p data-i18n="heroText">Buy directly from farmers and sell your agricultural products.</p>
+<button class="btn green" onclick="showSection('productsSection')" data-i18n="browseProducts">🌱 Browse Products</button>
+<button class="btn outline" onclick="showSection('accountSection')" data-i18n="loginRegister">👤 Login / Register</button>
 </section>
 
 <section id="accountSection" class="card">
-<h2>👤 KisanMandi Account</h2>
-<p>Login as a customer or farmer</p>
+<h2 data-i18n="accountTitle">👤 KisanMandi Account</h2>
+<p data-i18n="accountSubtitle">Login as a customer or farmer</p>
 <div id="accountMessage"></div>
 
 <div id="loginBox">
-<input id="loginEmail" type="email" placeholder="Email Address">
-<input id="loginPassword" type="password" placeholder="Password">
-<button class="btn green" onclick="loginUser()">🔐 Login</button>
-<button class="btn orange" onclick="forgotPassword()">🔑 Forgot Password?</button>
-<button class="btn outline" onclick="showRegister()">📝 Create New Account</button>
+<input id="loginEmail" type="email" data-i18n-placeholder="email" placeholder="Email Address">
+<input id="loginPassword" type="password" data-i18n-placeholder="password" placeholder="Password">
+<button class="btn green" onclick="loginUser()" data-i18n="loginButton">🔐 Login</button>
+<button class="btn orange" onclick="forgotPassword()" data-i18n="forgotPassword">🔑 Forgot Password?</button>
+<button class="btn outline" onclick="showRegister()" data-i18n="createAccount">📝 Create New Account</button>
 </div>
 
 <div id="registerBox" class="hidden">
-<input id="regName" placeholder="Full Name">
-<input id="regEmail" type="email" placeholder="Email Address">
-<input id="regPassword" type="password" placeholder="Create Password (minimum 6 characters)">
+<input id="regName" data-i18n-placeholder="fullName" placeholder="Full Name">
+<input id="regEmail" type="email" data-i18n-placeholder="email" placeholder="Email Address">
+<input id="regPassword" type="password" data-i18n-placeholder="createPassword" placeholder="Create Password (minimum 6 characters)">
 <input id="regMobile" placeholder="Mobile Number">
-<select id="regRole"><option value="customer">Customer</option><option value="farmer">Farmer</option></select>
-<button class="btn green" onclick="registerUser()">📋 Create Account</button>
-<button class="btn outline" onclick="showLogin()">🔐 Back to Login</button>
+<select id="regRole"><option value="customer" data-i18n="customer">Customer</option><option value="farmer" data-i18n="farmer">Farmer</option></select>
+<button class="btn green" onclick="registerUser()" data-i18n="createAccountButton">📋 Create Account</button>
+<button class="btn outline" onclick="showLogin()" data-i18n="backLogin">🔐 Back to Login</button>
 </div>
 
 <div id="loggedBox" class="hidden">
-<div class="success">✅ You are logged in.</div>
+<div class="success" data-i18n="loggedIn">✅ You are logged in.</div>
 <h3 id="welcomeUser"></h3>
-<button class="btn green" onclick="showSection('ordersSection')">📦 My Orders</button>
+<button class="btn green" onclick="showSection('ordersSection')" data-i18n="myOrders">📦 My Orders</button>
 <button id="farmerDashboardButton" class="btn blue hidden" onclick="showSection('farmerSection')">👨‍🌾 Farmer Dashboard</button>
-<button class="btn red" onclick="logoutUser()">🚪 Logout</button>
+<button class="btn red" onclick="logoutUser()" data-i18n="logout">🚪 Logout</button>
 </div>
 </section>
 
 <section id="productsSection" class="card">
-<h2>🌾 Available Products</h2>
-<input id="searchBox" placeholder="🔍 Search products, farmers, locations..." oninput="renderProducts()">
+<h2 data-i18n="availableProducts">🌾 Available Products</h2>
+<input id="searchBox" data-i18n-placeholder="search" placeholder="🔍 Search products, farmers, locations..." oninput="renderProducts()">
 
 <div class="market-toolbar">
     <div class="category-chips">
-        <button class="category-chip active" data-category="all" onclick="setCategory('all')">🌾 All</button>
-        <button class="category-chip" data-category="vegetable" onclick="setCategory('vegetable')">🥬 Vegetables</button>
-        <button class="category-chip" data-category="fruit" onclick="setCategory('fruit')">🍎 Fruits</button>
-        <button class="category-chip" data-category="grain" onclick="setCategory('grain')">🌾 Grains</button>
-        <button class="category-chip" data-category="dairy" onclick="setCategory('dairy')">🥛 Dairy</button>
-        <button class="category-chip" data-category="other" onclick="setCategory('other')">🌱 Other</button>
+        <button class="category-chip active" data-category="all" onclick="setCategory('all')" data-i18n="all">🌾 All</button>
+        <button class="category-chip" data-category="vegetable" onclick="setCategory('vegetable')" data-i18n="vegetables">🥬 Vegetables</button>
+        <button class="category-chip" data-category="fruit" onclick="setCategory('fruit')" data-i18n="fruits">🍎 Fruits</button>
+        <button class="category-chip" data-category="grain" onclick="setCategory('grain')" data-i18n="grains">🌾 Grains</button>
+        <button class="category-chip" data-category="dairy" onclick="setCategory('dairy')" data-i18n="dairy">🥛 Dairy</button>
+        <button class="category-chip" data-category="other" onclick="setCategory('other')" data-i18n="other">🌱 Other</button>
     </div>
 
     <div class="toolbar-row">
         <span id="productCount" class="result-count">Loading products...</span>
         <select id="sortProducts" onchange="renderProducts()" class="sort-select">
-            <option value="newest">↕ Newest</option>
-            <option value="priceLow">₹ Price: Low to High</option>
-            <option value="priceHigh">₹ Price: High to Low</option>
-            <option value="stockHigh">📦 Stock: High to Low</option>
-            <option value="name">🔤 Name A–Z</option>
+            <option value="newest" data-i18n="newest">↕ Newest</option>
+            <option value="priceLow" data-i18n="priceLow">₹ Price: Low to High</option>
+            <option value="priceHigh" data-i18n="priceHigh">₹ Price: High to Low</option>
+            <option value="stockHigh" data-i18n="stockHigh">📦 Stock: High to Low</option>
+            <option value="name" data-i18n="nameAZ">🔤 Name A–Z</option>
         </select>
     </div>
 </div>
@@ -266,47 +278,47 @@ footer{text-align:center;padding:30px;color:#607060}
 </section>
 
 <section id="cartSection" class="card">
-<h2>🛒 Your Cart</h2>
+<h2 data-i18n="yourCart">🛒 Your Cart</h2>
 <div id="cartList"><p>Your cart is empty.</p></div>
 <div id="cartTotal" class="total"></div>
 <button id="checkoutButton" class="btn green hidden" onclick="checkout()">📦 Place Order</button>
 </section>
 
 <section id="ordersSection" class="card">
-<h2>📦 Orders</h2>
-<p>Customers can track orders and farmers can manage orders for their products.</p>
+<h2 data-i18n="ordersTitle">📦 Orders</h2>
+<p data-i18n="ordersSubtitle">Customers can track orders and farmers can manage orders for their products.</p>
 <div id="ordersList"><div class="info">🔒 Please login to view orders.</div></div>
 </section>
 
 <section id="farmerSection" class="card hidden">
-<h2>👨‍🌾 Farmer Dashboard</h2>
+<h2 data-i18n="farmerDashboard">👨‍🌾 Farmer Dashboard</h2>
 <div id="farmerMessage"></div>
 
 <div class="card">
-<h2>🌱 Add Product</h2>
-<input id="productName" placeholder="Product / Crop Name">
-<input id="productPrice" type="number" placeholder="Price per kg">
-<input id="productStock" type="number" placeholder="Available Stock">
-<input id="productLocation" placeholder="Location">
+<h2 data-i18n="addProduct">🌱 Add Product</h2>
+<input id="productName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
+<input id="productPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg">
+<input id="productStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock">
+<input id="productLocation" data-i18n-placeholder="location" placeholder="Location">
 <select id="productCategory">
-<option value="vegetable">🥬 Vegetable</option>
-<option value="fruit">🍎 Fruit</option>
-<option value="grain">🌾 Grain</option>
-<option value="dairy">🥛 Dairy</option>
-<option value="other">🌱 Other</option>
+<option value="vegetable" data-i18n="vegetable">🥬 Vegetable</option>
+<option value="fruit" data-i18n="fruit">🍎 Fruit</option>
+<option value="grain" data-i18n="grain">🌾 Grain</option>
+<option value="dairy" data-i18n="dairy">🥛 Dairy</option>
+<option value="other" data-i18n="other">🌱 Other</option>
 </select>
-<button class="btn green" onclick="addProduct()">➕ List Product</button>
+<button class="btn green" onclick="addProduct()" data-i18n="listProduct">➕ List Product</button>
 <div class="info" style="margin-top:10px">
 📸 V8.6 uses built-in product visuals. No Firebase Storage or billing is required.
 </div>
 </div>
 
-<h2>📋 My Products</h2><div id="myProducts"></div>
-<h2>📥 Incoming Orders</h2><div id="farmerOrders"></div>
+<h2 data-i18n="myProducts">📋 My Products</h2><div id="myProducts"></div>
+<h2 data-i18n="incomingOrders">📥 Incoming Orders</h2><div id="farmerOrders"></div>
 </section>
 </div>
 
-<footer><p>🌾 KisanMandi V8.6</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V8.7</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -447,12 +459,12 @@ window.setCategory=function(category){
 
 function categoryLabel(category){
     return {
-        vegetable:"🥬 Vegetable",
-        fruit:"🍎 Fruit",
-        grain:"🌾 Grain",
-        dairy:"🥛 Dairy",
-        other:"🌱 Other"
-    }[category] || "🌾 Product";
+        vegetable:t("vegetable"),
+        fruit:t("fruit"),
+        grain:t("grain"),
+        dairy:t("dairy"),
+        other:t("other")
+    }[category] || (currentLanguage==="hi"?"🌾 उत्पाद":currentLanguage==="ta"?"🌾 பொருள்":"🌾 Product");
 }
 
 function productEmoji(category,name){
@@ -528,15 +540,12 @@ window.renderProducts=function(){
         return timestampValue(b.createdAt)-timestampValue(a.createdAt);
     });
 
-    document.getElementById("productCount").textContent=
-        `${filtered.length} product${filtered.length===1?"":"s"} found`;
+    document.getElementById("productCount").textContent=currentLanguage==="hi"?`${filtered.length} उत्पाद मिले`:currentLanguage==="ta"?`${filtered.length} பொருட்கள் கிடைத்தன`:`${filtered.length} product${filtered.length===1?"":"s"} found`;
 
     if(filtered.length===0){
 
         list.innerHTML=
-            `<div class="info empty-products">
-                🌱 No products match your search or category.
-             </div>`;
+            `<div class="info empty-products">${currentLanguage==="hi"?"🌱 आपकी खोज या श्रेणी से कोई उत्पाद नहीं मिला":currentLanguage==="ta"?"🌱 உங்கள் தேடல் அல்லது வகைக்கு பொருட்கள் இல்லை":"🌱 No products match your search or category."}</div>`;
 
         return;
     }
@@ -774,11 +783,98 @@ await loadFarmerOrders();await loadOrders();
 }catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
 
+
+/* =========================
+   KisanMandi V8.7 LANGUAGE
+   English + Hindi + Tamil
+   ========================= */
+const translations={
+en:{
+tagline:"किसान मंडी • Direct Farmer Marketplace",home:"🏠 Home",products:"🌾 Products",cart:"🛒 Cart",orders:"📦 Orders",account:"👤 Account",
+welcome:"Welcome to KisanMandi",heroText:"Buy directly from farmers and sell your agricultural products.",browseProducts:"🌱 Browse Products",loginRegister:"👤 Login / Register",
+accountTitle:"👤 KisanMandi Account",accountSubtitle:"Login as a customer or farmer",email:"Email Address",password:"Password",loginButton:"🔐 Login",
+forgotPassword:"🔑 Forgot Password?",createAccount:"📝 Create New Account",fullName:"Full Name",createPassword:"Create Password (minimum 6 characters)",
+customer:"Customer",farmer:"Farmer",createAccountButton:"📋 Create Account",backLogin:"🔐 Back to Login",loggedIn:"✅ You are logged in.",
+myOrders:"📦 My Orders",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
+all:"🌾 All",vegetables:"🥬 Vegetables",fruits:"🍎 Fruits",grains:"🌾 Grains",dairy:"🥛 Dairy",other:"🌱 Other",newest:"↕ Newest",
+priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",
+yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders",ordersSubtitle:"Customers can track orders and farmers can manage orders for their products.",
+farmerDashboard:"👨‍🌾 Farmer Dashboard",addProduct:"🌱 Add Product",productName:"Product / Crop Name",pricePerKg:"Price per kg",availableStock:"Available Stock",location:"Location",
+vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders"
+},
+hi:{
+tagline:"किसान मंडी • सीधे किसान से बाज़ार",home:"🏠 होम",products:"🌾 उत्पाद",cart:"🛒 कार्ट",orders:"📦 ऑर्डर",account:"👤 खाता",
+welcome:"किसान मंडी में आपका स्वागत है",heroText:"किसानों से सीधे खरीदें और अपने कृषि उत्पाद बेचें।",browseProducts:"🌱 उत्पाद देखें",loginRegister:"👤 लॉगिन / रजिस्टर",
+accountTitle:"👤 किसान मंडी खाता",accountSubtitle:"ग्राहक या किसान के रूप में लॉगिन करें",email:"ईमेल पता",password:"पासवर्ड",loginButton:"🔐 लॉगिन",
+forgotPassword:"🔑 पासवर्ड भूल गए?",createAccount:"📝 नया खाता बनाएं",fullName:"पूरा नाम",createPassword:"पासवर्ड बनाएं (कम से कम 6 अक्षर)",
+customer:"ग्राहक",farmer:"किसान",createAccountButton:"📋 खाता बनाएं",backLogin:"🔐 लॉगिन पर वापस",loggedIn:"✅ आप लॉगिन हैं।",
+myOrders:"📦 मेरे ऑर्डर",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
+all:"🌾 सभी",vegetables:"🥬 सब्ज़ियां",fruits:"🍎 फल",grains:"🌾 अनाज",dairy:"🥛 डेयरी",other:"🌱 अन्य",newest:"↕ नवीनतम",
+priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",
+yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर करें",ordersTitle:"📦 ऑर्डर",ordersSubtitle:"ग्राहक ऑर्डर ट्रैक कर सकते हैं और किसान अपने उत्पादों के ऑर्डर संभाल सकते हैं।",
+farmerDashboard:"👨‍🌾 किसान डैशबोर्ड",addProduct:"🌱 उत्पाद जोड़ें",productName:"उत्पाद / फसल का नाम",pricePerKg:"प्रति किलो कीमत",availableStock:"उपलब्ध स्टॉक",location:"स्थान",
+vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर"
+},
+ta:{
+tagline:"கிசான் மண்டி • விவசாயியிடமிருந்து நேரடி சந்தை",home:"🏠 முகப்பு",products:"🌾 பொருட்கள்",cart:"🛒 கார்ட்",orders:"📦 ஆர்டர்கள்",account:"👤 கணக்கு",
+welcome:"கிசான் மண்டிக்கு வரவேற்கிறோம்",heroText:"விவசாயிகளிடமிருந்து நேரடியாக வாங்கி உங்கள் விவசாயப் பொருட்களை விற்கவும்.",browseProducts:"🌱 பொருட்களைப் பார்க்க",loginRegister:"👤 உள்நுழைவு / பதிவு",
+accountTitle:"👤 கிசான் மண்டி கணக்கு",accountSubtitle:"வாடிக்கையாளர் அல்லது விவசாயியாக உள்நுழையவும்",email:"மின்னஞ்சல் முகவரி",password:"கடவுச்சொல்",loginButton:"🔐 உள்நுழைவு",
+forgotPassword:"🔑 கடவுச்சொல் மறந்துவிட்டதா?",createAccount:"📝 புதிய கணக்கு உருவாக்கவும்",fullName:"முழுப் பெயர்",createPassword:"கடவுச்சொல் உருவாக்கவும் (குறைந்தது 6 எழுத்துகள்)",
+customer:"வாடிக்கையாளர்",farmer:"விவசாயி",createAccountButton:"📋 கணக்கு உருவாக்கவும்",backLogin:"🔐 உள்நுழைவுக்கு திரும்ப",loggedIn:"✅ நீங்கள் உள்நுழைந்துள்ளீர்கள்.",
+myOrders:"📦 என் ஆர்டர்கள்",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
+all:"🌾 அனைத்தும்",vegetables:"🥬 காய்கறிகள்",fruits:"🍎 பழங்கள்",grains:"🌾 தானியங்கள்",dairy:"🥛 பால் பொருட்கள்",other:"🌱 மற்றவை",newest:"↕ புதியது",
+priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",
+yourCart:"🛒 உங்கள் கார்ட்",placeOrder:"📦 ஆர்டர் செய்யவும்",ordersTitle:"📦 ஆர்டர்கள்",ordersSubtitle:"வாடிக்கையாளர்கள் ஆர்டர்களை கண்காணிக்கலாம்; விவசாயிகள் தங்கள் பொருட்களின் ஆர்டர்களை நிர்வகிக்கலாம்.",
+farmerDashboard:"👨‍🌾 விவசாயி டாஷ்போர்டு",addProduct:"🌱 பொருள் சேர்க்கவும்",productName:"பொருள் / பயிர் பெயர்",pricePerKg:"ஒரு கிலோ விலை",availableStock:"கிடைக்கும் இருப்பு",location:"இடம்",
+vegetable:"🥬 காய்கறி",fruit:"🍎 பழம்",grain:"🌾 தானியம்",listProduct:"➕ பொருளைப் பட்டியலிடவும்",myProducts:"📋 என் பொருட்கள்",incomingOrders:"📥 வரும் ஆர்டர்கள்"
+}
+};
+
+let currentLanguage=localStorage.getItem("kisanMandiLanguage")||"en";
+
+function t(key){
+return (translations[currentLanguage]&&translations[currentLanguage][key])||translations.en[key]||key;
+}
+
+window.changeLanguage=function(lang){
+if(!translations[lang])lang="en";
+currentLanguage=lang;
+localStorage.setItem("kisanMandiLanguage",lang);
+applyLanguage();
+renderProducts();
+renderCart();
+if(currentUser){
+loadOrders();
+if(currentProfile?.role==="farmer")loadFarmerDashboard();
+}
+};
+
+function applyLanguage(){
+document.documentElement.lang=currentLanguage==="hi"?"hi":currentLanguage==="ta"?"ta":"en";
+document.querySelectorAll("[data-i18n]").forEach(el=>{
+const key=el.getAttribute("data-i18n");
+if(t(key))el.textContent=t(key);
+});
+document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+const key=el.getAttribute("data-i18n-placeholder");
+if(t(key))el.placeholder=t(key);
+});
+const selector=document.getElementById("languageSelect");
+if(selector)selector.value=currentLanguage;
+}
+
 function showMessage(id,message,error=false){
 const element=document.getElementById(id);if(!element)return;
 element.innerHTML=`<div class="${error?"error":"success"}">${message}</div>`;
 }
-function statusLabel(status){return {pending:"⏳ Pending",confirmed:"✅ Confirmed",delivered:"🚚 Delivered",rejected:"❌ Rejected"}[status]||status;}
+function statusLabel(status){
+const labels={
+en:{pending:"⏳ Pending",confirmed:"✅ Confirmed",delivered:"🚚 Delivered",rejected:"❌ Rejected"},
+hi:{pending:"⏳ लंबित",confirmed:"✅ पुष्टि की गई",delivered:"🚚 डिलीवर हो गया",rejected:"❌ अस्वीकार"},
+ta:{pending:"⏳ நிலுவையில்",confirmed:"✅ உறுதி செய்யப்பட்டது",delivered:"🚚 வழங்கப்பட்டது",rejected:"❌ நிராகரிக்கப்பட்டது"}
+};
+return (labels[currentLanguage]||labels.en)[status]||status;
+}
 function timestampValue(timestamp){return timestamp&&typeof timestamp.toMillis==="function"?timestamp.toMillis():0;}
 function formatTimestamp(timestamp){try{return timestamp?timestamp.toDate().toLocaleString():"Just now";}catch(e){return "Recent";}}
 function escapeHTML(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
@@ -796,6 +892,7 @@ const messages={
 return messages[code]||error?.message||"Something went wrong.";
 }
 
+applyLanguage();
 loadProducts();
 renderCart();
 </script>
