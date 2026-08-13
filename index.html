@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V8.8 - किसान मंडी</title>
+<title>KisanMandi V8.9 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -33,6 +33,11 @@ button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;m
 .success{background:#e5f5e3;color:#176b2c;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
 .error{background:#ffe3e3;color:#a51d1d;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
 .info{background:#fff8d9;color:#675613;padding:14px;border-radius:12px;margin:10px 0}.center{text-align:center}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}
+.stat-card{background:#f4f8f1;border:1px solid #dfe9dc;border-radius:16px;padding:16px;text-align:center}
+.stat-card .stat-icon{font-size:28px}.stat-card strong{display:block;font-size:24px;color:#176b2c;margin-top:4px}
+.product-manage{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.product-manage button{flex:1;min-width:120px;border:0;border-radius:10px;padding:10px;font-weight:bold}
+@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
 .hero{text-align:center;padding:30px 10px}.hero .emoji{font-size:75px}
 footer{text-align:center;padding:30px;color:#607060}
 
@@ -182,7 +187,19 @@ footer{text-align:center;padding:30px;color:#607060}
 }
 
 @media(max-width:600px){.card{padding:18px}header h1{font-size:25px}.product-img{height:160px}}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat-card{background:#f4f8f1;border:1px solid #dce8d8;border-radius:16px;padding:16px;text-align:center}.stat-card span{display:block;color:#666;font-size:14px}.stat-card strong{display:block;color:#176b2c;font-size:25px}.product-manage{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.product-manage button{border:0;border-radius:9px;padding:10px;color:white;font-weight:bold}.product-manage .blue{background:#2777c9}.product-manage .orange{background:#ed9400}.product-manage .red{background:#d52b2b}@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}.product-manage{grid-template-columns:1fr}}
+
+/* ===== KisanMandi V8.9 upgrades ===== */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.profile-card{background:#f7fbf5;border:1px solid #dfe9dc;border-radius:16px;padding:16px;margin:12px 0}
+.notification-box{border:1px solid #dfe9dc;border-radius:16px;padding:14px;background:#f7fbf5;margin:12px 0}
+.badge-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:12px;background:#d52b2b;color:#fff;font-size:12px;margin-left:4px}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.action-row .btn{width:auto;flex:1;min-width:145px;margin-top:0}
+.timeline{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.timeline span{padding:5px 9px;border-radius:14px;background:#edf2ec;color:#566256;font-size:12px;font-weight:bold}
+.timeline .active{background:#dff2df;color:#176b2c}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
+
 </style>
 </head>
 <body>
@@ -202,7 +219,7 @@ footer{text-align:center;padding:30px;color:#607060}
 <button onclick="showSection('home')" data-i18n="home">🏠 Home</button>
 <button onclick="showSection('productsSection')" data-i18n="products">🌾 Products</button>
 <button onclick="showSection('cartSection')" data-i18n="cart">🛒 Cart</button>
-<button onclick="showSection('ordersSection')" data-i18n="orders">📦 Orders</button>
+<button onclick="showSection('ordersSection')" data-i18n="orders">📦 Orders <span id="orderBadge" class="badge-count hidden">0</span></button>
 <button onclick="showSection('accountSection')" data-i18n="account">👤 Account</button>
 </nav>
 </header>
@@ -244,8 +261,10 @@ footer{text-align:center;padding:30px;color:#607060}
 <div class="success" data-i18n="loggedIn">✅ You are logged in.</div>
 <h3 id="welcomeUser"></h3>
 <button class="btn green" onclick="showSection('ordersSection')" data-i18n="myOrders">📦 My Orders</button>
+<button class="btn outline" onclick="openProfileModal()" data-i18n="editProfile">👤 Edit Profile</button>
 <button id="farmerDashboardButton" class="btn blue hidden" onclick="showSection('farmerSection')">👨‍🌾 Farmer Dashboard</button>
 <button class="btn red" onclick="logoutUser()" data-i18n="logout">🚪 Logout</button>
+<div id="notificationBox" class="notification-box"></div>
 </div>
 </section>
 
@@ -294,7 +313,15 @@ footer{text-align:center;padding:30px;color:#607060}
 <section id="farmerSection" class="card hidden">
 <h2 data-i18n="farmerDashboard">👨‍🌾 Farmer Dashboard</h2>
 <div id="farmerMessage"></div>
-<div class="stats-grid"><div class="stat-card"><div>📦</div><span data-i18n="totalOrders">Total Orders</span><strong id="statOrders">0</strong></div><div class="stat-card"><div>⏳</div><span data-i18n="pendingOrders">Pending</span><strong id="statPending">0</strong></div><div class="stat-card"><div>🚚</div><span data-i18n="deliveredOrders">Delivered</span><strong id="statDelivered">0</strong></div><div class="stat-card"><div>💰</div><span data-i18n="salesTotal">My Sales</span><strong id="statSales">₹0</strong></div></div>
+
+<div class="stats-grid" id="farmerStats">
+<div class="stat-card"><div class="stat-icon">📦</div><span data-i18n="totalOrders">Total Orders</span><strong id="statOrders">0</strong></div>
+<div class="stat-card"><div class="stat-icon">⏳</div><span data-i18n="pendingOrders">Pending</span><strong id="statPending">0</strong></div>
+<div class="stat-card"><div class="stat-icon">🚚</div><span data-i18n="deliveredOrders">Delivered</span><strong id="statDelivered">0</strong></div>
+<div class="stat-card"><div class="stat-icon">💰</div><span data-i18n="salesTotal">My Sales</span><strong id="statSales">₹0</strong></div>
+<div class="stat-card"><div class="stat-icon">🌾</div><span data-i18n="activeProducts">Active Products</span><strong id="statProducts">0</strong></div>
+</div>
+<button class="btn outline" onclick="loadFarmerDashboard()" data-i18n="refreshDashboard">🔄 Refresh Dashboard</button>
 
 <div class="card">
 <h2 data-i18n="addProduct">🌱 Add Product</h2>
@@ -320,8 +347,35 @@ footer{text-align:center;padding:30px;color:#607060}
 </section>
 </div>
 
-<div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005"><h2 data-i18n="editProduct">✏️ Edit Product</h2><input id="editProductId" type="hidden"><input id="editProductName" data-i18n-placeholder="productName" placeholder="Product / Crop Name"><input id="editProductPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg"><input id="editProductStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock"><input id="editProductLocation" data-i18n-placeholder="location" placeholder="Location"><div class="row"><button class="btn green" onclick="saveProductEdit()" data-i18n="saveChanges">💾 Save Changes</button><button class="btn red" onclick="closeProductEdit()" data-i18n="cancel">Cancel</button></div></div>
-<footer><p>🌾 KisanMandi V8.8</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
+<h2 data-i18n="editProduct">✏️ Edit Product</h2>
+<input id="editProductId" type="hidden">
+<input id="editProductName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
+<input id="editProductPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg">
+<input id="editProductStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock">
+<input id="editProductLocation" data-i18n-placeholder="location" placeholder="Location">
+<select id="editProductCategory">
+<option value="vegetable" data-i18n="vegetable">🥬 Vegetable</option>
+<option value="fruit" data-i18n="fruit">🍎 Fruit</option>
+<option value="grain" data-i18n="grain">🌾 Grain</option>
+<option value="dairy" data-i18n="dairy">🥛 Dairy</option>
+<option value="other" data-i18n="other">🌱 Other</option>
+</select>
+<div class="row"><button class="btn green" onclick="saveProductEdit()" data-i18n="saveChanges">💾 Save Changes</button><button class="btn red" onclick="closeProductEdit()" data-i18n="cancel">Cancel</button></div>
+</div>
+
+<div id="profileModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:110;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
+<h2 data-i18n="editProfile">👤 Edit Profile</h2>
+<div id="profileMessage"></div>
+<input id="profileName" data-i18n-placeholder="fullName" placeholder="Full Name">
+<input id="profileMobile" data-i18n-placeholder="mobileNumber" placeholder="Mobile Number">
+<div class="action-row">
+<button class="btn green" onclick="saveProfile()" data-i18n="saveProfile">💾 Save Profile</button>
+<button class="btn red" onclick="closeProfileModal()" data-i18n="cancel">Cancel</button>
+</div>
+</div>
+
+<footer><p>🌾 KisanMandi V8.9</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -427,7 +481,33 @@ document.getElementById("loggedBox").classList.add("hidden");
 document.getElementById("farmerDashboardButton").classList.add("hidden");
 }
 loadOrders();
+updateOrderNotifications();
 });
+
+
+window.openProfileModal=function(){
+if(!currentUser){showSection("accountSection");return;}
+document.getElementById("profileName").value=currentProfile?.name||currentUser.displayName||"";
+document.getElementById("profileMobile").value=currentProfile?.mobile||"";
+document.getElementById("profileMessage").innerHTML="";
+document.getElementById("profileModal").classList.remove("hidden");
+applyLanguage();
+};
+window.closeProfileModal=function(){document.getElementById("profileModal").classList.add("hidden");};
+window.saveProfile=async function(){
+if(!currentUser){alert("🔒 Please login first.");return;}
+const name=document.getElementById("profileName").value.trim();
+const mobile=document.getElementById("profileMobile").value.trim();
+if(!name){showMessage("profileMessage","❌ Please enter your name.",true);return;}
+try{
+await updateProfile(currentUser,{displayName:name});
+await updateDoc(doc(db,"users",currentUser.uid),{name,mobile});
+await loadCurrentProfile();
+document.getElementById("welcomeUser").textContent="👋 Welcome, "+name;
+showMessage("profileMessage","✅ Profile updated successfully!");
+setTimeout(closeProfileModal,700);
+}catch(error){showMessage("profileMessage","❌ "+friendlyError(error),true);}
+};
 
 async function loadCurrentProfile(){
 if(!currentUser)return;
@@ -628,6 +708,11 @@ saveCart();renderCart();alert("🛒 Product added to cart.");
 };
 
 function saveCart(){localStorage.setItem("kisanMandiCart",JSON.stringify(cart));}
+window.removeFromCart=function(index){
+if(!cart[index])return;
+cart.splice(index,1);
+saveCart();renderCart();
+};
 
 window.changeQuantity=function(index,change){
 if(!cart[index])return;
@@ -648,11 +733,12 @@ let total=0;
 list.innerHTML=cart.map((item,index)=>{
 const itemTotal=item.price*item.quantity;total+=itemTotal;
 return `<div class="order">
-<h3>${escapeHTML(item.name)}</h3>
-<p>👨‍🌾 ${escapeHTML(item.farmerName)}</p>
-<p>₹${item.price} / kg</p>
+<h3>${safeText(item.name)}</h3>
+<p>👨‍🌾 ${safeText(item.farmerName)}</p>
+<p>₹${Number(item.price||0)} / kg</p>
 <div class="qty"><button onclick="changeQuantity(${index},-1)">−</button><strong>${item.quantity}</strong><button onclick="changeQuantity(${index},1)">+</button></div>
 <strong>Item total: ₹${itemTotal}</strong>
+<button class="btn red" onclick="removeFromCart(${index})">🗑️ ${t("remove")}</button>
 </div>`;
 }).join("");
 totalBox.innerHTML=`💰 Cart Total: ₹${total}`;
@@ -666,14 +752,24 @@ if(currentProfile?.role==="farmer"){alert("👨‍🌾 Farmer accounts cannot pl
 try{
 let total=0;
 cart.forEach(item=>total+=item.price*item.quantity);
-const orderItems=cart.map(item=>({productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,farmerId:item.farmerId,farmerName:item.farmerName}));
-const farmerIds=[...new Set(cart.map(item=>item.farmerId).filter(Boolean))];
+const verifiedItems=[];
+for(const item of cart){
+const snap=await getDoc(doc(db,"products",item.productId));
+if(!snap.exists()){throw new Error("A product in your cart is no longer available.");}
+const data=snap.data();
+const liveStock=Number(data.stock||0);
+if(liveStock<item.quantity){throw new Error(`${data.name||item.name} has only ${liveStock} kg available.`);}
+verifiedItems.push({...item,price:Number(data.price||item.price),name:data.name||item.name,farmerId:data.ownerUid||data.farmerUid||item.farmerId,farmerName:data.farmerName||item.farmerName,farmerMobile:data.farmerMobile||""});
+}
+const orderItems=verifiedItems.map(item=>({productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,farmerId:item.farmerId,farmerName:item.farmerName,farmerMobile:item.farmerMobile}));
+const farmerIds=[...new Set(verifiedItems.map(item=>item.farmerId).filter(Boolean))];
+const farmerMobiles=[...new Set(verifiedItems.map(item=>item.farmerMobile).filter(Boolean))];
 const orderRef=await addDoc(collection(db,"orders"),{
 customerUid:currentUser.uid,
 customerName:currentProfile?.name||currentUser.displayName||"",
 customerEmail:currentUser.email||"",
 customerMobile:currentProfile?.mobile||"",
-items:orderItems,farmerUids:farmerIds,total,status:"pending",
+items:orderItems,farmerUids:farmerIds,farmerMobiles,total,status:"pending",
 createdAt:serverTimestamp(),updatedAt:serverTimestamp()
 });
 for(const item of cart){
@@ -692,6 +788,34 @@ showSection("ordersSection");
 }catch(error){alert("❌ Order failed:\n"+friendlyError(error));}
 };
 
+
+async function updateOrderNotifications(){
+const badge=document.getElementById("orderBadge");
+const box=document.getElementById("notificationBox");
+if(!currentUser){
+if(badge)badge.classList.add("hidden");
+if(box)box.innerHTML="";
+return;
+}
+try{
+const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+const snap=await getDocs(q);
+const orders=[];snap.forEach(d=>orders.push({id:d.id,...d.data()}));
+const active=orders.filter(o=>["pending","confirmed"].includes(o.status||"pending")).length;
+if(badge){
+badge.textContent=active;
+badge.classList.toggle("hidden",active===0);
+}
+if(box){
+if(orders.length===0){box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("noNotifications")}</p>`;}
+else{
+const latest=orders.sort((a,b)=>timestampValue(b.updatedAt||b.createdAt)-timestampValue(a.updatedAt||a.createdAt))[0];
+box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("latestOrder")}: <b>${safeText(latest.id)}</b> — <span class="status ${latest.status||"pending"}">${statusLabel(latest.status||"pending")}</span></p>`;
+}
+}
+}catch(error){console.warn("Notifications unavailable:",error);}
+}
+
 async function loadOrders(){
 const list=document.getElementById("ordersList");
 if(!currentUser){list.innerHTML='<div class="info">🔒 Please login to view orders.</div>';return;}
@@ -700,21 +824,32 @@ const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid))
 const snap=await getDocs(q);const orders=[];
 snap.forEach(item=>orders.push({id:item.id,...item.data()}));
 orders.sort((a,b)=>timestampValue(b.createdAt)-timestampValue(a.createdAt));
-if(orders.length===0){list.innerHTML='<div class="info">📦 You have no orders yet.</div>';return;}
+if(orders.length===0){list.innerHTML='<div class="info">📦 You have no orders yet.</div>';await updateOrderNotifications();return;}
 list.innerHTML=orders.map(renderCustomerOrder).join("");
+await updateOrderNotifications();
 }catch(error){list.innerHTML='<div class="error">❌ Could not load orders.</div>';}
 }
 
 function renderCustomerOrder(order){
 const status=order.status||"pending";
 const items=Array.isArray(order.items)?order.items:[];
-const itemsHTML=items.map(item=>`<p>${escapeHTML(item.name||"Product")} — ₹${item.price||0} × ${item.quantity||1}</p>`).join("");
-return `<div class="order"><h3>📦 Order ${escapeHTML(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3></div>`;
+const itemsHTML=items.map(item=>`<p>🌾 ${safeText(item.name||"Product")} — ₹${Number(item.price||0)} × ${Number(item.quantity||1)}</p>`).join("");
+const steps=["pending","confirmed","delivered"];
+const timeline=steps.map(s=>`<span class="${s===status?"active":""}">${statusLabel(s)}</span>`).join("");
+let wa="";
+const farmerMobile=order.farmerMobile||"";
+if(farmerMobile){
+const link=whatsappLink(farmerMobile,`Hello, I am ${order.customerName||"a KisanMandi customer"}. Regarding order ${order.id}.`);
+if(link)wa=`<a class="btn green" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Farmer</a>`;
+}
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3>${wa}</div>`;
 }
 
 async function loadFarmerDashboard(){
 if(!currentUser||currentProfile?.role!=="farmer"){document.getElementById("farmerSection").classList.add("hidden");return;}
-await loadMyProducts();await loadFarmerOrders();await loadFarmerStats();
+await loadMyProducts();
+await loadFarmerOrders();
+await loadFarmerStats();
 }
 
 window.addProduct=async function(){
@@ -726,7 +861,7 @@ const location=document.getElementById("productLocation").value.trim();
 const category=document.getElementById("productCategory").value;
 if(!name||price<=0||stock<0){showMessage("farmerMessage","❌ Enter valid product details.",true);return;}
 try{
-await addDoc(collection(db,"products"),{name,price,stock,location:location||"Maharajganj",category,ownerUid:currentUser.uid,farmerUid:currentUser.uid,farmerName:currentProfile?.name||currentUser.displayName||"Farmer",createdAt:serverTimestamp()});
+await addDoc(collection(db,"products"),{name,price,stock,location:location||"Maharajganj",category,ownerUid:currentUser.uid,farmerUid:currentUser.uid,farmerName:currentProfile?.name||currentUser.displayName||"Farmer",farmerMobile:currentProfile?.mobile||"",createdAt:serverTimestamp()});
 showMessage("farmerMessage","✅ Product listed successfully!");
 ["productName","productPrice","productStock","productLocation"].forEach(id=>document.getElementById(id).value="");
 await loadProducts();await loadMyProducts();
@@ -740,25 +875,89 @@ const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
 const snap=await getDocs(q);const list=[];
 snap.forEach(item=>list.push({id:item.id,...item.data()}));
 if(list.length===0){box.innerHTML='<div class="info">🌱 You have not listed any products.</div>';return;}
-box.innerHTML=list.map(product=>`<div class="order"><h3>${escapeHTML(product.name)}</h3><p>💰 ₹${Number(product.price||0)} / kg</p><p>📦 Stock: <strong>${Number(product.stock||0)}</strong></p><p>📍 ${escapeHTML(product.location||"")}</p><div class="product-manage"><button class="blue" onclick="openProductEdit('${product.id}')">✏️ ${t("edit")}</button><button class="orange" onclick="quickStock('${product.id}')">➕ ${t("stock")}</button><button class="red" onclick="deleteMyProduct('${product.id}')">🗑️ ${t("delete")}</button></div></div>`).join("");
-}catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';console.error(error);}
+box.innerHTML=list.map(product=>`<div class="order">
+<h3>${escapeHTML(product.name)}</h3>
+<p>💰 ₹${Number(product.price||0)} / kg</p>
+<p>📦 Stock: <strong>${Number(product.stock||0)}</strong></p>
+<p>📍 ${escapeHTML(product.location||"")}</p>
+<div class="product-manage">
+<button class="blue" onclick="openProductEdit('${product.id}')">✏️ ${t("edit")}</button>
+<button class="orange" onclick="quickStock('${product.id}',1)">➕ ${t("stock")}</button>
+<button class="red" onclick="deleteMyProduct('${product.id}')">🗑️ ${t("delete")}</button>
+</div>
+</div>`).join("");
+}catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';}
 }
 window.openProductEdit=async function(productId){
 if(!currentUser||currentProfile?.role!=="farmer")return;
-try{const snap=await getDoc(doc(db,"products",productId));if(!snap.exists()){alert("❌ Product not found.");return;}const product=snap.data();if(product.ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}document.getElementById("editProductId").value=productId;document.getElementById("editProductName").value=product.name||"";document.getElementById("editProductPrice").value=product.price||0;document.getElementById("editProductStock").value=product.stock||0;document.getElementById("editProductLocation").value=product.location||"";document.getElementById("editProductModal").classList.remove("hidden");}catch(error){alert("❌ Could not open product.\n"+friendlyError(error));}
+try{
+const snap=await getDoc(doc(db,"products",productId));
+if(!snap.exists()){alert("❌ Product not found.");return;}
+const product=snap.data();
+if(product.ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
+document.getElementById("editProductId").value=productId;
+document.getElementById("editProductName").value=product.name||"";
+document.getElementById("editProductPrice").value=product.price||0;
+document.getElementById("editProductStock").value=product.stock||0;
+document.getElementById("editProductLocation").value=product.location||"";
+document.getElementById("editProductCategory").value=product.category||"other";
+document.getElementById("editProductModal").classList.remove("hidden");
+applyLanguage();
+}catch(error){alert("❌ Could not open product.");}
 };
 window.closeProductEdit=function(){document.getElementById("editProductModal").classList.add("hidden");};
 window.saveProductEdit=async function(){
-if(!currentUser||currentProfile?.role!=="farmer")return;const id=document.getElementById("editProductId").value;const name=document.getElementById("editProductName").value.trim();const price=Number(document.getElementById("editProductPrice").value);const stock=Number(document.getElementById("editProductStock").value);const location=document.getElementById("editProductLocation").value.trim();if(!id||!name||price<=0||stock<0){alert("❌ Please enter valid product details.");return;}try{const ref=doc(db,"products",id);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}await updateDoc(ref,{name,price,stock,location:location||"Maharajganj"});closeProductEdit();showMessage("farmerMessage","✅ Product updated successfully!");await loadProducts();await loadMyProducts();}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
+const id=document.getElementById("editProductId").value;
+const name=document.getElementById("editProductName").value.trim();
+const price=Number(document.getElementById("editProductPrice").value);
+const stock=Number(document.getElementById("editProductStock").value);
+const location=document.getElementById("editProductLocation").value.trim();
+const category=document.getElementById("editProductCategory").value;
+if(!id||!name||price<=0||stock<0){alert("❌ Please enter valid product details.");return;}
+try{
+const ref=doc(db,"products",id);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
+await updateDoc(ref,{name,price,stock,location:location||"Maharajganj",category});
+closeProductEdit();
+showMessage("farmerMessage","✅ Product updated successfully!");
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
-window.quickStock=async function(productId){
-if(!currentUser||currentProfile?.role!=="farmer")return;const amount=Number(prompt(currentLanguage==="hi"?"कितना स्टॉक जोड़ना है?":currentLanguage==="ta"?"எவ்வளவு இருப்பை சேர்க்க வேண்டும்?":"How much stock to add?","10"));if(!Number.isFinite(amount)||amount<=0)return;try{const ref=doc(db,"products",productId);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}await updateDoc(ref,{stock:Number(snap.data().stock||0)+amount});await loadProducts();await loadMyProducts();}catch(error){alert("❌ Stock update failed:\n"+friendlyError(error));}
+window.quickStock=async function(productId,delta){
+try{
+const ref=doc(db,"products",productId);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
+const oldStock=Number(snap.data().stock||0);const amount=Math.max(1,Number(prompt(currentLanguage==="hi"?"कितना स्टॉक जोड़ना है?":currentLanguage==="ta"?"எவ்வளவு இருப்பை சேர்க்க வேண்டும்?":"How much stock to add?", "10"))||0);
+if(amount<=0)return;
+await updateDoc(ref,{stock:oldStock+amount});
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Stock update failed:\n"+friendlyError(error));}
 };
 window.deleteMyProduct=async function(productId){
-if(!currentUser||currentProfile?.role!=="farmer")return;if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;try{const ref=doc(db,"products",productId);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}await deleteDoc(ref);showMessage("farmerMessage","✅ Product deleted.");await loadProducts();await loadMyProducts();}catch(error){alert("❌ Delete failed:\n"+friendlyError(error));}
+if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;
+try{
+const ref=doc(db,"products",productId);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
+await deleteDoc(ref);
+showMessage("farmerMessage","✅ Product deleted.");
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Delete failed:\n"+friendlyError(error));}
 };
+
 async function loadFarmerStats(){
-try{const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));const snap=await getDocs(q);let total=0,pending=0,delivered=0,sales=0;snap.forEach(d=>{const o=d.data();total++;const st=o.status||"pending";if(st==="pending")pending++;if(st==="delivered")delivered++;(o.items||[]).forEach(item=>{if(item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid)sales+=Number(item.price||0)*Number(item.quantity||0);});});document.getElementById("statOrders").textContent=total;document.getElementById("statPending").textContent=pending;document.getElementById("statDelivered").textContent=delivered;document.getElementById("statSales").textContent="₹"+sales;}catch(error){console.error("Farmer stats:",error);}
+try{
+const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));
+const snap=await getDocs(q);let total=0,pending=0,delivered=0,sales=0;
+snap.forEach(d=>{const o=d.data();total++;const s=o.status||"pending";if(s==="pending")pending++;if(s==="delivered")delivered++;(o.items||[]).forEach(item=>{if(item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid)sales+=Number(item.price||0)*Number(item.quantity||0);});});
+const productSnap=await getDocs(query(collection(db,"products"),where("ownerUid","==",currentUser.uid)));
+let activeProducts=0;
+productSnap.forEach(d=>{if(Number(d.data().stock||0)>0)activeProducts++;});
+document.getElementById("statOrders").textContent=total;
+document.getElementById("statPending").textContent=pending;
+document.getElementById("statDelivered").textContent=delivered;
+document.getElementById("statSales").textContent="₹"+sales;
+document.getElementById("statProducts").textContent=activeProducts;
+}catch(error){console.error("Farmer stats:",error);}
 }
 
 async function loadFarmerOrders(){
@@ -783,11 +982,14 @@ function renderFarmerOrder(order){
 const status=order.status||"pending";
 const farmerItems=(order.items||[]).filter(item=>item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid);
 if(farmerItems.length===0)return "";
-const itemHTML=farmerItems.map(item=>`<p>🌾 ${escapeHTML(item.name)} — ₹${item.price} × ${item.quantity}</p>`).join("");
+const itemHTML=farmerItems.map(item=>`<p>🌾 ${safeText(item.name)} — ₹${Number(item.price||0)} × ${Number(item.quantity||1)}</p>`).join("");
 let buttons="";
 if(status==="pending")buttons=`<button class="btn green" onclick="updateOrderStatus('${order.id}','confirmed')">✅ Confirm Order</button><button class="btn red" onclick="updateOrderStatus('${order.id}','rejected')">❌ Reject Order</button>`;
 if(status==="confirmed")buttons=`<button class="btn blue" onclick="updateOrderStatus('${order.id}','delivered')">🚚 Mark Delivered</button>`;
-return `<div class="order"><h3>📦 Order ${escapeHTML(order.id)}</h3><p>👤 Customer: ${escapeHTML(order.customerName||"")}</p><p>📱 ${escapeHTML(order.customerMobile||"")}</p><p>📅 ${formatTimestamp(order.createdAt)}</p><br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemHTML}<h3>Order Total: ₹${Number(order.total||0)}</h3>${buttons}</div>`;
+const mobile=order.customerMobile||"";
+const link=whatsappLink(mobile,`Hello ${order.customerName||"Customer"}, this is your KisanMandi farmer regarding order ${order.id}.`);
+const whatsapp=link?`<a class="btn green" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Customer</a>`:"";
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>👤 Customer: ${safeText(order.customerName||"")}</p><p>📱 ${safeText(order.customerMobile||"")}</p><p>📅 ${formatTimestamp(order.createdAt)}</p><br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemHTML}<h3>Order Total: ₹${Number(order.total||0)}</h3><div class="action-row">${buttons}${whatsapp}</div></div>`;
 }
 
 window.updateOrderStatus=async function(orderId,newStatus){
@@ -799,13 +1001,14 @@ const order=snap.data();const farmerIds=Array.isArray(order.farmerUids)?order.fa
 if(!farmerIds.includes(currentUser.uid)){alert("❌ You are not authorized for this order.");return;}
 await updateDoc(orderRef,{status:newStatus,updatedAt:serverTimestamp()});
 alert("✅ Order status updated to "+newStatus);
-await loadFarmerOrders();await loadOrders();
+await loadFarmerOrders();await loadFarmerStats();await loadOrders();
 }catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
 
 
 /* =========================
-   KisanMandi V8.7 LANGUAGE
+   KisanMandi V8.9 LANGUAGE
+   English + Hindi + Tamil
    English + Hindi + Tamil
    ========================= */
 const translations={
@@ -815,7 +1018,7 @@ welcome:"Welcome to KisanMandi",heroText:"Buy directly from farmers and sell you
 accountTitle:"👤 KisanMandi Account",accountSubtitle:"Login as a customer or farmer",email:"Email Address",password:"Password",loginButton:"🔐 Login",
 forgotPassword:"🔑 Forgot Password?",createAccount:"📝 Create New Account",fullName:"Full Name",createPassword:"Create Password (minimum 6 characters)",
 customer:"Customer",farmer:"Farmer",createAccountButton:"📋 Create Account",backLogin:"🔐 Back to Login",loggedIn:"✅ You are logged in.",
-myOrders:"📦 My Orders",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
+myOrders:"📦 My Orders",editProfile:"👤 Edit Profile",saveProfile:"💾 Save Profile",refreshDashboard:"🔄 Refresh Dashboard",activeProducts:"Active Products",mobileNumber:"Mobile Number",notifications:"Notifications",noNotifications:"No active notifications.",latestOrder:"Latest order",remove:"Remove",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
 all:"🌾 All",vegetables:"🥬 Vegetables",fruits:"🍎 Fruits",grains:"🌾 Grains",dairy:"🥛 Dairy",other:"🌱 Other",newest:"↕ Newest",
 priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",
 yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders",ordersSubtitle:"Customers can track orders and farmers can manage orders for their products.",
@@ -828,7 +1031,7 @@ welcome:"किसान मंडी में आपका स्वागत 
 accountTitle:"👤 किसान मंडी खाता",accountSubtitle:"ग्राहक या किसान के रूप में लॉगिन करें",email:"ईमेल पता",password:"पासवर्ड",loginButton:"🔐 लॉगिन",
 forgotPassword:"🔑 पासवर्ड भूल गए?",createAccount:"📝 नया खाता बनाएं",fullName:"पूरा नाम",createPassword:"पासवर्ड बनाएं (कम से कम 6 अक्षर)",
 customer:"ग्राहक",farmer:"किसान",createAccountButton:"📋 खाता बनाएं",backLogin:"🔐 लॉगिन पर वापस",loggedIn:"✅ आप लॉगिन हैं।",
-myOrders:"📦 मेरे ऑर्डर",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
+myOrders:"📦 मेरे ऑर्डर",editProfile:"👤 प्रोफ़ाइल संपादित करें",saveProfile:"💾 प्रोफ़ाइल सहेजें",refreshDashboard:"🔄 डैशबोर्ड रीफ्रेश करें",activeProducts:"सक्रिय उत्पाद",mobileNumber:"मोबाइल नंबर",notifications:"सूचनाएं",noNotifications:"कोई सक्रिय सूचना नहीं है।",latestOrder:"नवीनतम ऑर्डर",remove:"हटाएं",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
 all:"🌾 सभी",vegetables:"🥬 सब्ज़ियां",fruits:"🍎 फल",grains:"🌾 अनाज",dairy:"🥛 डेयरी",other:"🌱 अन्य",newest:"↕ नवीनतम",
 priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",
 yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर करें",ordersTitle:"📦 ऑर्डर",ordersSubtitle:"ग्राहक ऑर्डर ट्रैक कर सकते हैं और किसान अपने उत्पादों के ऑर्डर संभाल सकते हैं।",
@@ -841,7 +1044,7 @@ welcome:"கிசான் மண்டிக்கு வரவேற்கி
 accountTitle:"👤 கிசான் மண்டி கணக்கு",accountSubtitle:"வாடிக்கையாளர் அல்லது விவசாயியாக உள்நுழையவும்",email:"மின்னஞ்சல் முகவரி",password:"கடவுச்சொல்",loginButton:"🔐 உள்நுழைவு",
 forgotPassword:"🔑 கடவுச்சொல் மறந்துவிட்டதா?",createAccount:"📝 புதிய கணக்கு உருவாக்கவும்",fullName:"முழுப் பெயர்",createPassword:"கடவுச்சொல் உருவாக்கவும் (குறைந்தது 6 எழுத்துகள்)",
 customer:"வாடிக்கையாளர்",farmer:"விவசாயி",createAccountButton:"📋 கணக்கு உருவாக்கவும்",backLogin:"🔐 உள்நுழைவுக்கு திரும்ப",loggedIn:"✅ நீங்கள் உள்நுழைந்துள்ளீர்கள்.",
-myOrders:"📦 என் ஆர்டர்கள்",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
+myOrders:"📦 என் ஆர்டர்கள்",editProfile:"👤 சுயவிவரத்தைத் திருத்து",saveProfile:"💾 சுயவிவரத்தைச் சேமி",refreshDashboard:"🔄 டாஷ்போர்டைப் புதுப்பி",activeProducts:"செயலில் உள்ள பொருட்கள்",mobileNumber:"மொபைல் எண்",notifications:"அறிவிப்புகள்",noNotifications:"செயலில் உள்ள அறிவிப்புகள் இல்லை.",latestOrder:"சமீபத்திய ஆர்டர்",remove:"நீக்கு",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
 all:"🌾 அனைத்தும்",vegetables:"🥬 காய்கறிகள்",fruits:"🍎 பழங்கள்",grains:"🌾 தானியங்கள்",dairy:"🥛 பால் பொருட்கள்",other:"🌱 மற்றவை",newest:"↕ புதியது",
 priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",
 yourCart:"🛒 உங்கள் கார்ட்",placeOrder:"📦 ஆர்டர் செய்யவும்",ordersTitle:"📦 ஆர்டர்கள்",ordersSubtitle:"வாடிக்கையாளர்கள் ஆர்டர்களை கண்காணிக்கலாம்; விவசாயிகள் தங்கள் பொருட்களின் ஆர்டர்களை நிர்வகிக்கலாம்.",
@@ -865,6 +1068,7 @@ renderProducts();
 renderCart();
 if(currentUser){
 loadOrders();
+updateOrderNotifications();
 if(currentProfile?.role==="farmer")loadFarmerDashboard();
 }
 };
@@ -911,6 +1115,19 @@ const messages={
 };
 return messages[code]||error?.message||"Something went wrong.";
 }
+
+function whatsappNumber(raw){
+let digits=String(raw||"").replace(/\D/g,"");
+if(!digits)return "";
+if(digits.length===10)digits="91"+digits;
+if(digits.length===11&&digits.startsWith("0"))digits="91"+digits.slice(1);
+return digits;
+}
+function whatsappLink(number,message){
+const digits=whatsappNumber(number);
+return digits?"https://wa.me/"+digits+"?text="+encodeURIComponent(message):"";
+}
+function safeText(value){return escapeHTML(value??"");}
 
 applyLanguage();
 loadProducts();
