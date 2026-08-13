@@ -803,8 +803,7 @@ await updateDoc(ref,{name,price,stock,location:location||"Maharajganj"});
 closeProductEdit();
 showMessage("farmerMessage","✅ Product updated successfully!");
 await loadProducts();await loadMyProducts();
-}catch(error){alert("❌ Update failed:
-"+friendlyError(error));}
+}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
 window.quickStock=async function(productId,delta){
 try{
@@ -814,8 +813,7 @@ const oldStock=Number(snap.data().stock||0);const amount=Math.max(1,Number(promp
 if(amount<=0)return;
 await updateDoc(ref,{stock:oldStock+amount});
 await loadProducts();await loadMyProducts();
-}catch(error){alert("❌ Stock update failed:
-"+friendlyError(error));}
+}catch(error){alert("❌ Stock update failed:\n"+friendlyError(error));}
 };
 window.deleteMyProduct=async function(productId){
 if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;
@@ -825,8 +823,7 @@ if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are no
 await deleteDoc(ref);
 showMessage("farmerMessage","✅ Product deleted.");
 await loadProducts();await loadMyProducts();
-}catch(error){alert("❌ Delete failed:
-"+friendlyError(error));}
+}catch(error){alert("❌ Delete failed:\n"+friendlyError(error));}
 };
 
 async function loadFarmerStats(){
