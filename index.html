@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V9.4 - किसान मंडी</title>
+<title>KisanMandi V10.0 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -207,7 +207,7 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
 
-/* ===== KisanMandi V9.4 upgrades ===== */
+/* ===== KisanMandi V10.0 upgrades ===== */
 .wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
 .wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
 .wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
@@ -244,6 +244,48 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:520px){
   .order-tools input,.order-tools select{min-width:100%;width:100%}
 }
+
+
+/* ===== KisanMandi V10.0 consolidated upgrades ===== */
+body.km-dark{
+  background:#101510 !important;
+  color:#e9f2e9 !important;
+}
+body.km-dark .card,
+body.km-dark .product,
+body.km-dark .checkout-modal,
+body.km-dark .order-tools,
+body.km-dark .review-box,
+body.km-dark .notification-box,
+body.km-dark .wishlist-toolbar{
+  background:#182019 !important;
+  color:#e9f2e9 !important;
+  border-color:#304233 !important;
+}
+body.km-dark input,
+body.km-dark textarea,
+body.km-dark select{
+  background:#101710 !important;
+  color:#f1f7f1 !important;
+  border-color:#3c4d3d !important;
+}
+body.km-dark .info,
+body.km-dark .checkout-note,
+body.km-dark .order-summary span{
+  background:#202d21 !important;
+  color:#dfeadf !important;
+}
+.km10-tools{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km10-tools h3{margin:0 0 6px;color:#176b2c}
+.km10-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.km10-grid .btn{margin:0;min-height:48px}
+.km10-status{margin-top:10px;padding:10px;border-radius:12px;background:#eef7ed;color:#365b3b;font-size:13px}
+.km10-share{background:#edf6ff !important;border-color:#2b75b9 !important;color:#1f5f99 !important}
+.km10-low{border-left:5px solid #d88900;padding:10px;background:#fff7df;border-radius:10px;margin-top:8px}
+body.km-dark .km10-tools{background:#182019;border-color:#304233}
+body.km-dark .km10-status{background:#202d21;color:#dfeadf}
+body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
+@media(max-width:520px){.km10-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -285,6 +327,22 @@ footer{text-align:center;padding:30px;color:#607060}
   <h2>🔔 Notifications</h2>
   <div id="notificationList"></div>
 </div>
+
+
+<section id="km10Tools" class="card km10-tools">
+  <h2 data-i18n="smartTools">🧰 KisanMandi Smart Tools</h2>
+  <p>One place for the main V10.0 convenience features.</p>
+  <div class="km10-grid">
+    <button class="btn outline" onclick="toggleKM10DarkMode()" data-i18n="darkMode">🌙 Dark Mode</button>
+    <button class="btn outline" onclick="shareKisanMandi()" data-i18n="shareSite">📤 Share KisanMandi</button>
+    <button class="btn outline" onclick="exportVisibleOrdersCSV()" data-i18n="exportOrders">📊 Export Orders</button>
+    <button class="btn outline" onclick="showSavedProducts()">❤️ Saved Products</button>
+    <button class="btn outline" onclick="showSection('ordersSection')">📦 Open Orders</button>
+    <button class="btn outline" onclick="showSection('accountSection')">👤 Account</button>
+  </div>
+  <div id="km10ToolStatus" class="km10-status">✅ V10.0 tools ready. Your V9.4 order tracking and notifications remain active.</div>
+</section>
+
 
 <section id="accountSection" class="card">
 <h2 data-i18n="accountTitle">👤 KisanMandi Account</h2>
@@ -474,7 +532,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V9.4</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V10.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -818,7 +876,7 @@ if(saved.length===0){list.innerHTML='<div class="info">❤️ You have no saved 
 list.innerHTML=saved.map(product=>{
 const stock=Number(product.stock||0);
 const emoji=productEmoji(String(product.category||"other"),product.name);
-return `<div class="product"><div class="product-img"><span class="product-emoji">${emoji}</span><span class="product-category-label">${categoryLabel(String(product.category||"other"))}</span></div><div class="product-body"><span class="badge">❤️ Saved</span><h2>${escapeHTML(product.name||"Product")}</h2><p class="product-meta">👨‍🌾 ${escapeHTML(product.farmerName||"Farmer")}</p><p class="product-meta">📍 ${escapeHTML(product.location||"India")}</p><p class="stock">📦 Available: ${stock}</p><div class="price">₹${Number(product.price||0)} / kg</div><button class="wishlist-btn saved" onclick="toggleWishlist('${product.id}')">❤️ Remove Saved</button>${stock>0?`<button class="btn green" onclick="addToCart('${product.id}')">🛒 Add to Cart</button>`:`<button class="btn red" disabled>❌ Out of Stock</button>`}</div></div>`;}).join("");
+return `<div class="product"><div class="product-img"><span class="product-emoji">${emoji}</span><span class="product-category-label">${categoryLabel(String(product.category||"other"))}</span></div><div class="product-body"><span class="badge">❤️ Saved</span><h2>${escapeHTML(product.name||"Product")}</h2><p class="product-meta">👨‍🌾 ${escapeHTML(product.farmerName||"Farmer")}</p><p class="product-meta">📍 ${escapeHTML(product.location||"India")}</p><p class="stock">📦 Available: ${stock}</p><div class="price">₹${Number(product.price||0)} / kg</div><button class="wishlist-btn saved" onclick="toggleWishlist('${product.id}')">❤️ Remove Saved</button><button class="wishlist-btn km10-share" onclick="shareKisanMandiProduct('${product.id}')">📤 Share</button>${stock>0?`<button class="btn green" onclick="addToCart('${product.id}')">🛒 Add to Cart</button>`:`<button class="btn red" disabled>❌ Out of Stock</button>`}</div></div>`;}).join("");
 };
 
 window.addToCart=function(productId){
@@ -1321,7 +1379,7 @@ await loadFarmerOrders();await loadFarmerStats();await loadOrders();
    English + Hindi + Tamil
    ========================= */
 const translations={
-en:{orderSearch:"🔎 Search order ID or product...",orderAll:"All statuses",orderPending:"Pending",orderConfirmed:"Confirmed",orderProcessing:"Processing",orderShipped:"Shipped",orderDelivered:"Delivered",orderCancelled:"Cancelled",
+en:{smartTools:"🧰 KisanMandi Smart Tools",darkMode:"🌙 Dark Mode",shareSite:"📤 Share KisanMandi",exportOrders:"📊 Export Orders",orderSearch:"🔎 Search order ID or product...",orderAll:"All statuses",orderPending:"Pending",orderConfirmed:"Confirmed",orderProcessing:"Processing",orderShipped:"Shipped",orderDelivered:"Delivered",orderCancelled:"Cancelled",
 tagline:"किसान मंडी • Direct Farmer Marketplace",home:"🏠 Home",products:"🌾 Products",cart:"🛒 Cart",orders:"📦 Orders",account:"👤 Account",
 welcome:"Welcome to KisanMandi",heroText:"Buy directly from farmers and sell your agricultural products.",browseProducts:"🌱 Browse Products",loginRegister:"👤 Login / Register",
 accountTitle:"👤 KisanMandi Account",accountSubtitle:"Login as a customer or farmer",email:"Email Address",password:"Password",loginButton:"🔐 Login",
@@ -1334,7 +1392,7 @@ yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders
 farmerDashboard:"👨‍🌾 Farmer Dashboard",addProduct:"🌱 Add Product",productName:"Product / Crop Name",pricePerKg:"Price per kg",availableStock:"Available Stock",location:"Location",
 vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders",totalOrders:"Total Orders",pendingOrders:"Pending",deliveredOrders:"Delivered",salesTotal:"My Sales",edit:"Edit",stock:"Stock",delete:"Delete",editProduct:"✏️ Edit Product",saveChanges:"💾 Save Changes",cancel:"Cancel"
 },
-hi:{orderSearch:"🔎 ऑर्डर ID या उत्पाद खोजें...",orderAll:"सभी स्थिति",orderPending:"लंबित",orderConfirmed:"पुष्टि",orderProcessing:"प्रोसेसिंग",orderShipped:"भेजा गया",orderDelivered:"डिलीवर",orderCancelled:"रद्द",
+hi:{smartTools:"🧰 किसान मंडी स्मार्ट टूल्स",darkMode:"🌙 डार्क मोड",shareSite:"📤 किसान मंडी शेयर करें",exportOrders:"📊 ऑर्डर एक्सपोर्ट करें",orderSearch:"🔎 ऑर्डर ID या उत्पाद खोजें...",orderAll:"सभी स्थिति",orderPending:"लंबित",orderConfirmed:"पुष्टि",orderProcessing:"प्रोसेसिंग",orderShipped:"भेजा गया",orderDelivered:"डिलीवर",orderCancelled:"रद्द",
 tagline:"किसान मंडी • सीधे किसान से बाज़ार",home:"🏠 होम",products:"🌾 उत्पाद",cart:"🛒 कार्ट",orders:"📦 ऑर्डर",account:"👤 खाता",
 welcome:"किसान मंडी में आपका स्वागत है",heroText:"किसानों से सीधे खरीदें और अपने कृषि उत्पाद बेचें।",browseProducts:"🌱 उत्पाद देखें",loginRegister:"👤 लॉगिन / रजिस्टर",
 accountTitle:"👤 किसान मंडी खाता",accountSubtitle:"ग्राहक या किसान के रूप में लॉगिन करें",email:"ईमेल पता",password:"पासवर्ड",loginButton:"🔐 लॉगिन",
@@ -1347,7 +1405,7 @@ yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर �
 farmerDashboard:"👨‍🌾 किसान डैशबोर्ड",addProduct:"🌱 उत्पाद जोड़ें",productName:"उत्पाद / फसल का नाम",pricePerKg:"प्रति किलो कीमत",availableStock:"उपलब्ध स्टॉक",location:"स्थान",
 vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर",totalOrders:"कुल ऑर्डर",pendingOrders:"लंबित",deliveredOrders:"डिलीवर",salesTotal:"मेरी बिक्री",edit:"संपादित करें",stock:"स्टॉक",delete:"हटाएं",editProduct:"✏️ उत्पाद संपादित करें",saveChanges:"💾 बदलाव सहेजें",cancel:"रद्द करें"
 },
-ta:{orderSearch:"🔎 ஆர்டர் ID அல்லது பொருளை தேடுங்கள்...",orderAll:"அனைத்து நிலைகள்",orderPending:"நிலுவையில்",orderConfirmed:"உறுதி",orderProcessing:"செயலாக்கம்",orderShipped:"அனுப்பப்பட்டது",orderDelivered:"வழங்கப்பட்டது",orderCancelled:"ரத்து",
+ta:{smartTools:"🧰 கிசான்மண்டி ஸ்மார்ட் கருவிகள்",darkMode:"🌙 டார்க் மோடு",shareSite:"📤 கிசான்மண்டியை பகிரவும்",exportOrders:"📊 ஆர்டர்களை ஏற்றுமதி செய்யவும்",orderSearch:"🔎 ஆர்டர் ID அல்லது பொருளை தேடுங்கள்...",orderAll:"அனைத்து நிலைகள்",orderPending:"நிலுவையில்",orderConfirmed:"உறுதி",orderProcessing:"செயலாக்கம்",orderShipped:"அனுப்பப்பட்டது",orderDelivered:"வழங்கப்பட்டது",orderCancelled:"ரத்து",
 tagline:"கிசான் மண்டி • விவசாயியிடமிருந்து நேரடி சந்தை",home:"🏠 முகப்பு",products:"🌾 பொருட்கள்",cart:"🛒 கார்ட்",orders:"📦 ஆர்டர்கள்",account:"👤 கணக்கு",
 welcome:"கிசான் மண்டிக்கு வரவேற்கிறோம்",heroText:"விவசாயிகளிடமிருந்து நேரடியாக வாங்கி உங்கள் விவசாயப் பொருட்களை விற்கவும்.",browseProducts:"🌱 பொருட்களைப் பார்க்க",loginRegister:"👤 உள்நுழைவு / பதிவு",
 accountTitle:"👤 கிசான் மண்டி கணக்கு",accountSubtitle:"வாடிக்கையாளர் அல்லது விவசாயியாக உள்நுழையவும்",email:"மின்னஞ்சல் முகவரி",password:"கடவுச்சொல்",loginButton:"🔐 உள்நுழைவு",
@@ -1509,6 +1567,136 @@ window.reviewHtml=function(productId){
 };
 
 try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
+
+/* =========================================================
+   KisanMandi V10.0 SMART TOOLS
+   ========================================================= */
+
+window.setKM10Status=function(message){
+  const el=document.getElementById("km10ToolStatus");
+  if(el)el.textContent=message;
+};
+
+window.toggleKM10DarkMode=function(){
+  const on=!document.body.classList.contains("km-dark");
+  document.body.classList.toggle("km-dark",on);
+  localStorage.setItem("kisanMandiDarkMode",on?"1":"0");
+  setKM10Status(on?"🌙 Dark Mode enabled.":"☀️ Light Mode enabled.");
+};
+
+window.restoreKM10Theme=function(){
+  if(localStorage.getItem("kisanMandiDarkMode")==="1"){
+    document.body.classList.add("km-dark");
+  }
+};
+
+window.shareKisanMandi=async function(){
+  const url=window.location.href;
+  const data={
+    title:"KisanMandi",
+    text:"🌾 KisanMandi — Direct Farmer Marketplace",
+    url
+  };
+  try{
+    if(navigator.share){
+      await navigator.share(data);
+      setKM10Status("✅ KisanMandi shared successfully.");
+    }else if(navigator.clipboard){
+      await navigator.clipboard.writeText(url);
+      setKM10Status("🔗 Website link copied. You can paste it anywhere.");
+    }else{
+      prompt("Copy KisanMandi link:",url);
+    }
+  }catch(e){
+    if(e?.name!=="AbortError")setKM10Status("ℹ️ Sharing was cancelled or unavailable.");
+  }
+};
+
+window.shareKisanMandiProduct=async function(productId){
+  const product=(typeof products!=="undefined"?products:[]).find(p=>p.id===productId);
+  if(!product){alert("Product not found.");return;}
+  const url=window.location.href.split("#")[0]+"#product-"+encodeURIComponent(productId);
+  const data={
+    title:`${product.name||"Product"} — KisanMandi`,
+    text:`🌾 ${product.name||"Product"} | ₹${Number(product.price||0)}/kg | Farmer: ${product.farmerName||"Farmer"}`,
+    url
+  };
+  try{
+    if(navigator.share)await navigator.share(data);
+    else if(navigator.clipboard){
+      await navigator.clipboard.writeText(url);
+      setKM10Status("🔗 Product link copied.");
+    }else{
+      prompt("Copy product link:",url);
+    }
+  }catch(e){
+    if(e?.name!=="AbortError")setKM10Status("ℹ️ Product sharing was cancelled.");
+  }
+};
+
+window.exportVisibleOrdersCSV=function(){
+  const root=document.getElementById("ordersList");
+  const cards=[...(root?.querySelectorAll(".order")||[])].filter(c=>c.style.display!=="none");
+  if(!cards.length){
+    alert("📦 No visible orders to export. Open Orders and load your orders first.");
+    return;
+  }
+
+  const rows=[["Order","Date","Status","Details","Total"]];
+  cards.forEach(card=>{
+    const lines=(card.innerText||"").split("\n").map(x=>x.trim()).filter(Boolean);
+    const order=lines.find(x=>/^📦\s*Order\s+/i.test(x))||"";
+    const date=lines.find(x=>/^📅/.test(x))||"";
+    const status=lines.find(x=>/pending|confirmed|processing|shipped|delivered|cancelled/i.test(x))||"";
+    const total=lines.find(x=>/Total:\s*₹/i.test(x))||"";
+    const details=lines.filter(x=>x!==order&&x!==date&&x!==status&&x!==total&&x.length>0).slice(0,3).join(" | ");
+    rows.push([order,date,status,details,total]);
+  });
+
+  const csv=rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`KisanMandi_Orders_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  setKM10Status("📊 Orders exported successfully.");
+};
+
+window.km10CheckLowStock=function(){
+  try{
+    if(!currentUser || !currentProfile || currentProfile.role!=="farmer")return;
+    const mine=(typeof products!=="undefined"?products:[]).filter(p=>
+      p.ownerUid===currentUser.uid || p.farmerUid===currentUser.uid
+    );
+    const low=mine.filter(p=>Number(p.stock||0)>0&&Number(p.stock||0)<=10);
+    if(low.length){
+      const names=low.slice(0,5).map(p=>`${p.name||"Product"} (${p.stock})`).join(", ");
+      addKisanNotification("⚠️ Low stock alert",`Low-stock products: ${names}${low.length>5?"…":""}`);
+    }
+    const out=mine.filter(p=>Number(p.stock||0)<=0);
+    if(out.length){
+      addKisanNotification("❌ Out of stock",`${out.length} of your listed products are out of stock.`);
+    }
+  }catch(e){
+    console.warn("Low-stock check:",e);
+  }
+};
+
+window.km10Init=function(){
+  restoreKM10Theme();
+  try{
+    const saved=localStorage.getItem("kisanMandiLanguage");
+    if(saved&&document.getElementById("languageSelect"))document.getElementById("languageSelect").value=saved;
+  }catch(e){}
+};
+
+/* Restore the theme as soon as the page script is ready. */
+try{km10Init();}catch(e){console.warn(e);}
+
 </script>
 </body>
 </html>
