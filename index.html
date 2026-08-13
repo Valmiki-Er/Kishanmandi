@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V8.5 - किसान मंडी</title>
+<title>KisanMandi V8.6 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -31,6 +31,152 @@ button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;m
 .info{background:#fff8d9;color:#675613;padding:14px;border-radius:12px;margin:10px 0}.center{text-align:center}
 .hero{text-align:center;padding:30px 10px}.hero .emoji{font-size:75px}
 footer{text-align:center;padding:30px;color:#607060}
+
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:18px;
+    margin-top:18px;
+}
+
+.market-toolbar{
+    margin-top:12px;
+    padding:12px;
+    background:#f7fbf5;
+    border-radius:16px;
+    border:1px solid #e1eadf;
+}
+
+.category-chips{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.category-chip{
+    border:1px solid #176b2c;
+    background:white;
+    color:#176b2c;
+    border-radius:20px;
+    padding:8px 13px;
+    font-weight:bold;
+}
+
+.category-chip.active,
+.category-chip:hover{
+    background:#176b2c;
+    color:white;
+}
+
+.toolbar-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:12px;
+}
+
+.result-count{
+    color:#5c6b5c;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.sort-select{
+    width:auto;
+    min-width:175px;
+    margin:0;
+    padding:10px;
+    font-size:14px;
+}
+
+.product{
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    transition:transform .18s ease,box-shadow .18s ease;
+}
+
+.product:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px #00000018;
+}
+
+.product-img{
+    height:180px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg,#eaf7e5,#fff7d7);
+}
+
+.product-img::after{
+    content:"";
+    position:absolute;
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    background:#ffffff55;
+    right:-30px;
+    top:-35px;
+}
+
+.product-emoji{
+    position:relative;
+    z-index:2;
+    font-size:86px;
+    filter:drop-shadow(0 4px 5px #0002);
+}
+
+.product-category-label{
+    position:absolute;
+    left:12px;
+    bottom:10px;
+    z-index:3;
+    background:#ffffffdd;
+    color:#176b2c;
+    padding:5px 9px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.product-body{
+    flex:1;
+}
+
+.product-meta{
+    color:#697569;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.stock-low{
+    color:#c26b00;
+}
+
+.empty-products{
+    grid-column:1/-1;
+}
+
+@media(max-width:600px){
+    .toolbar-row{
+        flex-direction:column;
+        align-items:stretch;
+    }
+    .sort-select{
+        width:100%;
+    }
+    .category-chips{
+        overflow-x:auto;
+        flex-wrap:nowrap;
+        padding-bottom:4px;
+    }
+    .category-chip{
+        white-space:nowrap;
+    }
+}
+
 @media(max-width:600px){.card{padding:18px}header h1{font-size:25px}.product-img{height:160px}}
 </style>
 </head>
@@ -92,8 +238,31 @@ footer{text-align:center;padding:30px;color:#607060}
 
 <section id="productsSection" class="card">
 <h2>🌾 Available Products</h2>
-<input id="searchBox" placeholder="🔍 Search products..." oninput="renderProducts()">
-<div id="productsList"><p>Loading products...</p></div>
+<input id="searchBox" placeholder="🔍 Search products, farmers, locations..." oninput="renderProducts()">
+
+<div class="market-toolbar">
+    <div class="category-chips">
+        <button class="category-chip active" data-category="all" onclick="setCategory('all')">🌾 All</button>
+        <button class="category-chip" data-category="vegetable" onclick="setCategory('vegetable')">🥬 Vegetables</button>
+        <button class="category-chip" data-category="fruit" onclick="setCategory('fruit')">🍎 Fruits</button>
+        <button class="category-chip" data-category="grain" onclick="setCategory('grain')">🌾 Grains</button>
+        <button class="category-chip" data-category="dairy" onclick="setCategory('dairy')">🥛 Dairy</button>
+        <button class="category-chip" data-category="other" onclick="setCategory('other')">🌱 Other</button>
+    </div>
+
+    <div class="toolbar-row">
+        <span id="productCount" class="result-count">Loading products...</span>
+        <select id="sortProducts" onchange="renderProducts()" class="sort-select">
+            <option value="newest">↕ Newest</option>
+            <option value="priceLow">₹ Price: Low to High</option>
+            <option value="priceHigh">₹ Price: High to Low</option>
+            <option value="stockHigh">📦 Stock: High to Low</option>
+            <option value="name">🔤 Name A–Z</option>
+        </select>
+    </div>
+</div>
+
+<div id="productsList" class="product-grid"><p>Loading products...</p></div>
 </section>
 
 <section id="cartSection" class="card">
@@ -127,6 +296,9 @@ footer{text-align:center;padding:30px;color:#607060}
 <option value="other">🌱 Other</option>
 </select>
 <button class="btn green" onclick="addProduct()">➕ List Product</button>
+<div class="info" style="margin-top:10px">
+📸 V8.6 uses built-in product visuals. No Firebase Storage or billing is required.
+</div>
 </div>
 
 <h2>📋 My Products</h2><div id="myProducts"></div>
@@ -134,7 +306,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </section>
 </div>
 
-<footer><p>🌾 KisanMandi V8.5</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V8.6</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -147,12 +319,13 @@ Replace ONLY the values below with the SAME firebaseConfig
 from your working V8.4 index.html.
 */
 const firebaseConfig={
-apiKey:"YOUR_V8_4_API_KEY",
-authDomain:"YOUR_PROJECT.firebaseapp.com",
-projectId:"YOUR_PROJECT_ID",
-storageBucket:"YOUR_PROJECT.firebasestorage.app",
-messagingSenderId:"YOUR_SENDER_ID",
-appId:"YOUR_APP_ID"
+apiKey:"AIzaSyCMFjkYeAq29DqFXYxXqEEtfks-hr9uG_s",
+authDomain:"kisanmandi-a372a.firebaseapp.com",
+projectId:"kisanmandi-a372a",
+storageBucket:"kisanmandi-a372a.firebasestorage.app",
+messagingSenderId:"562289122561",
+appId:"1:562289122561:web:55c59c462db40b8f170f00",
+measurementId:"G-FHCQZCPKLX"
 };
 
 const app=initializeApp(firebaseConfig);
@@ -262,30 +435,169 @@ function emojiForCategory(category){
 return {vegetable:"🥬",fruit:"🍎",grain:"🌾",dairy:"🥛",other:"🌱"}[category]||"🌱";
 }
 
+let selectedCategory="all";
+
+window.setCategory=function(category){
+    selectedCategory=category;
+    document.querySelectorAll(".category-chip").forEach(button=>{
+        button.classList.toggle("active",button.dataset.category===category);
+    });
+    renderProducts();
+};
+
+function categoryLabel(category){
+    return {
+        vegetable:"🥬 Vegetable",
+        fruit:"🍎 Fruit",
+        grain:"🌾 Grain",
+        dairy:"🥛 Dairy",
+        other:"🌱 Other"
+    }[category] || "🌾 Product";
+}
+
+function productEmoji(category,name){
+    const n=String(name||"").toLowerCase();
+
+    const specific={
+        potato:"🥔",tomato:"🍅",carrot:"🥕",onion:"🧅",
+        garlic:"🧄",brinjal:"🍆",chilli:"🌶️",pepper:"🫑",
+        apple:"🍎",mango:"🥭",banana:"🍌",orange:"🍊",
+        papaya:"🍈",guava:"🍐",grape:"🍇",
+        wheat:"🌾",rice:"🍚",maize:"🌽",corn:"🌽",
+        milk:"🥛",curd:"🥣",paneer:"🧀"
+    };
+
+    for(const key in specific){
+        if(n.includes(key)) return specific[key];
+    }
+
+    return {
+        vegetable:"🥬",
+        fruit:"🍎",
+        grain:"🌾",
+        dairy:"🥛",
+        other:"🌱"
+    }[category] || "🌾";
+}
+
 window.renderProducts=function(){
-const list=document.getElementById("productsList");
-const search=document.getElementById("searchBox").value.toLowerCase().trim();
-const filtered=products.filter(product=>{
-const name=String(product.name||"").toLowerCase();
-const farmer=String(product.farmerName||"").toLowerCase();
-const location=String(product.location||"").toLowerCase();
-return name.includes(search)||farmer.includes(search)||location.includes(search);
-});
-if(filtered.length===0){list.innerHTML='<div class="info">🌱 No products found.</div>';return;}
-list.innerHTML=filtered.map(product=>{
-const stock=Number(product.stock||0);
-return `<div class="product">
-<div class="product-img">${emojiForCategory(product.category)}</div>
-<div class="product-body">
-<span class="badge">🌱 Farmer Listed</span>
-<h2>${escapeHTML(product.name||"Product")}</h2>
-<p>👨‍🌾 Farmer: ${escapeHTML(product.farmerName||"Farmer")}</p>
-<p>📍 ${escapeHTML(product.location||"India")}</p>
-<p class="stock">📦 Available: ${stock}</p>
-<div class="price">₹${Number(product.price||0)} / kg</div>
-${stock>0?`<button class="btn green" onclick="addToCart('${product.id}')">🛒 Add to Cart</button>`:`<button class="btn red" disabled>❌ Out of Stock</button>`}
-</div></div>`;
-}).join("");
+
+    const list=document.getElementById("productsList");
+    const search=document.getElementById("searchBox").value.toLowerCase().trim();
+    const sort=document.getElementById("sortProducts").value;
+
+    let filtered=products.filter(product=>{
+
+        const name=String(product.name||"").toLowerCase();
+        const farmer=String(product.farmerName||"").toLowerCase();
+        const location=String(product.location||"").toLowerCase();
+        const category=String(product.category||"other").toLowerCase();
+
+        const matchesSearch=
+            !search ||
+            name.includes(search) ||
+            farmer.includes(search) ||
+            location.includes(search) ||
+            category.includes(search);
+
+        const matchesCategory=
+            selectedCategory==="all" ||
+            category===selectedCategory;
+
+        return matchesSearch && matchesCategory;
+    });
+
+    filtered.sort((a,b)=>{
+
+        if(sort==="priceLow"){
+            return Number(a.price||0)-Number(b.price||0);
+        }
+
+        if(sort==="priceHigh"){
+            return Number(b.price||0)-Number(a.price||0);
+        }
+
+        if(sort==="stockHigh"){
+            return Number(b.stock||0)-Number(a.stock||0);
+        }
+
+        if(sort==="name"){
+            return String(a.name||"").localeCompare(String(b.name||""));
+        }
+
+        return timestampValue(b.createdAt)-timestampValue(a.createdAt);
+    });
+
+    document.getElementById("productCount").textContent=
+        `${filtered.length} product${filtered.length===1?"":"s"} found`;
+
+    if(filtered.length===0){
+
+        list.innerHTML=
+            `<div class="info empty-products">
+                🌱 No products match your search or category.
+             </div>`;
+
+        return;
+    }
+
+    list.innerHTML=filtered.map(product=>{
+
+        const stock=Number(product.stock||0);
+        const category=String(product.category||"other");
+        const emoji=productEmoji(category,product.name);
+
+        return `
+        <div class="product">
+
+            <div class="product-img">
+
+                <span class="product-emoji">${emoji}</span>
+
+                <span class="product-category-label">
+                    ${categoryLabel(category)}
+                </span>
+
+            </div>
+
+            <div class="product-body">
+
+                <span class="badge">🌱 Farmer Listed</span>
+
+                <h2>${escapeHTML(product.name||"Product")}</h2>
+
+                <p class="product-meta">
+                    👨‍🌾 ${escapeHTML(product.farmerName||"Farmer")}
+                </p>
+
+                <p class="product-meta">
+                    📍 ${escapeHTML(product.location||"India")}
+                </p>
+
+                <p class="${stock>0&&stock<=10?"stock stock-low":"stock"}">
+                    📦 Available: ${stock}
+                </p>
+
+                <div class="price">
+                    ₹${Number(product.price||0)} / kg
+                </div>
+
+                ${
+                    stock>0
+                    ?
+                    `<button class="btn green"
+                        onclick="addToCart('${product.id}')">
+                        🛒 Add to Cart
+                    </button>`
+                    :
+                    `<button class="btn red" disabled>
+                        ❌ Out of Stock
+                    </button>`
+                }
+
+            </div>
+        </div>`;
+    }).join("");
 };
 
 window.addToCart=function(productId){
@@ -423,11 +735,14 @@ box.innerHTML=list.map(product=>`<div class="order"><h3>${escapeHTML(product.nam
 async function loadFarmerOrders(){
 const box=document.getElementById("farmerOrders");
 try{
-const snap=await getDocs(collection(db,"orders"));const orders=[];
+const q=query(
+collection(db,"orders"),
+where("farmerUids","array-contains",currentUser.uid)
+);
+const snap=await getDocs(q);
+const orders=[];
 snap.forEach(item=>{
-const data=item.data();
-const farmerIds=Array.isArray(data.farmerUids)?data.farmerUids:[];
-if(farmerIds.includes(currentUser.uid))orders.push({id:item.id,...data});
+orders.push({id:item.id,...item.data()});
 });
 if(orders.length===0){box.innerHTML='<div class="info">📥 No incoming orders.</div>';return;}
 orders.sort((a,b)=>timestampValue(b.createdAt)-timestampValue(a.createdAt));
@@ -437,7 +752,7 @@ box.innerHTML=orders.map(renderFarmerOrder).join("");
 
 function renderFarmerOrder(order){
 const status=order.status||"pending";
-const farmerItems=(order.items||[]).filter(item=>item.farmerId===currentUser.uid);
+const farmerItems=(order.items||[]).filter(item=>item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid);
 if(farmerItems.length===0)return "";
 const itemHTML=farmerItems.map(item=>`<p>🌾 ${escapeHTML(item.name)} — ₹${item.price} × ${item.quantity}</p>`).join("");
 let buttons="";
