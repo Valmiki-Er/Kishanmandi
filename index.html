@@ -207,12 +207,23 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
 
-/* ===== KisanMandi V9.1 upgrades ===== */
+/* ===== KisanMandi V9.2 upgrades ===== */
 .wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
 .wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
 .wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
 .saved-count{font-weight:bold;color:#176b2c}
 .profile-address{min-height:90px}
+
+.review-box{margin-top:14px;padding:14px;background:#f7fbf5;border:1px solid #dcebd9;border-radius:14px}
+.review-box h4{margin:0 0 8px;color:#176b2c}
+.review-stars{font-size:26px;letter-spacing:3px;cursor:pointer;user-select:none}
+.review-stars span{opacity:.35}
+.review-stars span.active{opacity:1}
+.review-item{padding:10px 0;border-bottom:1px solid #e5e5e5}
+.review-item:last-child{border-bottom:0}
+.rating-summary{font-weight:bold;color:#176b2c;margin:6px 0}
+.notification-badge{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;border-radius:12px;background:#d62828;color:#fff;font-size:12px;font-weight:700;vertical-align:middle;margin-left:4px}
+
 </style>
 </head>
 <body>
@@ -228,6 +239,7 @@ footer{text-align:center;padding:30px;color:#607060}
 <option value="ta">🇮🇳 தமிழ்</option>
 </select>
 </div>
+<button id="notificationBell" class="nav-btn" onclick="toggleNotifications()">🔔 <span id="notificationCount" class="notification-badge hidden">0</span></button>
 <nav>
 <button onclick="showSection('home')" data-i18n="home">🏠 Home</button>
 <button onclick="showSection('productsSection')" data-i18n="products">🌾 Products</button>
@@ -246,6 +258,12 @@ footer{text-align:center;padding:30px;color:#607060}
 <button class="btn green" onclick="showSection('productsSection')" data-i18n="browseProducts">🌱 Browse Products</button>
 <button class="btn outline" onclick="showSection('accountSection')" data-i18n="loginRegister">👤 Login / Register</button>
 </section>
+
+
+<div id="notificationPanel" class="hidden card">
+  <h2>🔔 Notifications</h2>
+  <div id="notificationList"></div>
+</div>
 
 <section id="accountSection" class="card">
 <h2 data-i18n="accountTitle">👤 KisanMandi Account</h2>
@@ -356,7 +374,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </select>
 <button class="btn green" onclick="addProduct()" data-i18n="listProduct">➕ List Product</button>
 <div class="info" style="margin-top:10px">
-📸 V9.1 uses built-in product visuals. No Firebase Storage or billing is required.
+📸 V9.2 uses built-in product visuals. No Firebase Storage or billing is required.
 </div>
 </div>
 
@@ -381,7 +399,7 @@ footer{text-align:center;padding:30px;color:#607060}
     </select>
     <label><strong>📝 Delivery Notes (optional)</strong></label>
     <textarea id="checkoutNotes" rows="3" placeholder="Any delivery instruction"></textarea>
-    <div class="checkout-note">🔒 V9.1 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
+    <div class="checkout-note">🔒 V9.2 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
     <div class="action-row">
       <button class="btn green" onclick="confirmCheckout()">✅ Confirm Order</button>
       <button class="btn red" onclick="closeCheckout()">Cancel</button>
@@ -418,7 +436,7 @@ footer{text-align:center;padding:30px;color:#607060}
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V9.1</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V9.2</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -1278,6 +1296,73 @@ function safeText(value){return escapeHTML(value??"");}
 applyLanguage();
 loadProducts();
 renderCart();
+
+window.toggleNotifications=function(){
+  const panel=document.getElementById("notificationPanel");
+  if(!panel)return;
+  panel.classList.toggle("hidden");
+  if(!panel.classList.contains("hidden")) renderNotifications();
+};
+
+window.renderNotifications=function(){
+  const list=document.getElementById("notificationList");
+  const badge=document.getElementById("notificationCount");
+  if(!list)return;
+  const notes=JSON.parse(localStorage.getItem("kisanMandiNotifications")||"[]");
+  if(badge){
+    badge.textContent=String(notes.length);
+    badge.classList.toggle("hidden",notes.length===0);
+  }
+  list.innerHTML=notes.length
+    ? notes.slice(0,20).map(n=>`<div class="review-item">🔔 <strong>${safeText(n.title||"KisanMandi")}</strong><br><small>${safeText(n.message||"")}</small></div>`).join("")
+    : `<div class="checkout-note">🎉 No new notifications.</div>`;
+};
+
+window.addKisanNotification=function(title,message){
+  const notes=JSON.parse(localStorage.getItem("kisanMandiNotifications")||"[]");
+  notes.unshift({title,message,at:Date.now()});
+  localStorage.setItem("kisanMandiNotifications",JSON.stringify(notes.slice(0,50)));
+  renderNotifications();
+};
+
+
+window.getProductReviews=function(productId){
+  const all=JSON.parse(localStorage.getItem("kisanMandiReviews")||"{}");
+  return Array.isArray(all[productId])?all[productId]:[];
+};
+
+window.submitProductReview=function(productId){
+  if(!currentUser){alert("🔒 Please login to leave a review.");showSection("accountSection");return;}
+  const ratingEl=document.getElementById("reviewRating-"+productId);
+  const textEl=document.getElementById("reviewText-"+productId);
+  const rating=Number(ratingEl?.value||0);
+  const text=(textEl?.value||"").trim();
+  if(rating<1||rating>5){alert("⭐ Please select a rating from 1 to 5.");return;}
+  if(!text){alert("✍️ Please write a short review.");return;}
+  const all=JSON.parse(localStorage.getItem("kisanMandiReviews")||"{}");
+  all[productId]=Array.isArray(all[productId])?all[productId]:[];
+  all[productId].unshift({
+    uid:currentUser.uid,
+    name:currentProfile?.name||currentUser.displayName||"KisanMandi Customer",
+    rating,
+    text,
+    at:Date.now()
+  });
+  localStorage.setItem("kisanMandiReviews",JSON.stringify(all));
+  if(typeof addKisanNotification==="function") addKisanNotification("Review saved","Your product review was saved on this device.");
+  alert("⭐ Review saved successfully.");
+  if(typeof loadProducts==="function")loadProducts();
+};
+
+window.reviewHtml=function(productId){
+  const reviews=getProductReviews(productId);
+  const avg=reviews.length?(reviews.reduce((s,r)=>s+Number(r.rating||0),0)/reviews.length).toFixed(1):"0.0";
+  const stars="★★★★★";
+  const list=reviews.slice(0,3).map(r=>`<div class="review-item">⭐ ${Number(r.rating||0)}/5 — <strong>${safeText(r.name||"Customer")}</strong><br>${safeText(r.text||"")}</div>`).join("");
+  return `<div class="review-box"><h4>⭐ Ratings & Reviews</h4><div class="rating-summary">${stars} ${avg}/5 · ${reviews.length} review${reviews.length===1?"":"s"}</div>${list}<div style="margin-top:10px"><select id="reviewRating-${productId}"><option value="0">Choose rating</option><option value="5">⭐⭐⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="3">⭐⭐⭐</option><option value="2">⭐⭐</option><option value="1">⭐</option></select><textarea id="reviewText-${productId}" rows="2" placeholder="Write your review..."></textarea><button class="btn green" onclick="submitProductReview('${productId}')">⭐ Submit Review</button></div></div>`;
+};
+
+try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
 </script>
 </body>
 </html>
