@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V8.7 - किसान मंडी</title>
+<title>KisanMandi V8.8 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -33,6 +33,11 @@ button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;m
 .success{background:#e5f5e3;color:#176b2c;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
 .error{background:#ffe3e3;color:#a51d1d;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
 .info{background:#fff8d9;color:#675613;padding:14px;border-radius:12px;margin:10px 0}.center{text-align:center}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}
+.stat-card{background:#f4f8f1;border:1px solid #dfe9dc;border-radius:16px;padding:16px;text-align:center}
+.stat-card .stat-icon{font-size:28px}.stat-card strong{display:block;font-size:24px;color:#176b2c;margin-top:4px}
+.product-manage{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.product-manage button{flex:1;min-width:120px;border:0;border-radius:10px;padding:10px;font-weight:bold}
+@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
 .hero{text-align:center;padding:30px 10px}.hero .emoji{font-size:75px}
 footer{text-align:center;padding:30px;color:#607060}
 
@@ -294,6 +299,13 @@ footer{text-align:center;padding:30px;color:#607060}
 <h2 data-i18n="farmerDashboard">👨‍🌾 Farmer Dashboard</h2>
 <div id="farmerMessage"></div>
 
+<div class="stats-grid" id="farmerStats">
+<div class="stat-card"><div class="stat-icon">📦</div><span data-i18n="totalOrders">Total Orders</span><strong id="statOrders">0</strong></div>
+<div class="stat-card"><div class="stat-icon">⏳</div><span data-i18n="pendingOrders">Pending</span><strong id="statPending">0</strong></div>
+<div class="stat-card"><div class="stat-icon">🚚</div><span data-i18n="deliveredOrders">Delivered</span><strong id="statDelivered">0</strong></div>
+<div class="stat-card"><div class="stat-icon">💰</div><span data-i18n="salesTotal">My Sales</span><strong id="statSales">₹0</strong></div>
+</div>
+
 <div class="card">
 <h2 data-i18n="addProduct">🌱 Add Product</h2>
 <input id="productName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
@@ -318,12 +330,21 @@ footer{text-align:center;padding:30px;color:#607060}
 </section>
 </div>
 
-<footer><p>🌾 KisanMandi V8.7</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
+<h2 data-i18n="editProduct">✏️ Edit Product</h2>
+<input id="editProductId" type="hidden">
+<input id="editProductName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
+<input id="editProductPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg">
+<input id="editProductStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock">
+<input id="editProductLocation" data-i18n-placeholder="location" placeholder="Location">
+<div class="row"><button class="btn green" onclick="saveProductEdit()" data-i18n="saveChanges">💾 Save Changes</button><button class="btn red" onclick="closeProductEdit()" data-i18n="cancel">Cancel</button></div>
+</div>
+<footer><p>🌾 KisanMandi V8.8</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,deleteDoc,query,where,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 /*
 IMPORTANT:
@@ -711,7 +732,9 @@ return `<div class="order"><h3>📦 Order ${escapeHTML(order.id)}</h3><p>📅 ${
 
 async function loadFarmerDashboard(){
 if(!currentUser||currentProfile?.role!=="farmer"){document.getElementById("farmerSection").classList.add("hidden");return;}
-await loadMyProducts();await loadFarmerOrders();
+await loadMyProducts();
+await loadFarmerOrders();
+await loadFarmerStats();
 }
 
 window.addProduct=async function(){
@@ -737,8 +760,85 @@ const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
 const snap=await getDocs(q);const list=[];
 snap.forEach(item=>list.push({id:item.id,...item.data()}));
 if(list.length===0){box.innerHTML='<div class="info">🌱 You have not listed any products.</div>';return;}
-box.innerHTML=list.map(product=>`<div class="order"><h3>${escapeHTML(product.name)}</h3><p>💰 ₹${product.price} / kg</p><p>📦 Stock: <strong>${product.stock||0}</strong></p><p>📍 ${escapeHTML(product.location||"")}</p></div>`).join("");
+box.innerHTML=list.map(product=>`<div class="order">
+<h3>${escapeHTML(product.name)}</h3>
+<p>💰 ₹${Number(product.price||0)} / kg</p>
+<p>📦 Stock: <strong>${Number(product.stock||0)}</strong></p>
+<p>📍 ${escapeHTML(product.location||"")}</p>
+<div class="product-manage">
+<button class="blue" onclick="openProductEdit('${product.id}')">✏️ ${t("edit")}</button>
+<button class="orange" onclick="quickStock('${product.id}',1)">➕ ${t("stock")}</button>
+<button class="red" onclick="deleteMyProduct('${product.id}')">🗑️ ${t("delete")}</button>
+</div>
+</div>`).join("");
 }catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';}
+}
+window.openProductEdit=async function(productId){
+if(!currentUser||currentProfile?.role!=="farmer")return;
+try{
+const snap=await getDoc(doc(db,"products",productId));
+if(!snap.exists()){alert("❌ Product not found.");return;}
+const product=snap.data();
+if(product.ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
+document.getElementById("editProductId").value=productId;
+document.getElementById("editProductName").value=product.name||"";
+document.getElementById("editProductPrice").value=product.price||0;
+document.getElementById("editProductStock").value=product.stock||0;
+document.getElementById("editProductLocation").value=product.location||"";
+document.getElementById("editProductModal").classList.remove("hidden");
+}catch(error){alert("❌ Could not open product.");}
+};
+window.closeProductEdit=function(){document.getElementById("editProductModal").classList.add("hidden");};
+window.saveProductEdit=async function(){
+const id=document.getElementById("editProductId").value;
+const name=document.getElementById("editProductName").value.trim();
+const price=Number(document.getElementById("editProductPrice").value);
+const stock=Number(document.getElementById("editProductStock").value);
+const location=document.getElementById("editProductLocation").value.trim();
+if(!id||!name||price<=0||stock<0){alert("❌ Please enter valid product details.");return;}
+try{
+const ref=doc(db,"products",id);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
+await updateDoc(ref,{name,price,stock,location:location||"Maharajganj"});
+closeProductEdit();
+showMessage("farmerMessage","✅ Product updated successfully!");
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Update failed:
+"+friendlyError(error));}
+};
+window.quickStock=async function(productId,delta){
+try{
+const ref=doc(db,"products",productId);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
+const oldStock=Number(snap.data().stock||0);const amount=Math.max(1,Number(prompt(currentLanguage==="hi"?"कितना स्टॉक जोड़ना है?":currentLanguage==="ta"?"எவ்வளவு இருப்பை சேர்க்க வேண்டும்?":"How much stock to add?", "10"))||0);
+if(amount<=0)return;
+await updateDoc(ref,{stock:oldStock+amount});
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Stock update failed:
+"+friendlyError(error));}
+};
+window.deleteMyProduct=async function(productId){
+if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;
+try{
+const ref=doc(db,"products",productId);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
+await deleteDoc(ref);
+showMessage("farmerMessage","✅ Product deleted.");
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Delete failed:
+"+friendlyError(error));}
+};
+
+async function loadFarmerStats(){
+try{
+const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));
+const snap=await getDocs(q);let total=0,pending=0,delivered=0,sales=0;
+snap.forEach(d=>{const o=d.data();total++;const s=o.status||"pending";if(s==="pending")pending++;if(s==="delivered")delivered++;(o.items||[]).forEach(item=>{if(item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid)sales+=Number(item.price||0)*Number(item.quantity||0);});});
+document.getElementById("statOrders").textContent=total;
+document.getElementById("statPending").textContent=pending;
+document.getElementById("statDelivered").textContent=delivered;
+document.getElementById("statSales").textContent="₹"+sales;
+}catch(error){console.error("Farmer stats:",error);}
 }
 
 async function loadFarmerOrders(){
@@ -779,7 +879,7 @@ const order=snap.data();const farmerIds=Array.isArray(order.farmerUids)?order.fa
 if(!farmerIds.includes(currentUser.uid)){alert("❌ You are not authorized for this order.");return;}
 await updateDoc(orderRef,{status:newStatus,updatedAt:serverTimestamp()});
 alert("✅ Order status updated to "+newStatus);
-await loadFarmerOrders();await loadOrders();
+await loadFarmerOrders();await loadFarmerStats();await loadOrders();
 }catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
 };
 
@@ -800,7 +900,7 @@ all:"🌾 All",vegetables:"🥬 Vegetables",fruits:"🍎 Fruits",grains:"🌾 Gr
 priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",
 yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders",ordersSubtitle:"Customers can track orders and farmers can manage orders for their products.",
 farmerDashboard:"👨‍🌾 Farmer Dashboard",addProduct:"🌱 Add Product",productName:"Product / Crop Name",pricePerKg:"Price per kg",availableStock:"Available Stock",location:"Location",
-vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders"
+vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders",totalOrders:"Total Orders",pendingOrders:"Pending",deliveredOrders:"Delivered",salesTotal:"My Sales",edit:"Edit",stock:"Stock",delete:"Delete",editProduct:"✏️ Edit Product",saveChanges:"💾 Save Changes",cancel:"Cancel"
 },
 hi:{
 tagline:"किसान मंडी • सीधे किसान से बाज़ार",home:"🏠 होम",products:"🌾 उत्पाद",cart:"🛒 कार्ट",orders:"📦 ऑर्डर",account:"👤 खाता",
@@ -813,7 +913,7 @@ all:"🌾 सभी",vegetables:"🥬 सब्ज़ियां",fruits:"🍎 
 priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",
 yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर करें",ordersTitle:"📦 ऑर्डर",ordersSubtitle:"ग्राहक ऑर्डर ट्रैक कर सकते हैं और किसान अपने उत्पादों के ऑर्डर संभाल सकते हैं।",
 farmerDashboard:"👨‍🌾 किसान डैशबोर्ड",addProduct:"🌱 उत्पाद जोड़ें",productName:"उत्पाद / फसल का नाम",pricePerKg:"प्रति किलो कीमत",availableStock:"उपलब्ध स्टॉक",location:"स्थान",
-vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर"
+vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर",totalOrders:"कुल ऑर्डर",pendingOrders:"लंबित",deliveredOrders:"डिलीवर",salesTotal:"मेरी बिक्री",edit:"संपादित करें",stock:"स्टॉक",delete:"हटाएं",editProduct:"✏️ उत्पाद संपादित करें",saveChanges:"💾 बदलाव सहेजें",cancel:"रद्द करें"
 },
 ta:{
 tagline:"கிசான் மண்டி • விவசாயியிடமிருந்து நேரடி சந்தை",home:"🏠 முகப்பு",products:"🌾 பொருட்கள்",cart:"🛒 கார்ட்",orders:"📦 ஆர்டர்கள்",account:"👤 கணக்கு",
@@ -826,7 +926,7 @@ all:"🌾 அனைத்தும்",vegetables:"🥬 காய்கறிக
 priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",
 yourCart:"🛒 உங்கள் கார்ட்",placeOrder:"📦 ஆர்டர் செய்யவும்",ordersTitle:"📦 ஆர்டர்கள்",ordersSubtitle:"வாடிக்கையாளர்கள் ஆர்டர்களை கண்காணிக்கலாம்; விவசாயிகள் தங்கள் பொருட்களின் ஆர்டர்களை நிர்வகிக்கலாம்.",
 farmerDashboard:"👨‍🌾 விவசாயி டாஷ்போர்டு",addProduct:"🌱 பொருள் சேர்க்கவும்",productName:"பொருள் / பயிர் பெயர்",pricePerKg:"ஒரு கிலோ விலை",availableStock:"கிடைக்கும் இருப்பு",location:"இடம்",
-vegetable:"🥬 காய்கறி",fruit:"🍎 பழம்",grain:"🌾 தானியம்",listProduct:"➕ பொருளைப் பட்டியலிடவும்",myProducts:"📋 என் பொருட்கள்",incomingOrders:"📥 வரும் ஆர்டர்கள்"
+vegetable:"🥬 காய்கறி",fruit:"🍎 பழம்",grain:"🌾 தானியம்",listProduct:"➕ பொருளைப் பட்டியலிடவும்",myProducts:"📋 என் பொருட்கள்",incomingOrders:"📥 வரும் ஆர்டர்கள்",totalOrders:"மொத்த ஆர்டர்கள்",pendingOrders:"நிலுவை",deliveredOrders:"வழங்கப்பட்டது",salesTotal:"என் விற்பனை",edit:"திருத்து",stock:"இருப்பு",delete:"நீக்கு",editProduct:"✏️ பொருளைத் திருத்து",saveChanges:"💾 மாற்றங்களைச் சேமி",cancel:"ரத்து"
 }
 };
 
