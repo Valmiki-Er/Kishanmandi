@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V10.0 - किसान मंडी</title>
+<title>KisanMandi V10.1 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -207,7 +207,7 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
 
-/* ===== KisanMandi V10.0 upgrades ===== */
+/* ===== KisanMandi V10.1 upgrades ===== */
 .wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
 .wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
 .wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
@@ -246,7 +246,7 @@ footer{text-align:center;padding:30px;color:#607060}
 }
 
 
-/* ===== KisanMandi V10.0 consolidated upgrades ===== */
+/* ===== KisanMandi V10.1 consolidated upgrades ===== */
 body.km-dark{
   background:#101510 !important;
   color:#e9f2e9 !important;
@@ -286,6 +286,20 @@ body.km-dark .km10-tools{background:#182019;border-color:#304233}
 body.km-dark .km10-status{background:#202d21;color:#dfeadf}
 body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
 @media(max-width:520px){.km10-grid{grid-template-columns:1fr}}
+
+
+/* ===== KisanMandi V10.1 operational upgrades ===== */
+.km101-panel{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km101-panel h3{color:#176b2c;margin-bottom:6px}
+.km101-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.km101-row .btn{margin:0;flex:1;min-width:145px}
+.km101-small{font-size:13px;color:#687368}
+.km101-delivery{padding:12px;border-radius:14px;background:#eef7ed;margin-top:10px}
+.km101-delivery strong{color:#176b2c}
+body.km-dark .km101-panel{background:#182019;border-color:#304233}
+body.km-dark .km101-small{color:#cbd6cb}
+body.km-dark .km101-delivery{background:#202d21}
+@media(max-width:520px){.km101-row .btn{min-width:100%}}
 
 </style>
 </head>
@@ -439,6 +453,16 @@ body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
   </div>
   <div id="orderSummary" class="order-summary"></div>
 </div>
+
+<div id="km101OrderTools" class="km101-panel">
+  <h3>📦 Order Tools</h3>
+  <div class="km101-small">Download your order report or quickly print your latest receipt.</div>
+  <div class="km101-row">
+    <button class="btn outline" onclick="exportMyOrdersCSV()">📊 My Orders CSV</button>
+    <button class="btn outline" onclick="printLatestOrderReceipt()">🧾 Latest Receipt</button>
+  </div>
+</div>
+
 <div id="ordersList"><div class="info">🔒 Please login to view orders.</div></div>
 </section>
 
@@ -475,7 +499,16 @@ body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
 </div>
 
 <h2 data-i18n="myProducts">📋 My Products</h2><div id="myProducts"></div>
-<h2 data-i18n="incomingOrders">📥 Incoming Orders</h2><div id="farmerOrders"></div>
+<h2 data-i18n="incomingOrders">📥 Incoming Orders</h2>
+<div id="km101FarmerTools" class="km101-panel">
+  <h3>👨‍🌾 Farmer Operations</h3>
+  <div class="km101-row">
+    <button class="btn outline" onclick="km101StockReport()">📊 Stock Report</button>
+    <button class="btn outline" onclick="km101DeliverySummary()">🚚 Delivery Summary</button>
+  </div>
+</div>
+
+<div id="farmerOrders"></div>
 </section>
 </div>
 
@@ -532,7 +565,7 @@ body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
 </div>
 </div>
 
-<footer><p>🌾 KisanMandi V10.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V10.1</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -1208,7 +1241,7 @@ const w=window.open("","_blank");
 if(!w){alert("Please allow pop-ups to print the receipt.");return;}
 w.document.write(`<!doctype html><html><head><title>KisanMandi Receipt ${escapeHTML(order.id)}</title><style>
 body{font-family:Arial,sans-serif;padding:24px;color:#263b28}h1{color:#176b2c}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ccc;padding:9px;text-align:left}.total{font-size:20px;font-weight:bold;margin-top:16px}.box{background:#f4f8f1;padding:14px;border-radius:10px;margin-top:12px}
-</style></head><body><h1>🌾 KisanMandi</h1><h2>Order Receipt</h2><p><strong>Order ID:</strong> ${escapeHTML(order.id)}</p><p><strong>Date:</strong> ${escapeHTML(formatTimestamp(order.createdAt))}</p><p><strong>Status:</strong> ${escapeHTML(statusLabel(order.status||"pending"))}</p><div class="box"><strong>Customer:</strong> ${escapeHTML(order.customerName||"")}<br><strong>Mobile:</strong> ${escapeHTML(order.customerMobile||"")}<br><strong>Delivery:</strong> ${escapeHTML(order.deliveryAddress||"")}</div><table><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><p class="total">Total: ₹${Number(order.total||0)}</p><p><strong>Payment:</strong> Cash on Delivery</p><p>Thank you for using KisanMandi.</p><script>window.onload=()=>window.print();<\/script></body></html>`);
+</style></head><body onload="window.print()"><h1>🌾 KisanMandi</h1><h2>Order Receipt</h2><p><strong>Order ID:</strong> ${escapeHTML(order.id)}</p><p><strong>Date:</strong> ${escapeHTML(formatTimestamp(order.createdAt))}</p><p><strong>Status:</strong> ${escapeHTML(statusLabel(order.status||"pending"))}</p><div class="box"><strong>Customer:</strong> ${escapeHTML(order.customerName||"")}<br><strong>Mobile:</strong> ${escapeHTML(order.customerMobile||"")}<br><strong>Delivery:</strong> ${escapeHTML(order.deliveryAddress||"")}</div><table><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><p class="total">Total: ₹${Number(order.total||0)}</p><p><strong>Payment:</strong> Cash on Delivery</p><p>Thank you for using KisanMandi.</p></body></html>`);
 w.document.close();
 }catch(error){alert("❌ Could not create receipt:\n"+friendlyError(error));}
 };
@@ -1569,7 +1602,7 @@ window.reviewHtml=function(productId){
 try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
 
 /* =========================================================
-   KisanMandi V10.0 SMART TOOLS
+   KisanMandi V10.1 SMART TOOLS
    ========================================================= */
 
 window.setKM10Status=function(message){
@@ -1696,6 +1729,80 @@ window.km10Init=function(){
 
 /* Restore the theme as soon as the page script is ready. */
 try{km10Init();}catch(e){console.warn(e);}
+
+
+/* =========================================================
+   KisanMandi V10.1 OPERATIONAL TOOLS
+   ========================================================= */
+window.exportMyOrdersCSV=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+    const snap=await getDocs(q);
+    if(snap.empty){alert("📦 You have no orders to export.");return;}
+    const rows=[["Order ID","Date","Status","Total","Delivery Address","Payment"]];
+    snap.forEach(d=>{
+      const o=d.data();
+      rows.push([
+        d.id,
+        formatTimestamp(o.createdAt),
+        o.status||"pending",
+        Number(o.total||0),
+        o.deliveryAddress||"",
+        "Cash on Delivery"
+      ]);
+    });
+    const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=`KisanMandi_MyOrders_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    if(typeof setKM10Status==="function")setKM10Status("📊 Your order report was downloaded.");
+  }catch(e){alert("❌ Could not export orders:\n"+friendlyError(e));}
+};
+
+window.printLatestOrderReceipt=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+    const snap=await getDocs(q);
+    if(snap.empty){alert("📦 You have no orders yet.");return;}
+    let latest=null;
+    snap.forEach(d=>{
+      const o={id:d.id,...d.data()};
+      if(!latest || timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;
+    });
+    if(latest && typeof printOrderReceipt==="function")await printOrderReceipt(latest.id);
+  }catch(e){alert("❌ Could not open the latest receipt:\n"+friendlyError(e));}
+};
+
+window.km101StockReport=async function(){
+  if(!currentUser || currentProfile?.role!=="farmer"){alert("👨‍🌾 Farmer login required.");return;}
+  try{
+    const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
+    const snap=await getDocs(q);
+    const products=[];
+    snap.forEach(d=>products.push({id:d.id,...d.data()}));
+    if(!products.length){alert("🌾 You have no products listed.");return;}
+    const low=products.filter(p=>Number(p.stock||0)>0&&Number(p.stock||0)<=10);
+    const out=products.filter(p=>Number(p.stock||0)<=0);
+    const healthy=products.length-low.length-out.length;
+    alert(`📊 Stock Report\n\n🌾 Total products: ${products.length}\n✅ Healthy stock: ${healthy}\n⚠️ Low stock: ${low.length}\n❌ Out of stock: ${out.length}`);
+  }catch(e){alert("❌ Could not load stock report:\n"+friendlyError(e));}
+};
+
+window.km101DeliverySummary=async function(){
+  if(!currentUser || currentProfile?.role!=="farmer"){alert("👨‍🌾 Farmer login required.");return;}
+  try{
+    const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));
+    const snap=await getDocs(q);
+    const c={pending:0,confirmed:0,processing:0,shipped:0,delivered:0,rejected:0,cancelled:0};
+    snap.forEach(d=>{const s=d.data().status||"pending";c[s]=(c[s]||0)+1;});
+    alert(`🚚 Delivery Summary\n\n⏳ Pending: ${c.pending}\n✅ Confirmed: ${c.confirmed}\n⚙️ Processing: ${c.processing}\n🚚 Shipped: ${c.shipped}\n🏠 Delivered: ${c.delivered}\n❌ Rejected: ${c.rejected}\n🛑 Cancelled: ${c.cancelled}`);
+  }catch(e){alert("❌ Could not load delivery summary:\n"+friendlyError(e));}
+};
 
 </script>
 </body>
