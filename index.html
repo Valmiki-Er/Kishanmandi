@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V11.0 - किसान मंडी</title>
+<title>KisanMandi V12.0 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -207,7 +207,7 @@ footer{text-align:center;padding:30px;color:#607060}
 @media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
 
 
-/* ===== KisanMandi V11.0 upgrades ===== */
+/* ===== KisanMandi V12.0 upgrades ===== */
 .wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
 .wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
 .wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
@@ -246,7 +246,7 @@ footer{text-align:center;padding:30px;color:#607060}
 }
 
 
-/* ===== KisanMandi V11.0 consolidated upgrades ===== */
+/* ===== KisanMandi V12.0 consolidated upgrades ===== */
 body.km-dark{
   background:#101510 !important;
   color:#e9f2e9 !important;
@@ -288,7 +288,7 @@ body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
 @media(max-width:520px){.km10-grid{grid-template-columns:1fr}}
 
 
-/* ===== KisanMandi V11.0 operational upgrades ===== */
+/* ===== KisanMandi V12.0 operational upgrades ===== */
 .km101-panel{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
 .km101-panel h3{color:#176b2c;margin-bottom:6px}
 .km101-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
@@ -312,6 +312,25 @@ body.km-dark .km101-delivery{background:#202d21}
 body.km-dark .km11-panel{background:#182019;border-color:#304233}
 body.km-dark .km11-muted{color:#cbd6cb}
 @media(max-width:520px){.km11-row .btn{min-width:100%}.km11-actions .btn{width:100%}}
+
+/* ===== KisanMandi V12.0 ===== */
+.km12-panel{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km12-panel h3{color:#176b2c;margin-bottom:6px}
+.km12-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.km12-row .btn{margin:0;flex:1;min-width:145px}
+.km12-muted{font-size:13px;color:#687368}
+.km12-search{width:100%;padding:13px 15px;border:1px solid #cfd8cf;border-radius:13px;font-size:16px;background:#fff}
+.km12-badge{display:inline-block;padding:5px 9px;border-radius:14px;font-size:12px;font-weight:bold;margin:3px;background:#edf5ec;color:#176b2c}
+.km12-badge.warn{background:#fff6dc;color:#8a6200}
+.km12-badge.danger{background:#ffecec;color:#a51d1d}
+.km12-status{padding:11px 13px;border-radius:13px;background:#eef7ed;margin-top:9px}
+.km12-status strong{color:#176b2c}
+body.km-dark .km12-panel{background:#182019;border-color:#304233}
+body.km-dark .km12-muted{color:#cbd6cb}
+body.km-dark .km12-search{background:#202720;color:#fff;border-color:#465247}
+body.km-dark .km12-status{background:#202d21}
+@media(max-width:520px){.km12-row .btn{min-width:100%}}
+
 </style>
 </head>
 <body>
@@ -578,7 +597,7 @@ body.km-dark .km11-muted{color:#cbd6cb}
 
 
 <div id="km11MarketplaceTools" class="km11-panel">
-<h3>🚀 KisanMandi V11.0</h3>
+<h3>🚀 KisanMandi V12.0</h3>
 <div class="km11-muted">Faster repeat purchases and better order control.</div>
 <div class="km11-row">
 <button class="btn outline" onclick="km11ReorderLast()">🔁 Reorder Last</button>
@@ -586,7 +605,18 @@ body.km-dark .km11-muted{color:#cbd6cb}
 <button class="btn outline" onclick="km11ClearLocalAlerts()">🧹 Clear Alerts</button>
 </div>
 </div>
-<footer><p>🌾 KisanMandi V11.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
+
+<div id="km12Dashboard" class="km12-panel">
+  <h3>🛡️ KisanMandi V12.0</h3>
+  <div class="km12-muted">Better order visibility, delivery tracking and marketplace trust.</div>
+  <div class="km12-row">
+    <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
+    <button class="btn outline" onclick="km12SavedData()">💾 My Saved Data</button>
+    <button class="btn outline" onclick="km12Support()">💬 Help & Support</button>
+  </div>
+</div>
+
+<footer><p>🌾 KisanMandi V12.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -1207,6 +1237,7 @@ if(box){
 if(orders.length===0){box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("noNotifications")}</p>`;}
 else{
 const latest=orders.sort((a,b)=>timestampValue(b.updatedAt||b.createdAt)-timestampValue(a.updatedAt||a.createdAt))[0];
+${typeof km12StatusBadge==="function"?km12StatusBadge(status):""}
 box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("latestOrder")}: <b>${safeText(latest.id)}</b> — <span class="status ${latest.status||"pending"}">${statusLabel(latest.status||"pending")}</span></p>`;
 }
 }
@@ -1627,7 +1658,7 @@ window.reviewHtml=function(productId){
 try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
 
 /* =========================================================
-   KisanMandi V11.0 SMART TOOLS
+   KisanMandi V12.0 SMART TOOLS
    ========================================================= */
 
 window.setKM10Status=function(message){
@@ -1757,7 +1788,7 @@ try{km10Init();}catch(e){console.warn(e);}
 
 
 /* =========================================================
-   KisanMandi V11.0 OPERATIONAL TOOLS
+   KisanMandi V12.0 OPERATIONAL TOOLS
    ========================================================= */
 window.exportMyOrdersCSV=async function(){
   if(!currentUser){alert("🔒 Please login first.");return;}
@@ -1830,7 +1861,7 @@ window.km101DeliverySummary=async function(){
 };
 
 
-/* ===== KisanMandi V11.0 ===== */
+/* ===== KisanMandi V12.0 ===== */
 window.addToCartByProduct=function(product,qty){
   if(!product||!product.id)return;
   const quantity=Math.max(1,Number(qty||1));
@@ -1914,6 +1945,65 @@ window.km11ClearLocalAlerts=function(){
   if(typeof renderNotifications==="function")renderNotifications();
   if(typeof setKM10Status==="function")setKM10Status("🧹 Local alerts cleared.");
   else alert("🧹 Local alerts cleared.");
+};
+
+
+/* =========================================================
+   KisanMandi V12.0
+   ========================================================= */
+
+window.km12OrderTimeline=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const snap=await getDocs(query(collection(db,"orders"),where("customerUid","==",currentUser.uid)));
+    if(snap.empty){alert("📦 You have no orders yet.");return;}
+    let latest=null;
+    snap.forEach(d=>{
+      const o={id:d.id,...d.data()};
+      if(!latest||timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;
+    });
+    if(!latest){alert("📦 No order found.");return;}
+    const status=latest.status||"pending";
+    const steps=[
+      ["pending","⏳ Order placed"],
+      ["confirmed","✅ Order confirmed"],
+      ["processing","⚙️ Processing"],
+      ["shipped","🚚 Shipped"],
+      ["delivered","🏠 Delivered"]
+    ];
+    const current=steps.findIndex(x=>x[0]===status);
+    let text=`🕒 Order Timeline\n\nOrder: ${latest.id}\nStatus: ${status.toUpperCase()}\n\n`;
+    steps.forEach((s,i)=>{text+=(i<=current?"✅ ":"○ ")+s[1]+"\n";});
+    if(status==="cancelled")text+="\n🛑 This order was cancelled.";
+    if(status==="rejected")text+="\n❌ This order was rejected.";
+    alert(text);
+  }catch(e){alert("❌ Could not load timeline:\n"+friendlyError(e));}
+};
+
+window.km12SavedData=function(){
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+  const km=keys.filter(k=>k&&/kisan|cart|language|theme|notification/i.test(k));
+  alert("💾 KisanMandi local data\n\n"+(km.length?km.map(k=>"• "+k).join("\n"):"No KisanMandi local data found."));
+};
+
+window.km12Support=function(){
+  alert("💬 KisanMandi Help\n\n1. Login/Register from Account.\n2. Browse Products and add items to Cart.\n3. Place your order and track it from Orders.\n4. Farmers can manage products and order status from Farmer Dashboard.\n\nFor an account or order problem, keep your Order ID ready.");
+};
+
+window.km12StatusBadge=function(status){
+  const s=String(status||"pending").toLowerCase();
+  const labels={
+    pending:"⏳ Pending",
+    confirmed:"✅ Confirmed",
+    processing:"⚙️ Processing",
+    shipped:"🚚 Shipped",
+    delivered:"🏠 Delivered",
+    cancelled:"🛑 Cancelled",
+    rejected:"❌ Rejected"
+  };
+  const cls=(s==="cancelled"||s==="rejected")?"danger":(s==="pending"?"warn":"");
+  return `<span class="km12-badge ${cls}">${labels[s]||s}</span>`;
 };
 
 </script>
