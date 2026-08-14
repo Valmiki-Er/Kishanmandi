@@ -1237,8 +1237,7 @@ if(box){
 if(orders.length===0){box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("noNotifications")}</p>`;}
 else{
 const latest=orders.sort((a,b)=>timestampValue(b.updatedAt||b.createdAt)-timestampValue(a.updatedAt||a.createdAt))[0];
-${typeof km12StatusBadge==="function"?km12StatusBadge(status):""}
-box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("latestOrder")}: <b>${safeText(latest.id)}</b> — <span class="status ${latest.status||"pending"}">${statusLabel(latest.status||"pending")}</span></p>`;
+box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("latestOrder")}: <b>${safeText(latest.id)}</b> — <span class="status ${latest.status||"pending"}">${statusLabel(latest.status||"pending")}</span>${typeof km12StatusBadge==="function" ? km12StatusBadge(latest.status||"pending") : ""}</p>`;
 }
 }
 }catch(error){console.warn("Notifications unavailable:",error);}
