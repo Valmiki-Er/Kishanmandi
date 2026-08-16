@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V12.2 - किसान मंडी</title>
+<title>KisanMandi V12.3 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -331,6 +331,35 @@ body.km-dark .km12-search{background:#202720;color:#fff;border-color:#465247}
 body.km-dark .km12-status{background:#202d21}
 @media(max-width:520px){.km12-row .btn{min-width:100%}}
 
+
+/* ===== KisanMandi V12.3 text visibility fix ===== */
+/* Dark mode changes the page background, but order cards stay light.
+   Force readable dark text inside those light cards. */
+body.km-dark .order{
+  background:#ffffff !important;
+  color:#263b28 !important;
+  border-color:#d8e3d4 !important;
+}
+body.km-dark .order h3,
+body.km-dark .order p,
+body.km-dark .order strong,
+body.km-dark .order .status-updated,
+body.km-dark .order .total{
+  color:#263b28 !important;
+}
+body.km-dark .order .status-updated{
+  color:#526052 !important;
+}
+body.km-dark .order .timeline span{
+  color:#445044 !important;
+}
+body.km-dark .order .timeline span.active{
+  color:#ffffff !important;
+}
+body.km-dark .order .status.cancelled,
+body.km-dark .order .status.rejected{
+  color:#a51d1d !important;
+}
 </style>
 </head>
 <body>
@@ -607,7 +636,7 @@ body.km-dark .km12-status{background:#202d21}
 </div>
 
 <div id="km12Dashboard" class="km12-panel">
-  <h3>🛡️ KisanMandi V12.2</h3>
+  <h3>🛡️ KisanMandi V12.3</h3>
   <div class="km12-muted">Better order visibility, delivery tracking, secure cancellation and marketplace trust.</div>
   <div class="km12-row">
     <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
@@ -617,7 +646,7 @@ body.km-dark .km12-status{background:#202d21}
   </div>
 </div>
 
-<footer><p>🌾 KisanMandi V12.2</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V12.3</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -1659,7 +1688,7 @@ window.reviewHtml=function(productId){
 try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
 
 /* =========================================================
-   KisanMandi V12.2 SMART TOOLS
+   KisanMandi V12.3 SMART TOOLS
    ========================================================= */
 
 window.setKM10Status=function(message){
@@ -1789,7 +1818,7 @@ try{km10Init();}catch(e){console.warn(e);}
 
 
 /* =========================================================
-   KisanMandi V12.2 OPERATIONAL TOOLS
+   KisanMandi V12.3 OPERATIONAL TOOLS
    ========================================================= */
 window.exportMyOrdersCSV=async function(){
   if(!currentUser){alert("🔒 Please login first.");return;}
@@ -1953,7 +1982,7 @@ window.km11ClearLocalAlerts=function(){
 
 
 /* =========================================================
-   KisanMandi V12.2
+   KisanMandi V12.3
    ========================================================= */
 
 window.km12OrderTimeline=async function(){
