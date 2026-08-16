@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V12.3 - किसान मंडी</title>
+<title>KisanMandi V12.4 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -360,6 +360,84 @@ body.km-dark .order .status.cancelled,
 body.km-dark .order .status.rejected{
   color:#a51d1d !important;
 }
+
+/* ===== KisanMandi V12.4 upgrades ===== */
+.km124-panel{
+  background:#f7fbf5;
+  border:1px solid #d7e7d3;
+  border-radius:18px;
+  padding:18px;
+  margin:18px 0;
+}
+.km124-panel h3{color:#176b2c;margin-bottom:6px}
+.km124-muted{color:#5f6d61;margin-bottom:12px}
+.km124-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.km124-grid .btn{margin-top:0}
+.km124-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.km124-stat{
+  background:white;
+  border:1px solid #dfe9dc;
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+.km124-stat strong{
+  display:block;
+  font-size:22px;
+  color:#176b2c;
+}
+.km124-stat span{font-size:12px;color:#5f6d61}
+.km124-alert{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:11px 0;
+  border-bottom:1px solid #e2e8df;
+}
+.km124-alert:last-child{border-bottom:0}
+.km124-alert-time{font-size:11px;color:#687568;margin-top:2px}
+.km124-empty{
+  background:#fff8d9;
+  color:#675613;
+  border-radius:12px;
+  padding:12px;
+}
+.km124-focus{
+  border:2px solid #176b2c!important;
+  box-shadow:0 0 0 3px #dff2df;
+}
+.km124-status-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.km124-status-row .km124-line{
+  width:18px;
+  height:3px;
+  background:#d8e3d4;
+  border-radius:4px;
+}
+.km124-status-row .km124-line.done{background:#176b2c}
+@media(max-width:700px){
+  .km124-summary{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .km124-grid{grid-template-columns:1fr}
+  .km124-panel{padding:15px}
+  .km124-stat strong{font-size:20px}
+}
+
 </style>
 </head>
 <body>
@@ -636,7 +714,7 @@ body.km-dark .order .status.rejected{
 </div>
 
 <div id="km12Dashboard" class="km12-panel">
-  <h3>🛡️ KisanMandi V12.3</h3>
+  <h3>🛡️ KisanMandi V12.4</h3>
   <div class="km12-muted">Better order visibility, delivery tracking, secure cancellation and marketplace trust.</div>
   <div class="km12-row">
     <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
@@ -646,7 +724,23 @@ body.km-dark .order .status.rejected{
   </div>
 </div>
 
-<footer><p>🌾 KisanMandi V12.3</p><p>Direct Farmer to Customer Marketplace</p></footer>
+
+<div id="km124Dashboard" class="km124-panel">
+  <h3>🚀 KisanMandi V12.4</h3>
+  <div class="km124-muted">Faster order overview, clearer alerts and easier marketplace control.</div>
+
+  <div class="km124-grid">
+    <button class="btn outline" onclick="km124OrderOverview()">📊 Order Overview</button>
+    <button class="btn outline" onclick="km124OpenNotifications()">🔔 Notification Center</button>
+    <button class="btn outline" onclick="km124ClearNotifications()">🧹 Clear Notifications</button>
+    <button class="btn outline" onclick="km124RefreshAll()">🔄 Refresh Marketplace</button>
+  </div>
+
+  <div id="km124Summary" class="km124-summary"></div>
+  <div id="km124Alerts" style="margin-top:12px"></div>
+</div>
+
+<footer><p>🌾 KisanMandi V12.4</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -2050,6 +2144,126 @@ window.km12StatusBadge=function(status){
   const cls=(s==="cancelled"||s==="rejected")?"danger":(s==="pending"?"warn":"");
   return `<span class="km12-badge ${cls}">${labels[s]||s}</span>`;
 };
+
+
+/* ===== KisanMandi V12.4 functions ===== */
+function km124FormatAlertTime(ms){
+  try{return new Date(Number(ms||Date.now())).toLocaleString();}
+  catch(e){return "";}
+}
+
+window.km124RenderSummary=function(){
+  const box=document.getElementById("km124Summary");
+  if(!box)return;
+
+  const cards=[...document.querySelectorAll("#ordersList .order")]
+    .filter(c=>c.style.display!=="none");
+
+  const counts={
+    total:cards.length,
+    active:0,
+    delivered:0,
+    cancelled:0
+  };
+
+  cards.forEach(card=>{
+    const text=(card.innerText||"").toLowerCase();
+    if(text.includes("pending")||text.includes("confirmed")||text.includes("processing")||text.includes("shipped")){
+      counts.active++;
+    }
+    if(text.includes("delivered"))counts.delivered++;
+    if(text.includes("cancelled"))counts.cancelled++;
+  });
+
+  box.innerHTML=`
+    <div class="km124-stat"><strong>${counts.total}</strong><span>📦 Shown</span></div>
+    <div class="km124-stat"><strong>${counts.active}</strong><span>🔄 Active</span></div>
+    <div class="km124-stat"><strong>${counts.delivered}</strong><span>🏠 Delivered</span></div>
+    <div class="km124-stat"><strong>${counts.cancelled}</strong><span>🛑 Cancelled</span></div>
+  `;
+};
+
+window.km124RenderAlerts=function(){
+  const box=document.getElementById("km124Alerts");
+  if(!box)return;
+
+  let notes=[];
+  try{notes=JSON.parse(localStorage.getItem("kisanMandiNotifications")||"[]");}
+  catch(e){notes=[];}
+
+  if(!Array.isArray(notes)||!notes.length){
+    box.innerHTML='<div class="km124-empty">🎉 No local notifications.</div>';
+    return;
+  }
+
+  box.innerHTML=notes.slice(0,8).map(n=>`
+    <div class="km124-alert">
+      <div>🔔</div>
+      <div>
+        <strong>${safeText(n.title||"KisanMandi")}</strong>
+        <div>${safeText(n.message||"")}</div>
+        <div class="km124-alert-time">${km124FormatAlertTime(n.at)}</div>
+      </div>
+    </div>
+  `).join("");
+};
+
+window.km124OrderOverview=function(){
+  showSection("ordersSection");
+  setTimeout(()=>{
+    km124RenderSummary();
+    const panel=document.getElementById("km124Dashboard");
+    if(panel)panel.classList.remove("km124-focus");
+  },250);
+};
+
+window.km124OpenNotifications=function(){
+  const panel=document.getElementById("notificationPanel");
+  if(panel){
+    panel.classList.remove("hidden");
+    if(typeof renderNotifications==="function")renderNotifications();
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  km124RenderAlerts();
+};
+
+window.km124ClearNotifications=function(){
+  if(!confirm("Clear KisanMandi notifications saved on this device?"))return;
+  localStorage.removeItem("kisanMandiNotifications");
+  if(typeof renderNotifications==="function")renderNotifications();
+  km124RenderAlerts();
+  alert("✅ Notifications cleared.");
+};
+
+window.km124RefreshAll=async function(){
+  try{
+    if(typeof loadProducts==="function")await loadProducts();
+    if(typeof renderCart==="function")renderCart();
+    if(currentUser && typeof loadOrders==="function"){
+      await loadOrders();
+      if(typeof filterOrdersUI==="function")filterOrdersUI();
+    }
+    if(typeof km124RenderSummary==="function")km124RenderSummary();
+    if(typeof km124RenderAlerts==="function")km124RenderAlerts();
+    alert("✅ KisanMandi refreshed successfully.");
+  }catch(e){
+    alert("❌ Refresh failed. Please try again.");
+  }
+};
+
+window.km124UpdateAfterOrder=function(){
+  setTimeout(()=>{
+    km124RenderSummary();
+    km124RenderAlerts();
+  },300);
+};
+
+document.addEventListener("DOMContentLoaded",()=>{
+  setTimeout(()=>{
+    km124RenderSummary();
+    km124RenderAlerts();
+  },500);
+});
 
 </script>
 </body>
