@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V12.0 - किसान मंडी</title>
+<title>KisanMandi V12.2 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -607,16 +607,17 @@ body.km-dark .km12-status{background:#202d21}
 </div>
 
 <div id="km12Dashboard" class="km12-panel">
-  <h3>🛡️ KisanMandi V12.0</h3>
-  <div class="km12-muted">Better order visibility, delivery tracking and marketplace trust.</div>
+  <h3>🛡️ KisanMandi V12.2</h3>
+  <div class="km12-muted">Better order visibility, delivery tracking, secure cancellation and marketplace trust.</div>
   <div class="km12-row">
     <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
+    <button class="btn outline" onclick="km12LatestOrder()">📦 Latest Order</button>
     <button class="btn outline" onclick="km12SavedData()">💾 My Saved Data</button>
     <button class="btn outline" onclick="km12Support()">💬 Help & Support</button>
   </div>
 </div>
 
-<footer><p>🌾 KisanMandi V12.0</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V12.2</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -1261,8 +1262,9 @@ function renderCustomerOrder(order){
 const status=order.status||"pending";
 const items=Array.isArray(order.items)?order.items:[];
 const itemsHTML=items.map(item=>`<p>🌾 ${safeText(item.name||"Product")} — ₹${Number(item.price||0)} × ${Number(item.quantity||1)}</p>`).join("");
-const steps=["pending","confirmed","delivered"];
-const timeline=steps.map(s=>`<span class="${s===status?"active":""}">${statusLabel(s)}</span>`).join("");
+const steps=["pending","confirmed","processing","shipped","delivered"];
+const currentIndex=steps.indexOf(status);
+const timeline=steps.map((s,i)=>`<span class="${i<=currentIndex&&currentIndex>=0?"active":""}">${statusLabel(s)}</span>`).join("");
 let wa="";
 const farmerMobile=order.farmerMobile||"";
 if(farmerMobile){
@@ -1273,7 +1275,7 @@ const address=order.deliveryAddress?`<p>📍 <strong>Delivery:</strong> ${safeTe
 const notes=order.deliveryNotes?`<p>📝 <strong>Notes:</strong> ${safeText(order.deliveryNotes)}</p>`:"";
 const payment=order.paymentMethod==="cod"?"💵 Cash on Delivery":"💳 Payment";
 const reorder=`<button class="btn outline receipt-btn" onclick="km11Reorder('${safeText(order.id)}')">🔁 Reorder</button>`;
-const cancel=(status==="pending")?`<button class="btn red receipt-btn" onclick="km11CancelOrder('${safeText(order.id)}')">🛑 Cancel</button>`:"";
+const cancel=(status==="pending"||status==="confirmed")?`<button class="btn red receipt-btn" onclick="km11CancelOrder('${safeText(order.id)}')">🛑 Cancel</button>`:"";
 const receipt=`<button class="btn outline receipt-btn" onclick="printOrderReceipt('${safeText(order.id)}')">🧾 Receipt</button>`;
 const updated=order.updatedAt||order.createdAt;
 return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><div class="status-updated">${t("lastUpdated")}: ${formatTimestamp(updated)}</div><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3><p>${payment}</p>${address}${notes}<div>${reorder}${cancel}${receipt}${wa}</div></div>`;
@@ -1549,9 +1551,9 @@ element.innerHTML=`<div class="${error?"error":"success"}">${message}</div>`;
 }
 function statusLabel(status){
 const labels={
-en:{pending:"⏳ Pending",confirmed:"✅ Confirmed",delivered:"🚚 Delivered",rejected:"❌ Rejected"},
-hi:{pending:"⏳ लंबित",confirmed:"✅ पुष्टि की गई",delivered:"🚚 डिलीवर हो गया",rejected:"❌ अस्वीकार"},
-ta:{pending:"⏳ நிலுவையில்",confirmed:"✅ உறுதி செய்யப்பட்டது",delivered:"🚚 வழங்கப்பட்டது",rejected:"❌ நிராகரிக்கப்பட்டது"}
+en:{pending:"⏳ Pending",confirmed:"✅ Confirmed",processing:"⚙️ Processing",shipped:"🚚 Shipped",delivered:"🏠 Delivered",cancelled:"🛑 Cancelled",rejected:"❌ Rejected"},
+hi:{pending:"⏳ लंबित",confirmed:"✅ पुष्टि की गई",processing:"⚙️ प्रोसेसिंग",shipped:"🚚 भेजा गया",delivered:"🏠 डिलीवर हो गया",cancelled:"🛑 रद्द",rejected:"❌ अस्वीकार"},
+ta:{pending:"⏳ நிலுவையில்",confirmed:"✅ உறுதி செய்யப்பட்டது",processing:"⚙️ செயலாக்கம்",shipped:"🚚 அனுப்பப்பட்டது",delivered:"🏠 வழங்கப்பட்டது",cancelled:"🛑 ரத்து",rejected:"❌ நிராகரிக்கப்பட்டது"}
 };
 return (labels[currentLanguage]||labels.en)[status]||status;
 }
@@ -1657,7 +1659,7 @@ window.reviewHtml=function(productId){
 try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
 
 /* =========================================================
-   KisanMandi V12.0 SMART TOOLS
+   KisanMandi V12.2 SMART TOOLS
    ========================================================= */
 
 window.setKM10Status=function(message){
@@ -1787,7 +1789,7 @@ try{km10Init();}catch(e){console.warn(e);}
 
 
 /* =========================================================
-   KisanMandi V12.0 OPERATIONAL TOOLS
+   KisanMandi V12.2 OPERATIONAL TOOLS
    ========================================================= */
 window.exportMyOrdersCSV=async function(){
   if(!currentUser){alert("🔒 Please login first.");return;}
@@ -1884,10 +1886,13 @@ window.km11CancelOrder=async function(orderId){
     if(!snap.exists())return alert("❌ Order not found.");
     const o=snap.data();
     if(o.customerUid!==currentUser.uid)return alert("❌ Not authorized.");
-    if((o.status||"pending")!=="pending")return alert("ℹ️ Only pending orders can be cancelled.");
-    await updateDoc(ref,{status:"cancelled",updatedAt:serverTimestamp(),cancelledBy:"customer"});
+    const status=o.status||"pending";
+    if(status!=="pending"&&status!=="confirmed")return alert("ℹ️ This order can no longer be cancelled.");
+    // Secure-rule compatible update: only status and updatedAt are changed.
+    await updateDoc(ref,{status:"cancelled",updatedAt:serverTimestamp()});
     if(typeof addKisanNotification==="function")addKisanNotification("🛑 Order cancelled","Order "+orderId+" was cancelled.");
-    await loadOrders(); await updateOrderNotifications();
+    await loadOrders();
+    await updateOrderNotifications();
     alert("✅ Order cancelled.");
   }catch(e){alert("❌ "+friendlyError(e));}
 };
@@ -1948,7 +1953,7 @@ window.km11ClearLocalAlerts=function(){
 
 
 /* =========================================================
-   KisanMandi V12.0
+   KisanMandi V12.2
    ========================================================= */
 
 window.km12OrderTimeline=async function(){
@@ -1977,6 +1982,18 @@ window.km12OrderTimeline=async function(){
     if(status==="rejected")text+="\n❌ This order was rejected.";
     alert(text);
   }catch(e){alert("❌ Could not load timeline:\n"+friendlyError(e));}
+};
+
+window.km12LatestOrder=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const snap=await getDocs(query(collection(db,"orders"),where("customerUid","==",currentUser.uid)));
+    if(snap.empty){alert("📦 You have no orders yet.");return;}
+    let latest=null;
+    snap.forEach(d=>{const o={id:d.id,...d.data()};if(!latest||timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;});
+    if(!latest)return;
+    alert(`📦 Latest Order\n\nOrder: ${latest.id}\nStatus: ${statusLabel(latest.status||"pending")}\nTotal: ₹${Number(latest.total||0)}\nUpdated: ${formatTimestamp(latest.updatedAt||latest.createdAt)}`);
+  }catch(e){alert("❌ Could not load latest order:\n"+friendlyError(e));}
 };
 
 window.km12SavedData=function(){
