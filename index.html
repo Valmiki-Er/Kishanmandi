@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V12.4 - किसान मंडी</title>
+<title>KisanMandi V13.0 FINAL - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -361,7 +361,7 @@ body.km-dark .order .status.rejected{
   color:#a51d1d !important;
 }
 
-/* ===== KisanMandi V12.4 upgrades ===== */
+/* ===== KisanMandi V13.0 FINAL upgrades ===== */
 .km124-panel{
   background:#f7fbf5;
   border:1px solid #d7e7d3;
@@ -437,6 +437,15 @@ body.km-dark .order .status.rejected{
   .km124-panel{padding:15px}
   .km124-stat strong{font-size:20px}
 }
+
+
+/* ===== KisanMandi V13.0 FINAL ===== */
+.km13-final{margin:16px 0;padding:16px;border:1px solid #cfe4cd;border-radius:18px;background:#f6fbf5}
+.km13-final h3{margin:0 0 5px;color:#176b2c}
+.km13-final p{margin:0;color:#5e6c60;font-size:13px}
+.km13-final .km13-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.km13-final button{width:100%}
+@media(max-width:650px){.km13-final .km13-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -714,7 +723,7 @@ body.km-dark .order .status.rejected{
 </div>
 
 <div id="km12Dashboard" class="km12-panel">
-  <h3>🛡️ KisanMandi V12.4</h3>
+  <h3>🛡️ KisanMandi V13.0 FINAL</h3>
   <div class="km12-muted">Better order visibility, delivery tracking, secure cancellation and marketplace trust.</div>
   <div class="km12-row">
     <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
@@ -726,7 +735,7 @@ body.km-dark .order .status.rejected{
 
 
 <div id="km124Dashboard" class="km124-panel">
-  <h3>🚀 KisanMandi V12.4</h3>
+  <h3>🚀 KisanMandi V13.0 FINAL</h3>
   <div class="km124-muted">Faster order overview, clearer alerts and easier marketplace control.</div>
 
   <div class="km124-grid">
@@ -740,7 +749,18 @@ body.km-dark .order .status.rejected{
   <div id="km124Alerts" style="margin-top:12px"></div>
 </div>
 
-<footer><p>🌾 KisanMandi V12.4</p><p>Direct Farmer to Customer Marketplace</p></footer>
+
+<div id="km13FinalPanel" class="km13-final">
+  <h3>🌾 KisanMandi V13.0 FINAL</h3>
+  <p>Final consolidated release — keep this version as your stable backup.</p>
+  <div class="km13-grid">
+    <button class="btn outline" onclick="km13RunHealthCheck()">🩺 App Health Check</button>
+    <button class="btn outline" onclick="km13BackupReminder()">💾 Backup Reminder</button>
+    <button class="btn outline" onclick="km13About()">ℹ️ About KisanMandi</button>
+  </div>
+</div>
+
+<footer><p>🌾 KisanMandi V13.0 FINAL</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -2146,7 +2166,7 @@ window.km12StatusBadge=function(status){
 };
 
 
-/* ===== KisanMandi V12.4 functions ===== */
+/* ===== KisanMandi V13.0 FINAL functions ===== */
 function km124FormatAlertTime(ms){
   try{return new Date(Number(ms||Date.now())).toLocaleString();}
   catch(e){return "";}
@@ -2264,6 +2284,33 @@ document.addEventListener("DOMContentLoaded",()=>{
     km124RenderAlerts();
   },500);
 });
+
+
+/* ===== KisanMandi V13.0 FINAL ===== */
+window.km13RunHealthCheck=function(){
+  const checks=[
+    ["Firebase", typeof db!=="undefined"],
+    ["Authentication", typeof auth!=="undefined"],
+    ["Products", typeof loadProducts==="function"],
+    ["Cart", typeof renderCart==="function"],
+    ["Orders", typeof loadOrders==="function"],
+    ["Notifications", typeof renderNotifications==="function"]
+  ];
+  const failed=checks.filter(x=>!x[1]);
+  if(!failed.length){
+    alert("✅ KisanMandi V13.0 FINAL health check passed.\n\nCore modules are loaded.");
+  }else{
+    alert("⚠️ Modules not detected by the health check:\n\n"+failed.map(x=>"• "+x[0]).join("\n"));
+  }
+};
+
+window.km13BackupReminder=function(){
+  alert("💾 FINAL VERSION BACKUP\n\nKeep this working V13.0 index.html as your master backup before future changes.");
+};
+
+window.km13About=function(){
+  alert("🌾 KisanMandi V13.0 FINAL\n\nDirect Farmer → Customer Marketplace\n\nYour working V13.0 FINAL features are retained in this final release.");
+};
 
 </script>
 </body>
