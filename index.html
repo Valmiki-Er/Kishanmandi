@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>KisanMandi V13.0 FINAL - किसान मंडी</title>
+<title>KisanMandi V13.2 - किसान मंडी</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
@@ -361,7 +361,7 @@ body.km-dark .order .status.rejected{
   color:#a51d1d !important;
 }
 
-/* ===== KisanMandi V13.0 FINAL upgrades ===== */
+/* ===== KisanMandi V13.2 upgrades ===== */
 .km124-panel{
   background:#f7fbf5;
   border:1px solid #d7e7d3;
@@ -493,7 +493,7 @@ body.km-dark .km12-muted{
   color:#dfeadf !important;
 }
 
-/* ===== KisanMandi V13.0 FINAL ===== */
+/* ===== KisanMandi V13.2 ===== */
 .km13-final{margin:16px 0;padding:16px;border:1px solid #cfe4cd;border-radius:18px;background:#f6fbf5}
 .km13-final h3{margin:0 0 5px;color:#176b2c}
 .km13-final p{margin:0;color:#5e6c60;font-size:13px}
@@ -501,6 +501,7 @@ body.km-dark .km12-muted{
 .km13-final button{width:100%}
 @media(max-width:650px){.km13-final .km13-grid{grid-template-columns:1fr}}
 
+.btn:disabled{opacity:.7;cursor:wait}.login-status{margin-top:8px;text-align:center;font-weight:bold}
 </style>
 </head>
 <body>
@@ -777,7 +778,7 @@ body.km-dark .km12-muted{
 </div>
 
 <div id="km12Dashboard" class="km12-panel">
-  <h3>🛡️ KisanMandi V13.0 FINAL</h3>
+  <h3>🛡️ KisanMandi V13.2</h3>
   <div class="km12-muted">Better order visibility, delivery tracking, secure cancellation and marketplace trust.</div>
   <div class="km12-row">
     <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
@@ -789,7 +790,7 @@ body.km-dark .km12-muted{
 
 
 <div id="km124Dashboard" class="km124-panel">
-  <h3>🚀 KisanMandi V13.0 FINAL</h3>
+  <h3>🚀 KisanMandi V13.2</h3>
   <div class="km124-muted">Faster order overview, clearer alerts and easier marketplace control.</div>
 
   <div class="km124-grid">
@@ -805,7 +806,7 @@ body.km-dark .km12-muted{
 
 
 <div id="km13FinalPanel" class="km13-final">
-  <h3>🌾 KisanMandi V13.0 FINAL</h3>
+  <h3>🌾 KisanMandi V13.2</h3>
   <p>Final consolidated release — keep this version as your stable backup.</p>
   <div class="km13-grid">
     <button class="btn outline" onclick="km13RunHealthCheck()">🩺 App Health Check</button>
@@ -814,11 +815,11 @@ body.km-dark .km12-muted{
   </div>
 </div>
 
-<footer><p>🌾 KisanMandi V13.0 FINAL</p><p>Direct Farmer to Customer Marketplace</p></footer>
+<footer><p>🌾 KisanMandi V13.2</p><p>Direct Farmer to Customer Marketplace</p></footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut,updateProfile} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut,updateProfile,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,deleteDoc,query,where,serverTimestamp,onSnapshot} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 /*
@@ -839,6 +840,9 @@ measurementId:"G-FHCQZCPKLX"
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+
+// Keep the login session on the device so the customer/farmer stays signed in.
+try{ await setPersistence(auth,browserLocalPersistence); }catch(e){ console.warn("Auth persistence unavailable",e); }
 
 let currentUser=null;
 let currentProfile=null;
@@ -886,10 +890,19 @@ window.loginUser=async function(){
 const email=document.getElementById("loginEmail").value.trim();
 const password=document.getElementById("loginPassword").value;
 if(!email||!password){showMessage("accountMessage","❌ Enter email and password.",true);return;}
+const button=document.querySelector('#loginBox button[onclick="loginUser()"]');
 try{
+if(button){button.disabled=true;button.textContent="⏳ Logging in...";}
+showMessage("accountMessage","⏳ Connecting securely...",false);
+await setPersistence(auth,browserLocalPersistence).catch(()=>{});
 await signInWithEmailAndPassword(auth,email,password);
 showMessage("accountMessage","✅ Login successful! Welcome back.");
-}catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
+}catch(error){
+console.error("KisanMandi login error:",error);
+showMessage("accountMessage","❌ "+friendlyError(error),true);
+}finally{
+if(button){button.disabled=false;button.textContent=t("loginButton")||"🔐 Login";}
+}
 };
 
 window.forgotPassword=async function(){
@@ -906,7 +919,13 @@ window.logoutUser=async function(){stopOrderStatusListener();await signOut(auth)
 onAuthStateChanged(auth,async user=>{
 currentUser=user;
 if(user){
-await loadCurrentProfile();
+try{
+  await loadCurrentProfile();
+}catch(profileError){
+  console.warn("Profile read failed after authentication:",profileError);
+  currentProfile=null;
+  showMessage("accountMessage","⚠️ Login succeeded, but your profile could not be loaded yet. Please check your connection and try again.",true);
+}
 document.getElementById("loginBox").classList.add("hidden");
 document.getElementById("registerBox").classList.add("hidden");
 document.getElementById("loggedBox").classList.remove("hidden");
@@ -956,9 +975,14 @@ setTimeout(closeProfileModal,700);
 };
 
 async function loadCurrentProfile(){
-if(!currentUser)return;
+if(!currentUser)return null;
 const snap=await getDoc(doc(db,"users",currentUser.uid));
-if(snap.exists())currentProfile=snap.data();
+if(snap.exists()){
+  currentProfile=snap.data();
+}else{
+  currentProfile=null;
+}
+return currentProfile;
 }
 
 async function loadProducts(){
@@ -1766,6 +1790,8 @@ const messages={
 "auth/invalid-credential":"Incorrect email or password.",
 "auth/user-not-found":"User account not found.",
 "auth/wrong-password":"Incorrect password.",
+"auth/network-request-failed":"Network connection failed. Check your internet and try again.",
+"auth/too-many-requests":"Too many login attempts. Please wait a moment and try again.",
 "permission-denied":"Firebase security rules denied this action."
 };
 return messages[code]||error?.message||"Something went wrong.";
@@ -2220,7 +2246,7 @@ window.km12StatusBadge=function(status){
 };
 
 
-/* ===== KisanMandi V13.0 FINAL functions ===== */
+/* ===== KisanMandi V13.2 functions ===== */
 function km124FormatAlertTime(ms){
   try{return new Date(Number(ms||Date.now())).toLocaleString();}
   catch(e){return "";}
@@ -2340,7 +2366,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 });
 
 
-/* ===== KisanMandi V13.0 FINAL ===== */
+/* ===== KisanMandi V13.2 ===== */
 window.km13RunHealthCheck=function(){
   const checks=[
     ["Firebase", typeof db!=="undefined"],
@@ -2352,7 +2378,7 @@ window.km13RunHealthCheck=function(){
   ];
   const failed=checks.filter(x=>!x[1]);
   if(!failed.length){
-    alert("✅ KisanMandi V13.0 FINAL health check passed.\n\nCore modules are loaded.");
+    alert("✅ KisanMandi V13.2 health check passed.\n\nCore modules are loaded.");
   }else{
     alert("⚠️ Modules not detected by the health check:\n\n"+failed.map(x=>"• "+x[0]).join("\n"));
   }
@@ -2363,7 +2389,7 @@ window.km13BackupReminder=function(){
 };
 
 window.km13About=function(){
-  alert("🌾 KisanMandi V13.0 FINAL\n\nDirect Farmer → Customer Marketplace\n\nYour working V13.0 FINAL features are retained in this final release.");
+  alert("🌾 KisanMandi V13.2\n\nDirect Farmer → Customer Marketplace\n\nYour working V13.2 features are retained in this final release.");
 };
 
 </script>
