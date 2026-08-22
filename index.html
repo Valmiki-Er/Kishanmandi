@@ -439,6 +439,60 @@ body.km-dark .order .status.rejected{
 }
 
 
+/* ===== KisanMandi V13.1 TEXT VISIBILITY FIX ===== */
+/* V13 panels are light cards while the app uses dark mode. Force readable text. */
+body.km-dark .km124-panel,
+body.km-dark .km13-final{
+  background:#f7fbf5 !important;
+  color:#263b28 !important;
+  border-color:#cfe4cd !important;
+}
+body.km-dark .km124-panel h3,
+body.km-dark .km13-final h3{
+  color:#176b2c !important;
+}
+body.km-dark .km124-panel p,
+body.km-dark .km13-final p,
+body.km-dark .km124-muted,
+body.km-dark .km124-stat span,
+body.km-dark .km124-alert-time{
+  color:#526052 !important;
+}
+body.km-dark .km124-stat{
+  background:#ffffff !important;
+  color:#263b28 !important;
+  border-color:#dfe9dc !important;
+}
+body.km-dark .km124-stat strong{
+  color:#176b2c !important;
+}
+body.km-dark .km124-alert{
+  color:#263b28 !important;
+  border-bottom-color:#e2e8df !important;
+}
+body.km-dark .km124-alert *{
+  color:#263b28 !important;
+}
+body.km-dark .km124-alert-time{
+  color:#526052 !important;
+}
+body.km-dark .km124-empty{
+  color:#675613 !important;
+}
+/* Improve V12/V13 tool headings when shown on dark panels. */
+body.km-dark .km10-tools h3,
+body.km-dark .km101-panel h3,
+body.km-dark .km11-panel h3,
+body.km-dark .km12-panel h3{
+  color:#7bd58f !important;
+}
+body.km-dark .km10-status,
+body.km-dark .km101-small,
+body.km-dark .km11-muted,
+body.km-dark .km12-muted{
+  color:#dfeadf !important;
+}
+
 /* ===== KisanMandi V13.0 FINAL ===== */
 .km13-final{margin:16px 0;padding:16px;border:1px solid #cfe4cd;border-radius:18px;background:#f6fbf5}
 .km13-final h3{margin:0 0 5px;color:#176b2c}
