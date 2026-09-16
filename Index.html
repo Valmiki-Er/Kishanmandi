@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KisanMandi V13.2 - किसान मंडी</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f8f1;color:#263b28;line-height:1.5}
+header{background:#176b2c;color:white;padding:20px;text-align:center;position:sticky;top:0;z-index:20;box-shadow:0 3px 12px #0002}
+header h1{font-size:30px}
+header p{font-size:15px;margin-top:4px}
+nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.language-box{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:12px}
+.language-box label{font-weight:bold}
+.language-select{width:auto;min-width:150px;margin:0;padding:9px 12px;border:0;border-radius:20px;background:white;color:#176b2c;font-weight:bold;font-size:15px}
+@media(max-width:600px){.language-select{min-width:145px}}
+nav button{border:0;border-radius:20px;padding:9px 15px;background:white;color:#176b2c;font-weight:bold}
+.container{width:min(950px,94%);margin:25px auto}
+.card{background:white;border-radius:22px;padding:24px;margin-bottom:22px;box-shadow:0 8px 25px #00000012}
+.card h2{color:#176b2c;margin-bottom:12px}
+input,select,textarea{width:100%;padding:14px;margin:7px 0;border:1px solid #bbb;border-radius:12px;font-size:16px}
+button{cursor:pointer}.btn{width:100%;border:0;border-radius:12px;padding:14px;margin-top:8px;font-size:17px;font-weight:bold}
+.green{background:#176b2c;color:white}.red{background:#d52b2b;color:white}.orange{background:#ed9400;color:white}.blue{background:#2777c9;color:white}.outline{background:white;color:#176b2c;border:2px solid #176b2c}
+
+.checkout-overlay{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:150}
+.checkout-modal{background:white;border-radius:22px;padding:22px;width:min(94%,560px);max-height:92vh;overflow:auto;box-shadow:0 18px 60px #0006}
+.checkout-modal h2{color:#176b2c;margin-bottom:8px}
+.checkout-note{background:#fff8d8;border:1px solid #f0df8a;border-radius:12px;padding:12px;margin:10px 0;color:#5c4b12}
+.receipt-btn{display:inline-block!important;width:auto!important;padding:10px 14px!important;margin:6px 6px 0 0!important;font-size:14px!important}
+.product{overflow:hidden;border:1px solid #e2e8df;border-radius:20px;margin:18px 0;background:white}
+.product-img{height:190px;background:#edf7e9;display:flex;align-items:center;justify-content:center;font-size:90px}
+.product-body{padding:20px}.price{font-size:27px;font-weight:bold;color:#176b2c;margin:10px 0}
+.stock{font-weight:bold;color:#247738}.badge{display:inline-block;padding:5px 12px;border-radius:20px;background:#fff1b9;color:#755b0b;font-weight:bold}
+.status{display:inline-block;padding:6px 13px;border-radius:20px;font-weight:bold}.pending{background:#fff0bd;color:#785900}.confirmed{background:#dcecff;color:#12558d}.delivered{background:#dff2df;color:#176b2c}.rejected{background:#ffdede;color:#a51d1d}
+.order{border:1px solid #d8e3d4;border-radius:18px;padding:18px;margin:15px 0;background:#fbfdf9}
+.order h3{color:#176b2c;margin-bottom:8px}.qty{display:flex;align-items:center;gap:12px;margin:10px 0}.qty button{width:42px;height:42px;border:0;border-radius:50%;background:#176b2c;color:white;font-size:22px}
+.total{font-size:24px;font-weight:bold;color:#176b2c;padding:12px 0}.hidden{display:none!important}
+.success{background:#e5f5e3;color:#176b2c;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
+.error{background:#ffe3e3;color:#a51d1d;padding:15px;border-radius:12px;font-weight:bold;margin:10px 0}
+.info{background:#fff8d9;color:#675613;padding:14px;border-radius:12px;margin:10px 0}.center{text-align:center}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}
+.stat-card{background:#f4f8f1;border:1px solid #dfe9dc;border-radius:16px;padding:16px;text-align:center}
+.stat-card .stat-icon{font-size:28px}.stat-card strong{display:block;font-size:24px;color:#176b2c;margin-top:4px}
+.product-manage{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.product-manage button{flex:1;min-width:120px;border:0;border-radius:10px;padding:10px;font-weight:bold}
+@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.hero{text-align:center;padding:30px 10px}.hero .emoji{font-size:75px}
+footer{text-align:center;padding:30px;color:#607060}
+
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:18px;
+    margin-top:18px;
+}
+
+.market-toolbar{
+    margin-top:12px;
+    padding:12px;
+    background:#f7fbf5;
+    border-radius:16px;
+    border:1px solid #e1eadf;
+}
+
+.category-chips{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.category-chip{
+    border:1px solid #176b2c;
+    background:white;
+    color:#176b2c;
+    border-radius:20px;
+    padding:8px 13px;
+    font-weight:bold;
+}
+
+.category-chip.active,
+.category-chip:hover{
+    background:#176b2c;
+    color:white;
+}
+
+.toolbar-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:12px;
+}
+
+.result-count{
+    color:#5c6b5c;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.sort-select{
+    width:auto;
+    min-width:175px;
+    margin:0;
+    padding:10px;
+    font-size:14px;
+}
+
+.product{
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    transition:transform .18s ease,box-shadow .18s ease;
+}
+
+.product:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px #00000018;
+}
+
+.product-img{
+    height:180px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg,#eaf7e5,#fff7d7);
+}
+
+.product-img::after{
+    content:"";
+    position:absolute;
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    background:#ffffff55;
+    right:-30px;
+    top:-35px;
+}
+
+.product-emoji{
+    position:relative;
+    z-index:2;
+    font-size:86px;
+    filter:drop-shadow(0 4px 5px #0002);
+}
+
+.product-category-label{
+    position:absolute;
+    left:12px;
+    bottom:10px;
+    z-index:3;
+    background:#ffffffdd;
+    color:#176b2c;
+    padding:5px 9px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.product-body{
+    flex:1;
+}
+
+.product-meta{
+    color:#697569;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.stock-low{
+    color:#c26b00;
+}
+
+.empty-products{
+    grid-column:1/-1;
+}
+
+@media(max-width:600px){
+    .toolbar-row{
+        flex-direction:column;
+        align-items:stretch;
+    }
+    .sort-select{
+        width:100%;
+    }
+    .category-chips{
+        overflow-x:auto;
+        flex-wrap:nowrap;
+        padding-bottom:4px;
+    }
+    .category-chip{
+        white-space:nowrap;
+    }
+}
+
+@media(max-width:600px){.card{padding:18px}header h1{font-size:25px}.product-img{height:160px}}
+
+/* ===== KisanMandi V8.9 upgrades ===== */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.profile-card{background:#f7fbf5;border:1px solid #dfe9dc;border-radius:16px;padding:16px;margin:12px 0}
+.notification-box{border:1px solid #dfe9dc;border-radius:16px;padding:14px;background:#f7fbf5;margin:12px 0}
+.badge-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:12px;background:#d52b2b;color:#fff;font-size:12px;margin-left:4px}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.action-row .btn{width:auto;flex:1;min-width:145px;margin-top:0}
+.timeline{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.timeline span{padding:5px 9px;border-radius:14px;background:#edf2ec;color:#566256;font-size:12px;font-weight:bold}
+.timeline .active{background:#dff2df;color:#176b2c}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr}.action-row .btn{min-width:100%}}
+
+
+/* ===== KisanMandi V12.0 upgrades ===== */
+.wishlist-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0;padding:12px;background:#f7fbf5;border:1px solid #dfe9dc;border-radius:14px;flex-wrap:wrap}
+.wishlist-btn{background:#fff;border:2px solid #176b2c;color:#176b2c;border-radius:12px;padding:9px 12px;font-weight:bold;font-size:14px}
+.wishlist-btn.saved{background:#ffe4e4;border-color:#d52b2b;color:#a51d1d}
+.saved-count{font-weight:bold;color:#176b2c}
+.profile-address{min-height:90px}
+
+.review-box{margin-top:14px;padding:14px;background:#f7fbf5;border:1px solid #dcebd9;border-radius:14px}
+.review-box h4{margin:0 0 8px;color:#176b2c}
+.review-stars{font-size:26px;letter-spacing:3px;cursor:pointer;user-select:none}
+.review-stars span{opacity:.35}
+.review-stars span.active{opacity:1}
+.review-item{padding:10px 0;border-bottom:1px solid #e5e5e5}
+.review-item:last-child{border-bottom:0}
+.rating-summary{font-weight:bold;color:#176b2c;margin:6px 0}
+.notification-badge{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;border-radius:12px;background:#d62828;color:#fff;font-size:12px;font-weight:700;vertical-align:middle;margin-left:4px}
+
+
+.order-live{display:flex;align-items:center;gap:8px;margin:10px 0;padding:10px 12px;border-radius:12px;background:#eef8ee;color:#176b2c;font-weight:bold}
+.live-dot{width:10px;height:10px;border-radius:50%;background:#1b8f3a;display:inline-block;box-shadow:0 0 0 4px #d9f0dd}
+.timeline{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.timeline span{padding:7px 10px;border-radius:14px;background:#edf0ed;color:#667066;font-size:13px;font-weight:bold}
+.timeline span.active{background:#176b2c;color:white}
+.status-updated{font-size:13px;color:#657065;margin-top:5px}
+.refresh-orders{margin:8px 0 14px}
+
+
+.order-tools{margin:12px 0 16px;padding:12px;border:1px solid #dce8dc;border-radius:14px;background:#f7fbf6}
+.order-tools-row{display:flex;gap:8px;flex-wrap:wrap}
+.order-tools input,.order-tools select{flex:1;min-width:150px;padding:11px 12px;border:1px solid #cfd8cf;border-radius:10px;background:white;font-size:15px}
+.order-summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.order-summary span{padding:7px 10px;border-radius:14px;background:#eef4ee;font-size:13px;font-weight:bold;color:#365b3b}
+.order-action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.order-action-row .btn{margin:0;flex:1;min-width:130px}
+@media(max-width:520px){
+  .order-tools input,.order-tools select{min-width:100%;width:100%}
+}
+
+
+/* ===== KisanMandi V12.0 consolidated upgrades ===== */
+body.km-dark{
+  background:#101510 !important;
+  color:#e9f2e9 !important;
+}
+body.km-dark .card,
+body.km-dark .product,
+body.km-dark .checkout-modal,
+body.km-dark .order-tools,
+body.km-dark .review-box,
+body.km-dark .notification-box,
+body.km-dark .wishlist-toolbar{
+  background:#182019 !important;
+  color:#e9f2e9 !important;
+  border-color:#304233 !important;
+}
+body.km-dark input,
+body.km-dark textarea,
+body.km-dark select{
+  background:#101710 !important;
+  color:#f1f7f1 !important;
+  border-color:#3c4d3d !important;
+}
+body.km-dark .info,
+body.km-dark .checkout-note,
+body.km-dark .order-summary span{
+  background:#202d21 !important;
+  color:#dfeadf !important;
+}
+.km10-tools{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km10-tools h3{margin:0 0 6px;color:#176b2c}
+.km10-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.km10-grid .btn{margin:0;min-height:48px}
+.km10-status{margin-top:10px;padding:10px;border-radius:12px;background:#eef7ed;color:#365b3b;font-size:13px}
+.km10-share{background:#edf6ff !important;border-color:#2b75b9 !important;color:#1f5f99 !important}
+.km10-low{border-left:5px solid #d88900;padding:10px;background:#fff7df;border-radius:10px;margin-top:8px}
+body.km-dark .km10-tools{background:#182019;border-color:#304233}
+body.km-dark .km10-status{background:#202d21;color:#dfeadf}
+body.km-dark .km10-low{background:#332b18;color:#f3e5bd}
+@media(max-width:520px){.km10-grid{grid-template-columns:1fr}}
+
+
+/* ===== KisanMandi V12.0 operational upgrades ===== */
+.km101-panel{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km101-panel h3{color:#176b2c;margin-bottom:6px}
+.km101-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.km101-row .btn{margin:0;flex:1;min-width:145px}
+.km101-small{font-size:13px;color:#687368}
+.km101-delivery{padding:12px;border-radius:14px;background:#eef7ed;margin-top:10px}
+.km101-delivery strong{color:#176b2c}
+body.km-dark .km101-panel{background:#182019;border-color:#304233}
+body.km-dark .km101-small{color:#cbd6cb}
+body.km-dark .km101-delivery{background:#202d21}
+@media(max-width:520px){.km101-row .btn{min-width:100%}}
+
+
+.km11-panel{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km11-panel h3{color:#176b2c;margin-bottom:6px}
+.km11-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.km11-row .btn{margin:0;flex:1;min-width:145px}
+.km11-muted{font-size:13px;color:#6d766d}
+.km11-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.km11-actions .btn{width:auto;margin:0}
+body.km-dark .km11-panel{background:#182019;border-color:#304233}
+body.km-dark .km11-muted{color:#cbd6cb}
+@media(max-width:520px){.km11-row .btn{min-width:100%}.km11-actions .btn{width:100%}}
+
+/* ===== KisanMandi V12.0 ===== */
+.km12-panel{margin:16px 0;padding:16px;border:1px solid #dce8dc;border-radius:18px;background:#f8fcf7}
+.km12-panel h3{color:#176b2c;margin-bottom:6px}
+.km12-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.km12-row .btn{margin:0;flex:1;min-width:145px}
+.km12-muted{font-size:13px;color:#687368}
+.km12-search{width:100%;padding:13px 15px;border:1px solid #cfd8cf;border-radius:13px;font-size:16px;background:#fff}
+.km12-badge{display:inline-block;padding:5px 9px;border-radius:14px;font-size:12px;font-weight:bold;margin:3px;background:#edf5ec;color:#176b2c}
+.km12-badge.warn{background:#fff6dc;color:#8a6200}
+.km12-badge.danger{background:#ffecec;color:#a51d1d}
+.km12-status{padding:11px 13px;border-radius:13px;background:#eef7ed;margin-top:9px}
+.km12-status strong{color:#176b2c}
+body.km-dark .km12-panel{background:#182019;border-color:#304233}
+body.km-dark .km12-muted{color:#cbd6cb}
+body.km-dark .km12-search{background:#202720;color:#fff;border-color:#465247}
+body.km-dark .km12-status{background:#202d21}
+@media(max-width:520px){.km12-row .btn{min-width:100%}}
+
+
+/* ===== KisanMandi V12.3 text visibility fix ===== */
+/* Dark mode changes the page background, but order cards stay light.
+   Force readable dark text inside those light cards. */
+body.km-dark .order{
+  background:#ffffff !important;
+  color:#263b28 !important;
+  border-color:#d8e3d4 !important;
+}
+body.km-dark .order h3,
+body.km-dark .order p,
+body.km-dark .order strong,
+body.km-dark .order .status-updated,
+body.km-dark .order .total{
+  color:#263b28 !important;
+}
+body.km-dark .order .status-updated{
+  color:#526052 !important;
+}
+body.km-dark .order .timeline span{
+  color:#445044 !important;
+}
+body.km-dark .order .timeline span.active{
+  color:#ffffff !important;
+}
+body.km-dark .order .status.cancelled,
+body.km-dark .order .status.rejected{
+  color:#a51d1d !important;
+}
+
+/* ===== KisanMandi V13.2 upgrades ===== */
+.km124-panel{
+  background:#f7fbf5;
+  border:1px solid #d7e7d3;
+  border-radius:18px;
+  padding:18px;
+  margin:18px 0;
+}
+.km124-panel h3{color:#176b2c;margin-bottom:6px}
+.km124-muted{color:#5f6d61;margin-bottom:12px}
+.km124-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.km124-grid .btn{margin-top:0}
+.km124-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.km124-stat{
+  background:white;
+  border:1px solid #dfe9dc;
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+.km124-stat strong{
+  display:block;
+  font-size:22px;
+  color:#176b2c;
+}
+.km124-stat span{font-size:12px;color:#5f6d61}
+.km124-alert{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:11px 0;
+  border-bottom:1px solid #e2e8df;
+}
+.km124-alert:last-child{border-bottom:0}
+.km124-alert-time{font-size:11px;color:#687568;margin-top:2px}
+.km124-empty{
+  background:#fff8d9;
+  color:#675613;
+  border-radius:12px;
+  padding:12px;
+}
+.km124-focus{
+  border:2px solid #176b2c!important;
+  box-shadow:0 0 0 3px #dff2df;
+}
+.km124-status-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.km124-status-row .km124-line{
+  width:18px;
+  height:3px;
+  background:#d8e3d4;
+  border-radius:4px;
+}
+.km124-status-row .km124-line.done{background:#176b2c}
+@media(max-width:700px){
+  .km124-summary{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .km124-grid{grid-template-columns:1fr}
+  .km124-panel{padding:15px}
+  .km124-stat strong{font-size:20px}
+}
+
+
+/* ===== KisanMandi V13.1 TEXT VISIBILITY FIX ===== */
+/* V13 panels are light cards while the app uses dark mode. Force readable text. */
+body.km-dark .km124-panel,
+body.km-dark .km13-final{
+  background:#f7fbf5 !important;
+  color:#263b28 !important;
+  border-color:#cfe4cd !important;
+}
+body.km-dark .km124-panel h3,
+body.km-dark .km13-final h3{
+  color:#176b2c !important;
+}
+body.km-dark .km124-panel p,
+body.km-dark .km13-final p,
+body.km-dark .km124-muted,
+body.km-dark .km124-stat span,
+body.km-dark .km124-alert-time{
+  color:#526052 !important;
+}
+body.km-dark .km124-stat{
+  background:#ffffff !important;
+  color:#263b28 !important;
+  border-color:#dfe9dc !important;
+}
+body.km-dark .km124-stat strong{
+  color:#176b2c !important;
+}
+body.km-dark .km124-alert{
+  color:#263b28 !important;
+  border-bottom-color:#e2e8df !important;
+}
+body.km-dark .km124-alert *{
+  color:#263b28 !important;
+}
+body.km-dark .km124-alert-time{
+  color:#526052 !important;
+}
+body.km-dark .km124-empty{
+  color:#675613 !important;
+}
+/* Improve V12/V13 tool headings when shown on dark panels. */
+body.km-dark .km10-tools h3,
+body.km-dark .km101-panel h3,
+body.km-dark .km11-panel h3,
+body.km-dark .km12-panel h3{
+  color:#7bd58f !important;
+}
+body.km-dark .km10-status,
+body.km-dark .km101-small,
+body.km-dark .km11-muted,
+body.km-dark .km12-muted{
+  color:#dfeadf !important;
+}
+
+/* ===== KisanMandi V13.2 ===== */
+.km13-final{margin:16px 0;padding:16px;border:1px solid #cfe4cd;border-radius:18px;background:#f6fbf5}
+.km13-final h3{margin:0 0 5px;color:#176b2c}
+.km13-final p{margin:0;color:#5e6c60;font-size:13px}
+.km13-final .km13-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.km13-final button{width:100%}
+@media(max-width:650px){.km13-final .km13-grid{grid-template-columns:1fr}}
+
+.btn:disabled{opacity:.7;cursor:wait}.login-status{margin-top:8px;text-align:center;font-weight:bold}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌾 KisanMandi</h1>
+<p data-i18n="tagline">किसान मंडी • Direct Farmer Marketplace</p>
+<div class="language-box">
+<label for="languageSelect">🌐</label>
+<select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)" aria-label="Language">
+<option value="en">🇬🇧 English</option>
+<option value="hi">🇮🇳 हिंदी</option>
+<option value="ta">🇮🇳 தமிழ்</option>
+</select>
+</div>
+<button id="notificationBell" class="nav-btn" onclick="toggleNotifications()">🔔 <span id="notificationCount" class="notification-badge hidden">0</span></button>
+<nav>
+<button onclick="showSection('home')" data-i18n="home">🏠 Home</button>
+<button onclick="showSection('productsSection')" data-i18n="products">🌾 Products</button>
+<button onclick="showSection('cartSection')" data-i18n="cart">🛒 Cart</button>
+<button onclick="showSection('ordersSection')" data-i18n="orders">📦 Orders <span id="orderBadge" class="badge-count hidden">0</span></button>
+<button onclick="showSection('accountSection')" data-i18n="account">👤 Account</button>
+</nav>
+</header>
+
+<div class="container">
+
+<section id="home" class="card hero">
+<div class="emoji">🌾</div>
+<h2 data-i18n="welcome">Welcome to KisanMandi</h2>
+<p data-i18n="heroText">Buy directly from farmers and sell your agricultural products.</p>
+<button class="btn green" onclick="showSection('productsSection')" data-i18n="browseProducts">🌱 Browse Products</button>
+<button class="btn outline" onclick="showSection('accountSection')" data-i18n="loginRegister">👤 Login / Register</button>
+</section>
+
+
+<div id="notificationPanel" class="hidden card">
+  <h2>🔔 Notifications</h2>
+  <div id="notificationList"></div>
+</div>
+
+
+<section id="km10Tools" class="card km10-tools">
+  <h2 data-i18n="smartTools">🧰 KisanMandi Smart Tools</h2>
+  <p>One place for the main V10.0 convenience features.</p>
+  <div class="km10-grid">
+    <button class="btn outline" onclick="toggleKM10DarkMode()" data-i18n="darkMode">🌙 Dark Mode</button>
+    <button class="btn outline" onclick="shareKisanMandi()" data-i18n="shareSite">📤 Share KisanMandi</button>
+    <button class="btn outline" onclick="exportVisibleOrdersCSV()" data-i18n="exportOrders">📊 Export Orders</button>
+    <button class="btn outline" onclick="showSavedProducts()">❤️ Saved Products</button>
+    <button class="btn outline" onclick="showSection('ordersSection')">📦 Open Orders</button>
+    <button class="btn outline" onclick="showSection('accountSection')">👤 Account</button>
+  </div>
+  <div id="km10ToolStatus" class="km10-status">✅ V10.0 tools ready. Your V9.4 order tracking and notifications remain active.</div>
+</section>
+
+
+<section id="accountSection" class="card">
+<h2 data-i18n="accountTitle">👤 KisanMandi Account</h2>
+<p data-i18n="accountSubtitle">Login as a customer or farmer</p>
+<div id="accountMessage"></div>
+
+<div id="loginBox">
+<input id="loginEmail" type="email" data-i18n-placeholder="email" placeholder="Email Address">
+<input id="loginPassword" type="password" data-i18n-placeholder="password" placeholder="Password">
+<button class="btn green" onclick="loginUser()" data-i18n="loginButton">🔐 Login</button>
+<button class="btn orange" onclick="forgotPassword()" data-i18n="forgotPassword">🔑 Forgot Password?</button>
+<button class="btn outline" onclick="showRegister()" data-i18n="createAccount">📝 Create New Account</button>
+</div>
+
+<div id="registerBox" class="hidden">
+<input id="regName" data-i18n-placeholder="fullName" placeholder="Full Name">
+<input id="regEmail" type="email" data-i18n-placeholder="email" placeholder="Email Address">
+<input id="regPassword" type="password" data-i18n-placeholder="createPassword" placeholder="Create Password (minimum 6 characters)">
+<input id="regMobile" placeholder="Mobile Number">
+<select id="regRole"><option value="customer" data-i18n="customer">Customer</option><option value="farmer" data-i18n="farmer">Farmer</option></select>
+<button class="btn green" onclick="registerUser()" data-i18n="createAccountButton">📋 Create Account</button>
+<button class="btn outline" onclick="showLogin()" data-i18n="backLogin">🔐 Back to Login</button>
+</div>
+
+<div id="loggedBox" class="hidden">
+<div class="success" data-i18n="loggedIn">✅ You are logged in.</div>
+<h3 id="welcomeUser"></h3>
+<button class="btn green" onclick="showSection('ordersSection')" data-i18n="myOrders">📦 My Orders</button>
+<button class="btn outline" onclick="openProfileModal()" data-i18n="editProfile">👤 Edit Profile</button>
+<button id="farmerDashboardButton" class="btn blue hidden" onclick="showSection('farmerSection')">👨‍🌾 Farmer Dashboard</button>
+<button class="btn red" onclick="logoutUser()" data-i18n="logout">🚪 Logout</button>
+<div id="notificationBox" class="notification-box"></div>
+</div>
+</section>
+
+<section id="productsSection" class="card">
+<h2 data-i18n="availableProducts">🌾 Available Products</h2>
+<input id="searchBox" data-i18n-placeholder="search" placeholder="🔍 Search products, farmers, locations..." oninput="renderProducts()">
+
+<div class="market-toolbar">
+    <div class="category-chips">
+        <button class="category-chip active" data-category="all" onclick="setCategory('all')" data-i18n="all">🌾 All</button>
+        <button class="category-chip" data-category="vegetable" onclick="setCategory('vegetable')" data-i18n="vegetables">🥬 Vegetables</button>
+        <button class="category-chip" data-category="fruit" onclick="setCategory('fruit')" data-i18n="fruits">🍎 Fruits</button>
+        <button class="category-chip" data-category="grain" onclick="setCategory('grain')" data-i18n="grains">🌾 Grains</button>
+        <button class="category-chip" data-category="dairy" onclick="setCategory('dairy')" data-i18n="dairy">🥛 Dairy</button>
+        <button class="category-chip" data-category="other" onclick="setCategory('other')" data-i18n="other">🌱 Other</button>
+    </div>
+
+    <div class="toolbar-row">
+        <span id="productCount" class="result-count">Loading products...</span>
+        <select id="sortProducts" onchange="renderProducts()" class="sort-select">
+            <option value="newest" data-i18n="newest">↕ Newest</option>
+            <option value="priceLow" data-i18n="priceLow">₹ Price: Low to High</option>
+            <option value="priceHigh" data-i18n="priceHigh">₹ Price: High to Low</option>
+            <option value="stockHigh" data-i18n="stockHigh">📦 Stock: High to Low</option>
+            <option value="name" data-i18n="nameAZ">🔤 Name A–Z</option>
+        </select>
+    </div>
+</div>
+
+<div class="wishlist-toolbar">
+  <span class="saved-count" id="savedCount">❤️ 0 saved</span>
+  <button class="wishlist-btn" onclick="showSavedProducts()" data-i18n="viewSaved">❤️ View Saved Products</button>
+</div>
+
+<div id="productsList" class="product-grid"><p>Loading products...</p></div>
+</section>
+
+<section id="cartSection" class="card">
+<h2 data-i18n="yourCart">🛒 Your Cart</h2>
+<div id="cartList"><p>Your cart is empty.</p></div>
+<div id="cartTotal" class="total"></div>
+<button id="checkoutButton" class="btn green hidden" onclick="openCheckout()">📦 Place Order</button>
+</section>
+
+<section id="ordersSection" class="card">
+<h2 data-i18n="ordersTitle">📦 Orders</h2>
+<p data-i18n="ordersSubtitle">Customers can track orders and farmers can manage orders for their products.</p>
+<div class="order-live"><span class="live-dot"></span><span data-i18n="orderLive">🟢 Live order tracking</span></div>
+<button class="btn outline refresh-orders" onclick="refreshOrdersNow()" data-i18n="refreshOrders">🔄 Refresh Orders</button>
+<div class="order-tools">
+  <div class="order-tools-row">
+    <input id="orderSearchInput" type="search" placeholder="🔎 Search order ID or product..." oninput="filterOrdersUI()">
+    <select id="orderStatusFilter" onchange="filterOrdersUI()">
+      <option value="all">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="processing">Processing</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+  <div id="orderSummary" class="order-summary"></div>
+</div>
+
+<div id="km101OrderTools" class="km101-panel">
+  <h3>📦 Order Tools</h3>
+  <div class="km101-small">Download your order report or quickly print your latest receipt.</div>
+  <div class="km101-row">
+    <button class="btn outline" onclick="exportMyOrdersCSV()">📊 My Orders CSV</button>
+    <button class="btn outline" onclick="printLatestOrderReceipt()">🧾 Latest Receipt</button>
+  </div>
+</div>
+
+<div id="ordersList"><div class="info">🔒 Please login to view orders.</div></div>
+</section>
+
+<section id="farmerSection" class="card hidden">
+<h2 data-i18n="farmerDashboard">👨‍🌾 Farmer Dashboard</h2>
+<div id="farmerMessage"></div>
+
+<div class="stats-grid" id="farmerStats">
+<div class="stat-card"><div class="stat-icon">📦</div><span data-i18n="totalOrders">Total Orders</span><strong id="statOrders">0</strong></div>
+<div class="stat-card"><div class="stat-icon">⏳</div><span data-i18n="pendingOrders">Pending</span><strong id="statPending">0</strong></div>
+<div class="stat-card"><div class="stat-icon">🚚</div><span data-i18n="deliveredOrders">Delivered</span><strong id="statDelivered">0</strong></div>
+<div class="stat-card"><div class="stat-icon">💰</div><span data-i18n="salesTotal">My Sales</span><strong id="statSales">₹0</strong></div>
+<div class="stat-card"><div class="stat-icon">🌾</div><span data-i18n="activeProducts">Active Products</span><strong id="statProducts">0</strong></div>
+</div>
+<button class="btn outline" onclick="loadFarmerDashboard()" data-i18n="refreshDashboard">🔄 Refresh Dashboard</button>
+
+<div class="card">
+<h2 data-i18n="addProduct">🌱 Add Product</h2>
+<input id="productName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
+<input id="productPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg">
+<input id="productStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock">
+<input id="productLocation" data-i18n-placeholder="location" placeholder="Location">
+<select id="productCategory">
+<option value="vegetable" data-i18n="vegetable">🥬 Vegetable</option>
+<option value="fruit" data-i18n="fruit">🍎 Fruit</option>
+<option value="grain" data-i18n="grain">🌾 Grain</option>
+<option value="dairy" data-i18n="dairy">🥛 Dairy</option>
+<option value="other" data-i18n="other">🌱 Other</option>
+</select>
+<button class="btn green" onclick="addProduct()" data-i18n="listProduct">➕ List Product</button>
+<div class="info" style="margin-top:10px">
+📸 V9.3 uses built-in product visuals. No Firebase Storage or billing is required.
+</div>
+</div>
+
+<h2 data-i18n="myProducts">📋 My Products</h2><div id="myProducts"></div>
+<h2 data-i18n="incomingOrders">📥 Incoming Orders</h2>
+<div class="info">🔒 Order workflow: <strong>Pending → Confirmed → Processing → Shipped → Delivered</strong>. Each farmer action advances only one step; rejected/cancelled orders cannot be advanced.</div>
+<div id="km101FarmerTools" class="km101-panel">
+  <h3>👨‍🌾 Farmer Operations</h3>
+  <div class="km101-row">
+    <button class="btn outline" onclick="km101StockReport()">📊 Stock Report</button>
+    <button class="btn outline" onclick="km101DeliverySummary()">🚚 Delivery Summary</button>
+  </div>
+</div>
+
+<div id="farmerOrders"></div>
+</section>
+</div>
+
+
+<div id="checkoutModal" class="checkout-overlay hidden">
+  <div class="checkout-modal">
+    <h2>🧾 Confirm Your Order</h2>
+    <p>Please enter your delivery details before placing the order.</p>
+    <div id="checkoutMessage"></div>
+    <label><strong>📍 Delivery Address</strong></label>
+    <textarea id="checkoutAddress" rows="4" placeholder="House / Village / Street / District / PIN code"></textarea>
+    <label><strong>📞 Contact Number</strong></label>
+    <input id="checkoutMobile" type="tel" placeholder="Mobile number">
+    <label><strong>💳 Payment Method</strong></label>
+    <select id="checkoutPayment">
+      <option value="cod">💵 Cash on Delivery</option>
+    </select>
+    <label><strong>📝 Delivery Notes (optional)</strong></label>
+    <textarea id="checkoutNotes" rows="3" placeholder="Any delivery instruction"></textarea>
+    <div class="checkout-note">🔒 V9.3 uses Cash on Delivery. Online payment can be added later without changing your order system.</div>
+    <div class="action-row">
+      <button class="btn green" onclick="confirmCheckout()">✅ Confirm Order</button>
+      <button class="btn red" onclick="closeCheckout()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="editProductModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:100;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
+<h2 data-i18n="editProduct">✏️ Edit Product</h2>
+<input id="editProductId" type="hidden">
+<input id="editProductName" data-i18n-placeholder="productName" placeholder="Product / Crop Name">
+<input id="editProductPrice" type="number" data-i18n-placeholder="pricePerKg" placeholder="Price per kg">
+<input id="editProductStock" type="number" data-i18n-placeholder="availableStock" placeholder="Available Stock">
+<input id="editProductLocation" data-i18n-placeholder="location" placeholder="Location">
+<select id="editProductCategory">
+<option value="vegetable" data-i18n="vegetable">🥬 Vegetable</option>
+<option value="fruit" data-i18n="fruit">🍎 Fruit</option>
+<option value="grain" data-i18n="grain">🌾 Grain</option>
+<option value="dairy" data-i18n="dairy">🥛 Dairy</option>
+<option value="other" data-i18n="other">🌱 Other</option>
+</select>
+<div class="row"><button class="btn green" onclick="saveProductEdit()" data-i18n="saveChanges">💾 Save Changes</button><button class="btn red" onclick="closeProductEdit()" data-i18n="cancel">Cancel</button></div>
+</div>
+
+<div id="profileModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92%,520px);z-index:110;max-height:90vh;overflow:auto;box-shadow:0 15px 50px #0005">
+<h2 data-i18n="editProfile">👤 Edit Profile</h2>
+<div id="profileMessage"></div>
+<input id="profileName" data-i18n-placeholder="fullName" placeholder="Full Name">
+<input id="profileMobile" data-i18n-placeholder="mobileNumber" placeholder="Mobile Number">
+<textarea id="profileAddress" class="profile-address" placeholder="Default Delivery Address"></textarea>
+<div class="action-row">
+<button class="btn green" onclick="saveProfile()" data-i18n="saveProfile">💾 Save Profile</button>
+<button class="btn red" onclick="closeProfileModal()" data-i18n="cancel">Cancel</button>
+</div>
+</div>
+
+
+<div id="km11MarketplaceTools" class="km11-panel">
+<h3>🚀 KisanMandi V12.0</h3>
+<div class="km11-muted">Faster repeat purchases and better order control.</div>
+<div class="km11-row">
+<button class="btn outline" onclick="km11ReorderLast()">🔁 Reorder Last</button>
+<button class="btn outline" onclick="km11MarketplaceSummary()">📊 My Summary</button>
+<button class="btn outline" onclick="km11ClearLocalAlerts()">🧹 Clear Alerts</button>
+</div>
+</div>
+
+<div id="km12Dashboard" class="km12-panel">
+  <h3>🛡️ KisanMandi V13.2</h3>
+  <div class="km12-muted">Better order visibility, delivery tracking, secure cancellation and marketplace trust.</div>
+  <div class="km12-row">
+    <button class="btn outline" onclick="km12OrderTimeline()">🕒 Order Timeline</button>
+    <button class="btn outline" onclick="km12LatestOrder()">📦 Latest Order</button>
+    <button class="btn outline" onclick="km12SavedData()">💾 My Saved Data</button>
+    <button class="btn outline" onclick="km12Support()">💬 Help & Support</button>
+  </div>
+</div>
+
+
+<div id="km124Dashboard" class="km124-panel">
+  <h3>🚀 KisanMandi V13.2</h3>
+  <div class="km124-muted">Faster order overview, clearer alerts and easier marketplace control.</div>
+
+  <div class="km124-grid">
+    <button class="btn outline" onclick="km124OrderOverview()">📊 Order Overview</button>
+    <button class="btn outline" onclick="km124OpenNotifications()">🔔 Notification Center</button>
+    <button class="btn outline" onclick="km124ClearNotifications()">🧹 Clear Notifications</button>
+    <button class="btn outline" onclick="km124RefreshAll()">🔄 Refresh Marketplace</button>
+  </div>
+
+  <div id="km124Summary" class="km124-summary"></div>
+  <div id="km124Alerts" style="margin-top:12px"></div>
+</div>
+
+
+<div id="km13FinalPanel" class="km13-final">
+  <h3>🌾 KisanMandi V13.2</h3>
+  <p>Final consolidated release — keep this version as your stable backup.</p>
+  <div class="km13-grid">
+    <button class="btn outline" onclick="km13RunHealthCheck()">🩺 App Health Check</button>
+    <button class="btn outline" onclick="km13BackupReminder()">💾 Backup Reminder</button>
+    <button class="btn outline" onclick="km13About()">ℹ️ About KisanMandi</button>
+  </div>
+</div>
+
+<footer><p>🌾 KisanMandi V13.2</p><p>Direct Farmer to Customer Marketplace</p></footer>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,onAuthStateChanged,signOut,updateProfile,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {getFirestore,collection,addDoc,getDocs,getDoc,doc,setDoc,updateDoc,deleteDoc,query,where,serverTimestamp,onSnapshot} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+/*
+IMPORTANT:
+Replace ONLY the values below with the SAME firebaseConfig
+from your working V8.4 index.html.
+*/
+const firebaseConfig={
+apiKey:"AIzaSyCMFjkYeAq29DqFXYxXqEEtfks-hr9uG_s",
+authDomain:"kisanmandi-a372a.firebaseapp.com",
+projectId:"kisanmandi-a372a",
+storageBucket:"kisanmandi-a372a.firebasestorage.app",
+messagingSenderId:"562289122561",
+appId:"1:562289122561:web:55c59c462db40b8f170f00",
+measurementId:"G-FHCQZCPKLX"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+// Keep the login session on the device so the customer/farmer stays signed in.
+try{ await setPersistence(auth,browserLocalPersistence); }catch(e){ console.warn("Auth persistence unavailable",e); }
+
+let currentUser=null;
+let currentProfile=null;
+let products=[];
+let cart=JSON.parse(localStorage.getItem("kisanMandiCart")||"[]");
+let wishlist=JSON.parse(localStorage.getItem("kisanMandiWishlist")||"[]");
+
+window.showSection=function(id){
+["home","productsSection","cartSection","ordersSection","accountSection","farmerSection"].forEach(s=>{
+const e=document.getElementById(s);if(e)e.classList.add("hidden");
+});
+const target=document.getElementById(id);
+if(target){target.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});}
+if(id==="ordersSection")loadOrders();
+if(id==="farmerSection")loadFarmerDashboard();
+if(id==="cartSection")renderCart();
+};
+
+window.showRegister=function(){
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.remove("hidden");
+};
+window.showLogin=function(){
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loginBox").classList.remove("hidden");
+};
+
+window.registerUser=async function(){
+const name=document.getElementById("regName").value.trim();
+const email=document.getElementById("regEmail").value.trim();
+const password=document.getElementById("regPassword").value;
+const mobile=document.getElementById("regMobile").value.trim();
+const role=document.getElementById("regRole").value;
+if(!name||!email||!password){showMessage("accountMessage","❌ Please fill all required fields.",true);return;}
+if(password.length<6){showMessage("accountMessage","❌ Password must contain at least 6 characters.",true);return;}
+try{
+const credential=await createUserWithEmailAndPassword(auth,email,password);
+await updateProfile(credential.user,{displayName:name});
+await setDoc(doc(db,"users",credential.user.uid),{uid:credential.user.uid,name,email,mobile,role,createdAt:serverTimestamp()});
+showMessage("accountMessage","✅ Account created successfully!");
+}catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
+};
+
+window.loginUser=async function(){
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
+if(!email||!password){showMessage("accountMessage","❌ Enter email and password.",true);return;}
+const button=document.querySelector('#loginBox button[onclick="loginUser()"]');
+try{
+if(button){button.disabled=true;button.textContent="⏳ Logging in...";}
+showMessage("accountMessage","⏳ Connecting securely...",false);
+await setPersistence(auth,browserLocalPersistence).catch(()=>{});
+await signInWithEmailAndPassword(auth,email,password);
+showMessage("accountMessage","✅ Login successful! Welcome back.");
+}catch(error){
+console.error("KisanMandi login error:",error);
+showMessage("accountMessage","❌ "+friendlyError(error),true);
+}finally{
+if(button){button.disabled=false;button.textContent=t("loginButton")||"🔐 Login";}
+}
+};
+
+window.forgotPassword=async function(){
+const email=document.getElementById("loginEmail").value.trim();
+if(!email){showMessage("accountMessage","❌ Enter your email address first.",true);return;}
+try{
+await sendPasswordResetEmail(auth,email);
+showMessage("accountMessage","✅ Password reset email sent.");
+}catch(error){showMessage("accountMessage","❌ "+friendlyError(error),true);}
+};
+
+window.logoutUser=async function(){stopOrderStatusListener();await signOut(auth);};
+
+onAuthStateChanged(auth,async user=>{
+currentUser=user;
+if(user){
+try{
+  await loadCurrentProfile();
+}catch(profileError){
+  console.warn("Profile read failed after authentication:",profileError);
+  currentProfile=null;
+  showMessage("accountMessage","⚠️ Login succeeded, but your profile could not be loaded yet. Please check your connection and try again.",true);
+}
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loggedBox").classList.remove("hidden");
+document.getElementById("welcomeUser").textContent="👋 Welcome, "+(currentProfile?.name||user.displayName||"KisanMandi User");
+if(currentProfile?.role==="farmer")document.getElementById("farmerDashboardButton").classList.remove("hidden");
+else document.getElementById("farmerDashboardButton").classList.add("hidden");
+startOrderStatusListener();
+}else{
+stopOrderStatusListener();
+currentProfile=null;
+document.getElementById("loginBox").classList.remove("hidden");
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loggedBox").classList.add("hidden");
+document.getElementById("farmerDashboardButton").classList.add("hidden");
+}
+loadOrders();
+updateOrderNotifications();
+});
+
+
+window.openProfileModal=function(){
+if(!currentUser){showSection("accountSection");return;}
+document.getElementById("profileName").value=currentProfile?.name||currentUser.displayName||"";
+document.getElementById("profileMobile").value=currentProfile?.mobile||"";
+document.getElementById("profileAddress").value=currentProfile?.address||localStorage.getItem("kisanMandiDeliveryAddress")||"";
+document.getElementById("profileMessage").innerHTML="";
+document.getElementById("profileModal").classList.remove("hidden");
+applyLanguage();
+};
+window.closeProfileModal=function(){document.getElementById("profileModal").classList.add("hidden");};
+window.saveProfile=async function(){
+if(!currentUser){alert("🔒 Please login first.");return;}
+const name=document.getElementById("profileName").value.trim();
+const mobile=document.getElementById("profileMobile").value.trim();
+const address=document.getElementById("profileAddress").value.trim();
+if(!name){showMessage("profileMessage","❌ Please enter your name.",true);return;}
+try{
+await updateProfile(currentUser,{displayName:name});
+await updateDoc(doc(db,"users",currentUser.uid),{name,mobile,address});
+localStorage.setItem("kisanMandiDeliveryAddress",address);
+if(mobile)localStorage.setItem("kisanMandiDeliveryMobile",mobile);
+await loadCurrentProfile();
+document.getElementById("welcomeUser").textContent="👋 Welcome, "+name;
+showMessage("profileMessage","✅ Profile updated successfully!");
+setTimeout(closeProfileModal,700);
+}catch(error){showMessage("profileMessage","❌ "+friendlyError(error),true);}
+};
+
+async function loadCurrentProfile(){
+if(!currentUser)return null;
+const snap=await getDoc(doc(db,"users",currentUser.uid));
+if(snap.exists()){
+  currentProfile=snap.data();
+}else{
+  currentProfile=null;
+}
+return currentProfile;
+}
+
+async function loadProducts(){
+try{
+const snap=await getDocs(collection(db,"products"));
+products=[];
+snap.forEach(item=>products.push({id:item.id,...item.data()}));
+renderProducts();
+}catch(error){
+document.getElementById("productsList").innerHTML='<div class="error">❌ Unable to load products.</div>';
+}
+}
+
+function emojiForCategory(category){
+return {vegetable:"🥬",fruit:"🍎",grain:"🌾",dairy:"🥛",other:"🌱"}[category]||"🌱";
+}
+
+let selectedCategory="all";
+
+window.setCategory=function(category){
+    selectedCategory=category;
+    document.querySelectorAll(".category-chip").forEach(button=>{
+        button.classList.toggle("active",button.dataset.category===category);
+    });
+    renderProducts();
+};
+
+function categoryLabel(category){
+    return {
+        vegetable:t("vegetable"),
+        fruit:t("fruit"),
+        grain:t("grain"),
+        dairy:t("dairy"),
+        other:t("other")
+    }[category] || (currentLanguage==="hi"?"🌾 उत्पाद":currentLanguage==="ta"?"🌾 பொருள்":"🌾 Product");
+}
+
+function productEmoji(category,name){
+    const n=String(name||"").toLowerCase();
+
+    const specific={
+        potato:"🥔",tomato:"🍅",carrot:"🥕",onion:"🧅",
+        garlic:"🧄",brinjal:"🍆",chilli:"🌶️",pepper:"🫑",
+        apple:"🍎",mango:"🥭",banana:"🍌",orange:"🍊",
+        papaya:"🍈",guava:"🍐",grape:"🍇",
+        wheat:"🌾",rice:"🍚",maize:"🌽",corn:"🌽",
+        milk:"🥛",curd:"🥣",paneer:"🧀"
+    };
+
+    for(const key in specific){
+        if(n.includes(key)) return specific[key];
+    }
+
+    return {
+        vegetable:"🥬",
+        fruit:"🍎",
+        grain:"🌾",
+        dairy:"🥛",
+        other:"🌱"
+    }[category] || "🌾";
+}
+
+window.renderProducts=function(){
+
+    const list=document.getElementById("productsList");
+    const search=document.getElementById("searchBox").value.toLowerCase().trim();
+    const sort=document.getElementById("sortProducts").value;
+
+    let filtered=products.filter(product=>{
+
+        const name=String(product.name||"").toLowerCase();
+        const farmer=String(product.farmerName||"").toLowerCase();
+        const location=String(product.location||"").toLowerCase();
+        const category=String(product.category||"other").toLowerCase();
+
+        const matchesSearch=
+            !search ||
+            name.includes(search) ||
+            farmer.includes(search) ||
+            location.includes(search) ||
+            category.includes(search);
+
+        const matchesCategory=
+            selectedCategory==="all" ||
+            category===selectedCategory;
+
+        return matchesSearch && matchesCategory;
+    });
+
+    filtered.sort((a,b)=>{
+
+        if(sort==="priceLow"){
+            return Number(a.price||0)-Number(b.price||0);
+        }
+
+        if(sort==="priceHigh"){
+            return Number(b.price||0)-Number(a.price||0);
+        }
+
+        if(sort==="stockHigh"){
+            return Number(b.stock||0)-Number(a.stock||0);
+        }
+
+        if(sort==="name"){
+            return String(a.name||"").localeCompare(String(b.name||""));
+        }
+
+        return timestampValue(b.createdAt)-timestampValue(a.createdAt);
+    });
+
+    document.getElementById("savedCount").textContent=`❤️ ${wishlist.length} saved`;
+    document.getElementById("productCount").textContent=currentLanguage==="hi"?`${filtered.length} उत्पाद मिले`:currentLanguage==="ta"?`${filtered.length} பொருட்கள் கிடைத்தன`:`${filtered.length} product${filtered.length===1?"":"s"} found`;
+
+    if(filtered.length===0){
+
+        list.innerHTML=
+            `<div class="info empty-products">${currentLanguage==="hi"?"🌱 आपकी खोज या श्रेणी से कोई उत्पाद नहीं मिला":currentLanguage==="ta"?"🌱 உங்கள் தேடல் அல்லது வகைக்கு பொருட்கள் இல்லை":"🌱 No products match your search or category."}</div>`;
+
+        return;
+    }
+
+    list.innerHTML=filtered.map(product=>{
+
+        const stock=Number(product.stock||0);
+        const category=String(product.category||"other");
+        const emoji=productEmoji(category,product.name);
+
+        return `
+        <div class="product">
+
+            <div class="product-img">
+
+                <span class="product-emoji">${emoji}</span>
+
+                <span class="product-category-label">
+                    ${categoryLabel(category)}
+                </span>
+
+            </div>
+
+            <div class="product-body">
+
+                <span class="badge">🌱 Farmer Listed</span>
+
+                <h2>${escapeHTML(product.name||"Product")}</h2>
+
+                <p class="product-meta">
+                    👨‍🌾 ${escapeHTML(product.farmerName||"Farmer")}
+                </p>
+
+                <p class="product-meta">
+                    📍 ${escapeHTML(product.location||"India")}
+                </p>
+
+                <p class="${stock>0&&stock<=10?"stock stock-low":"stock"}">
+                    📦 Available: ${stock}
+                </p>
+
+                <div class="price">
+                    ₹${Number(product.price||0)} / kg
+                </div>
+
+                <button class="wishlist-btn ${wishlist.includes(product.id)?"saved":""}" onclick="toggleWishlist('${product.id}')">
+                    ${wishlist.includes(product.id)?"❤️ Saved":"🤍 Save"}
+                </button>
+
+                ${
+                    stock>0
+                    ?
+                    `<button class="btn green"
+                        onclick="addToCart('${product.id}')">
+                        🛒 Add to Cart
+                    </button>`
+                    :
+                    `<button class="btn red" disabled>
+                        ❌ Out of Stock
+                    </button>`
+                }
+
+            </div>
+        </div>`;
+    }).join("");
+};
+
+window.toggleWishlist=function(productId){
+if(!products.some(p=>p.id===productId))return;
+if(wishlist.includes(productId)) wishlist=wishlist.filter(id=>id!==productId);
+else wishlist.push(productId);
+localStorage.setItem("kisanMandiWishlist",JSON.stringify(wishlist));
+renderProducts();
+};
+
+window.showSavedProducts=function(){
+const saved=products.filter(p=>wishlist.includes(p.id));
+const list=document.getElementById("productsList");
+if(saved.length===0){list.innerHTML='<div class="info">❤️ You have no saved products yet. Tap 🤍 Save on any product.</div>';return;}
+list.innerHTML=saved.map(product=>{
+const stock=Number(product.stock||0);
+const emoji=productEmoji(String(product.category||"other"),product.name);
+return `<div class="product"><div class="product-img"><span class="product-emoji">${emoji}</span><span class="product-category-label">${categoryLabel(String(product.category||"other"))}</span></div><div class="product-body"><span class="badge">❤️ Saved</span><h2>${escapeHTML(product.name||"Product")}</h2><p class="product-meta">👨‍🌾 ${escapeHTML(product.farmerName||"Farmer")}</p><p class="product-meta">📍 ${escapeHTML(product.location||"India")}</p><p class="stock">📦 Available: ${stock}</p><div class="price">₹${Number(product.price||0)} / kg</div><button class="wishlist-btn saved" onclick="toggleWishlist('${product.id}')">❤️ Remove Saved</button><button class="wishlist-btn km10-share" onclick="shareKisanMandiProduct('${product.id}')">📤 Share</button>${stock>0?`<button class="btn green" onclick="addToCart('${product.id}')">🛒 Add to Cart</button>`:`<button class="btn red" disabled>❌ Out of Stock</button>`}</div></div>`;}).join("");
+};
+
+window.addToCart=function(productId){
+const product=products.find(p=>p.id===productId);
+if(!product)return;
+const stock=Number(product.stock||0);
+if(stock<=0){alert("❌ Product is out of stock.");return;}
+const existing=cart.find(item=>item.productId===productId);
+if(existing){
+if(existing.quantity<stock)existing.quantity++;
+else{alert("❌ Maximum available stock reached.");return;}
+}else{
+cart.push({productId,name:product.name,price:Number(product.price||0),quantity:1,farmerId:product.ownerUid||product.farmerUid||"",farmerName:product.farmerName||"",location:product.location||""});
+}
+saveCart();renderCart();alert("🛒 Product added to cart.");
+};
+
+function saveCart(){localStorage.setItem("kisanMandiCart",JSON.stringify(cart));}
+window.removeFromCart=function(index){
+if(!cart[index])return;
+cart.splice(index,1);
+saveCart();renderCart();
+};
+
+window.changeQuantity=function(index,change){
+if(!cart[index])return;
+cart[index].quantity+=change;
+if(cart[index].quantity<=0)cart.splice(index,1);
+saveCart();renderCart();
+};
+
+function renderCart(){
+const list=document.getElementById("cartList");
+const totalBox=document.getElementById("cartTotal");
+const checkoutButton=document.getElementById("checkoutButton");
+if(cart.length===0){
+list.innerHTML='<p class="center">🛒 Your cart is empty.</p>';
+totalBox.innerHTML="";checkoutButton.classList.add("hidden");return;
+}
+let total=0;
+list.innerHTML=cart.map((item,index)=>{
+const itemTotal=item.price*item.quantity;total+=itemTotal;
+return `<div class="order">
+<h3>${safeText(item.name)}</h3>
+<p>👨‍🌾 ${safeText(item.farmerName)}</p>
+<p>₹${Number(item.price||0)} / kg</p>
+<div class="qty"><button onclick="changeQuantity(${index},-1)">−</button><strong>${item.quantity}</strong><button onclick="changeQuantity(${index},1)">+</button></div>
+<strong>Item total: ₹${itemTotal}</strong>
+<button class="btn red" onclick="removeFromCart(${index})">🗑️ ${t("remove")}</button>
+</div>`;
+}).join("");
+totalBox.innerHTML=`💰 Cart Total: ₹${total}`;
+checkoutButton.classList.remove("hidden");
+}
+
+window.openCheckout=function(){
+if(!currentUser){alert("🔒 Please login before placing an order.");showSection("accountSection");return;}
+if(cart.length===0){alert("🛒 Your cart is empty.");return;}
+if(currentProfile?.role==="farmer"){alert("👨‍🌾 Farmer accounts cannot place customer orders.");return;}
+const savedAddress=localStorage.getItem("kisanMandiDeliveryAddress")||currentProfile?.address||"";
+const savedMobile=localStorage.getItem("kisanMandiDeliveryMobile")||currentProfile?.mobile||"";
+document.getElementById("checkoutAddress").value=savedAddress;
+document.getElementById("checkoutMobile").value=savedMobile;
+document.getElementById("checkoutNotes").value="";
+document.getElementById("checkoutMessage").innerHTML="";
+document.getElementById("checkoutModal").classList.remove("hidden");
+};
+
+window.closeCheckout=function(){
+document.getElementById("checkoutModal").classList.add("hidden");
+};
+
+window.confirmCheckout=async function(){
+if(!currentUser){alert("🔒 Please login before placing an order.");return;}
+const address=document.getElementById("checkoutAddress").value.trim();
+const mobile=document.getElementById("checkoutMobile").value.trim();
+const paymentMethod=document.getElementById("checkoutPayment").value;
+const notes=document.getElementById("checkoutNotes").value.trim();
+if(!address){showMessage("checkoutMessage","❌ Please enter your delivery address.",true);return;}
+if(!mobile){showMessage("checkoutMessage","❌ Please enter your contact number.",true);return;}
+if(cart.length===0){closeCheckout();alert("🛒 Your cart is empty.");return;}
+
+try{
+let total=0;
+cart.forEach(item=>total+=Number(item.price||0)*Number(item.quantity||1));
+const verifiedItems=[];
+for(const item of cart){
+const snap=await getDoc(doc(db,"products",item.productId));
+if(!snap.exists())throw new Error("A product in your cart is no longer available.");
+const data=snap.data();
+const liveStock=Number(data.stock||0);
+if(liveStock<item.quantity)throw new Error(`${data.name||item.name} has only ${liveStock} kg available.`);
+verifiedItems.push({
+...item,
+price:Number(data.price||item.price),
+name:data.name||item.name,
+farmerId:data.ownerUid||data.farmerUid||item.farmerId,
+farmerName:data.farmerName||item.farmerName,
+farmerMobile:data.farmerMobile||""
+});
+}
+const orderItems=verifiedItems.map(item=>({
+productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,
+farmerId:item.farmerId,farmerName:item.farmerName,farmerMobile:item.farmerMobile
+}));
+const farmerIds=[...new Set(verifiedItems.map(item=>item.farmerId).filter(Boolean))];
+const farmerMobiles=[...new Set(verifiedItems.map(item=>item.farmerMobile).filter(Boolean))];
+
+const orderRef=await addDoc(collection(db,"orders"),{
+customerUid:currentUser.uid,
+customerName:currentProfile?.name||currentUser.displayName||"",
+customerEmail:currentUser.email||"",
+customerMobile:mobile,
+deliveryAddress:address,
+deliveryNotes:notes,
+paymentMethod:paymentMethod==="cod"?"cod":"cod",
+items:orderItems,
+farmerUids:farmerIds,
+farmerMobiles,
+total,
+status:"pending",
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
+});
+
+for(const item of cart){
+try{
+const productRef=doc(db,"products",item.productId);
+const productSnap=await getDoc(productRef);
+if(productSnap.exists()){
+const oldStock=Number(productSnap.data().stock||0);
+await updateDoc(productRef,{stock:Math.max(0,oldStock-item.quantity)});
+}
+}catch(stockError){console.warn("Stock update failed:",stockError);}
+}
+
+localStorage.setItem("kisanMandiDeliveryAddress",address);
+localStorage.setItem("kisanMandiDeliveryMobile",mobile);
+cart=[];saveCart();renderCart();await loadProducts();await loadOrders();
+closeCheckout();
+alert("✅ Order placed successfully!\n\nOrder ID: "+orderRef.id);
+showSection("ordersSection");
+}catch(error){
+showMessage("checkoutMessage","❌ Order failed: "+friendlyError(error),true);
+}
+};
+
+window.checkout=window.confirmCheckout;
+
+
+
+let orderStatusUnsubscribe=null;
+let orderListenerPrimed=false;
+
+
+
+window.updateOrderSummary=function(){
+  const root=document.getElementById("ordersList");
+  const summary=document.getElementById("orderSummary");
+  if(!root||!summary)return;
+  const cards=[...root.querySelectorAll(".order")];
+  const counts={pending:0,confirmed:0,processing:0,shipped:0,delivered:0,cancelled:0};
+  cards.forEach(card=>{
+    const text=(card.innerText||"").toLowerCase();
+    Object.keys(counts).forEach(k=>{if(text.includes(k))counts[k]++;});
+  });
+  summary.innerHTML=
+    `<span>📦 ${cards.length} total</span>`+
+    `<span>⏳ ${counts.pending} pending</span>`+
+    `<span>🚚 ${counts.shipped+counts.processing} active</span>`+
+    `<span>✅ ${counts.delivered} delivered</span>`;
+};
+
+window.filterOrdersUI=function(){
+  const root=document.getElementById("ordersList");
+  if(!root)return;
+  const search=(document.getElementById("orderSearchInput")?.value||"").trim().toLowerCase();
+  const status=(document.getElementById("orderStatusFilter")?.value||"all").toLowerCase();
+  const cards=[...root.querySelectorAll(".order")];
+  let visible=0;
+  cards.forEach(card=>{
+    const text=(card.innerText||"").toLowerCase();
+    const matchesSearch=!search||text.includes(search);
+    const matchesStatus=status==="all"||text.includes(status);
+    const show=matchesSearch&&matchesStatus;
+    card.style.display=show?"":"none";
+    if(show)visible++;
+  });
+  const summary=document.getElementById("orderSummary");
+  updateOrderSummary();
+  if(summary){
+    summary.innerHTML=`<span>📦 ${visible} shown</span><span>🔎 ${search||"All orders"}</span><span>📋 ${status==="all"?"All statuses":status}</span>`;
+  }
+};
+
+window.refreshOrdersNow=async function(){
+  if(!currentUser){
+    alert("🔒 Please login first.");
+    return;
+  }
+  await loadOrders();
+  await updateOrderNotifications();
+  filterOrdersUI();
+};
+
+window.startOrderStatusListener=function(){
+  if(orderStatusUnsubscribe)orderStatusUnsubscribe();
+  orderStatusUnsubscribe=null;
+  orderListenerPrimed=false;
+  if(!currentUser)return;
+
+  try{
+    const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+    orderStatusUnsubscribe=onSnapshot(q,(snap)=>{
+      const previous=JSON.parse(localStorage.getItem("kisanMandiOrderStatuses")||"{}");
+      const next={...previous};
+
+      snap.forEach(d=>{
+        const data=d.data();
+        const status=data.status||"pending";
+        const old=next[d.id];
+
+        // First snapshot establishes the baseline without creating noisy alerts.
+        if(orderListenerPrimed && old && old!==status){
+          const readable=statusLabel(status);
+          addKisanNotification("📦 Order status updated",`Order ${d.id} is now ${readable}.`);
+        }
+        next[d.id]=status;
+      });
+
+      localStorage.setItem("kisanMandiOrderStatuses",JSON.stringify(next));
+      orderListenerPrimed=true;
+
+      // Refresh the visible order list immediately when a status changes.
+      if(document.getElementById("ordersSection") &&
+         !document.getElementById("ordersSection").classList.contains("hidden")){
+        loadOrders().then(()=>filterOrdersUI());
+      }
+      updateOrderNotifications();
+    },(error)=>{
+      console.warn("Live order tracking unavailable:",error);
+    });
+  }catch(error){
+    console.warn("Could not start live order tracking:",error);
+  }
+};
+
+window.stopOrderStatusListener=function(){
+  if(orderStatusUnsubscribe){
+    orderStatusUnsubscribe();
+    orderStatusUnsubscribe=null;
+  }
+  orderListenerPrimed=false;
+};
+
+async function updateOrderNotifications(){
+const badge=document.getElementById("orderBadge");
+const box=document.getElementById("notificationBox");
+if(!currentUser){
+if(badge)badge.classList.add("hidden");
+if(box)box.innerHTML="";
+return;
+}
+try{
+const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+const snap=await getDocs(q);
+const orders=[];snap.forEach(d=>orders.push({id:d.id,...d.data()}));
+const active=orders.filter(o=>["pending","confirmed"].includes(o.status||"pending")).length;
+if(badge){
+badge.textContent=active;
+badge.classList.toggle("hidden",active===0);
+}
+if(box){
+if(orders.length===0){box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("noNotifications")}</p>`;}
+else{
+const latest=orders.sort((a,b)=>timestampValue(b.updatedAt||b.createdAt)-timestampValue(a.updatedAt||a.createdAt))[0];
+box.innerHTML=`<strong>🔔 ${t("notifications")}</strong><p>${t("latestOrder")}: <b>${safeText(latest.id)}</b> — <span class="status ${latest.status||"pending"}">${statusLabel(latest.status||"pending")}</span></p>`;
+}
+}
+}catch(error){console.warn("Notifications unavailable:",error);}
+}
+
+async function loadOrders(){
+const list=document.getElementById("ordersList");
+if(!currentUser){list.innerHTML='<div class="info">🔒 Please login to view orders.</div>';return;}
+try{
+const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+const snap=await getDocs(q);const orders=[];
+snap.forEach(item=>orders.push({id:item.id,...item.data()}));
+orders.sort((a,b)=>timestampValue(b.createdAt)-timestampValue(a.createdAt));
+if(orders.length===0){list.innerHTML='<div class="info">📦 You have no orders yet.</div>';await updateOrderNotifications();return;}
+list.innerHTML=orders.map(renderCustomerOrder).join("");
+await updateOrderNotifications();
+}catch(error){list.innerHTML='<div class="error">❌ Could not load orders.</div>';}
+}
+
+function renderCustomerOrder(order){
+const status=order.status||"pending";
+const items=Array.isArray(order.items)?order.items:[];
+const itemsHTML=items.map(item=>`<p>🌾 ${safeText(item.name||"Product")} — ₹${Number(item.price||0)} × ${Number(item.quantity||1)}</p>`).join("");
+const steps=["pending","confirmed","processing","shipped","delivered"];
+const currentIndex=steps.indexOf(status);
+const timeline=steps.map((s,i)=>`<span class="${i<=currentIndex&&currentIndex>=0?"active":""}">${statusLabel(s)}</span>`).join("");
+let wa="";
+const farmerMobile=order.farmerMobile||"";
+if(farmerMobile){
+const link=whatsappLink(farmerMobile,`Hello, I am ${order.customerName||"a KisanMandi customer"}. Regarding order ${order.id}.`);
+if(link)wa=`<a class="btn green receipt-btn" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Farmer</a>`;
+}
+const address=order.deliveryAddress?`<p>📍 <strong>Delivery:</strong> ${safeText(order.deliveryAddress)}</p>`:"";
+const notes=order.deliveryNotes?`<p>📝 <strong>Notes:</strong> ${safeText(order.deliveryNotes)}</p>`:"";
+const payment=order.paymentMethod==="cod"?"💵 Cash on Delivery":"💳 Payment";
+const reorder=`<button class="btn outline receipt-btn" onclick="km11Reorder('${safeText(order.id)}')">🔁 Reorder</button>`;
+const cancel=(status==="pending"||status==="confirmed")?`<button class="btn red receipt-btn" onclick="km11CancelOrder('${safeText(order.id)}')">🛑 Cancel</button>`:"";
+const receipt=`<button class="btn outline receipt-btn" onclick="printOrderReceipt('${safeText(order.id)}')">🧾 Receipt</button>`;
+const updated=order.updatedAt||order.createdAt;
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>📅 ${formatTimestamp(order.createdAt)}</p><div class="timeline">${timeline}</div><span class="status ${status}">${statusLabel(status)}</span><div class="status-updated">${t("lastUpdated")}: ${formatTimestamp(updated)}</div><br>${itemsHTML}<h3>Total: ₹${Number(order.total||0)}</h3><p>${payment}</p>${address}${notes}<div>${reorder}${cancel}${receipt}${wa}</div></div>`;
+}
+
+window.printOrderReceipt=async function(orderId){
+if(!currentUser)return;
+try{
+const snap=await getDoc(doc(db,"orders",orderId));
+if(!snap.exists()){alert("❌ Order not found.");return;}
+const order={id:snap.id,...snap.data()};
+const isCustomer=order.customerUid===currentUser.uid;
+const isFarmer=Array.isArray(order.farmerUids)&&order.farmerUids.includes(currentUser.uid);
+if(!isCustomer&&!isFarmer){alert("❌ You are not authorized to view this receipt.");return;}
+const items=Array.isArray(order.items)?order.items:[];
+const rows=items.map(i=>`<tr><td>${escapeHTML(i.name||"Product")}</td><td>${Number(i.quantity||1)}</td><td>₹${Number(i.price||0)}</td><td>₹${Number(i.price||0)*Number(i.quantity||1)}</td></tr>`).join("");
+const w=window.open("","_blank");
+if(!w){alert("Please allow pop-ups to print the receipt.");return;}
+w.document.write(`<!doctype html><html><head><title>KisanMandi Receipt ${escapeHTML(order.id)}</title><style>
+body{font-family:Arial,sans-serif;padding:24px;color:#263b28}h1{color:#176b2c}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ccc;padding:9px;text-align:left}.total{font-size:20px;font-weight:bold;margin-top:16px}.box{background:#f4f8f1;padding:14px;border-radius:10px;margin-top:12px}
+</style></head><body onload="window.print()"><h1>🌾 KisanMandi</h1><h2>Order Receipt</h2><p><strong>Order ID:</strong> ${escapeHTML(order.id)}</p><p><strong>Date:</strong> ${escapeHTML(formatTimestamp(order.createdAt))}</p><p><strong>Status:</strong> ${escapeHTML(statusLabel(order.status||"pending"))}</p><div class="box"><strong>Customer:</strong> ${escapeHTML(order.customerName||"")}<br><strong>Mobile:</strong> ${escapeHTML(order.customerMobile||"")}<br><strong>Delivery:</strong> ${escapeHTML(order.deliveryAddress||"")}</div><table><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><p class="total">Total: ₹${Number(order.total||0)}</p><p><strong>Payment:</strong> Cash on Delivery</p><p>Thank you for using KisanMandi.</p></body></html>`);
+w.document.close();
+}catch(error){alert("❌ Could not create receipt:\n"+friendlyError(error));}
+};
+
+async function loadFarmerDashboard(){
+if(!currentUser||currentProfile?.role!=="farmer"){document.getElementById("farmerSection").classList.add("hidden");return;}
+await loadMyProducts();
+await loadFarmerOrders();
+await loadFarmerStats();
+}
+
+window.addProduct=async function(){
+if(!currentUser||currentProfile?.role!=="farmer"){alert("❌ Farmer login required.");return;}
+const name=document.getElementById("productName").value.trim();
+const price=Number(document.getElementById("productPrice").value);
+const stock=Number(document.getElementById("productStock").value);
+const location=document.getElementById("productLocation").value.trim();
+const category=document.getElementById("productCategory").value;
+if(!name||price<=0||stock<0){showMessage("farmerMessage","❌ Enter valid product details.",true);return;}
+try{
+await addDoc(collection(db,"products"),{name,price,stock,location:location||"Maharajganj",category,ownerUid:currentUser.uid,farmerUid:currentUser.uid,farmerName:currentProfile?.name||currentUser.displayName||"Farmer",farmerMobile:currentProfile?.mobile||"",createdAt:serverTimestamp()});
+showMessage("farmerMessage","✅ Product listed successfully!");
+["productName","productPrice","productStock","productLocation"].forEach(id=>document.getElementById(id).value="");
+await loadProducts();await loadMyProducts();
+}catch(error){showMessage("farmerMessage","❌ "+friendlyError(error),true);}
+};
+
+async function loadMyProducts(){
+const box=document.getElementById("myProducts");
+try{
+const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
+const snap=await getDocs(q);const list=[];
+snap.forEach(item=>list.push({id:item.id,...item.data()}));
+if(list.length===0){box.innerHTML='<div class="info">🌱 You have not listed any products.</div>';return;}
+box.innerHTML=list.map(product=>`<div class="order">
+<h3>${escapeHTML(product.name)}</h3>
+<p>💰 ₹${Number(product.price||0)} / kg</p>
+<p>📦 Stock: <strong>${Number(product.stock||0)}</strong></p>
+<p>📍 ${escapeHTML(product.location||"")}</p>
+<div class="product-manage">
+<button class="blue" onclick="openProductEdit('${product.id}')">✏️ ${t("edit")}</button>
+<button class="orange" onclick="quickStock('${product.id}',1)">➕ ${t("stock")}</button>
+<button class="red" onclick="deleteMyProduct('${product.id}')">🗑️ ${t("delete")}</button>
+</div>
+</div>`).join("");
+}catch(error){box.innerHTML='<div class="error">❌ Could not load your products.</div>';}
+}
+window.openProductEdit=async function(productId){
+if(!currentUser||currentProfile?.role!=="farmer")return;
+try{
+const snap=await getDoc(doc(db,"products",productId));
+if(!snap.exists()){alert("❌ Product not found.");return;}
+const product=snap.data();
+if(product.ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
+document.getElementById("editProductId").value=productId;
+document.getElementById("editProductName").value=product.name||"";
+document.getElementById("editProductPrice").value=product.price||0;
+document.getElementById("editProductStock").value=product.stock||0;
+document.getElementById("editProductLocation").value=product.location||"";
+document.getElementById("editProductCategory").value=product.category||"other";
+document.getElementById("editProductModal").classList.remove("hidden");
+applyLanguage();
+}catch(error){alert("❌ Could not open product.");}
+};
+window.closeProductEdit=function(){document.getElementById("editProductModal").classList.add("hidden");};
+window.saveProductEdit=async function(){
+const id=document.getElementById("editProductId").value;
+const name=document.getElementById("editProductName").value.trim();
+const price=Number(document.getElementById("editProductPrice").value);
+const stock=Number(document.getElementById("editProductStock").value);
+const location=document.getElementById("editProductLocation").value.trim();
+const category=document.getElementById("editProductCategory").value;
+if(!id||!name||price<=0||stock<0){alert("❌ Please enter valid product details.");return;}
+try{
+const ref=doc(db,"products",id);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized to edit this product.");return;}
+await updateDoc(ref,{name,price,stock,location:location||"Maharajganj",category});
+closeProductEdit();
+showMessage("farmerMessage","✅ Product updated successfully!");
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Update failed:\n"+friendlyError(error));}
+};
+window.quickStock=async function(productId,delta){
+try{
+const ref=doc(db,"products",productId);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
+const oldStock=Number(snap.data().stock||0);const amount=Math.max(1,Number(prompt(currentLanguage==="hi"?"कितना स्टॉक जोड़ना है?":currentLanguage==="ta"?"எவ்வளவு இருப்பை சேர்க்க வேண்டும்?":"How much stock to add?", "10"))||0);
+if(amount<=0)return;
+await updateDoc(ref,{stock:oldStock+amount});
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Stock update failed:\n"+friendlyError(error));}
+};
+window.deleteMyProduct=async function(productId){
+if(!confirm(currentLanguage==="hi"?"क्या आप इस उत्पाद को हटाना चाहते हैं?":currentLanguage==="ta"?"இந்த பொருளை நீக்க விரும்புகிறீர்களா?":"Delete this product?"))return;
+try{
+const ref=doc(db,"products",productId);const snap=await getDoc(ref);
+if(!snap.exists()||snap.data().ownerUid!==currentUser.uid){alert("❌ You are not authorized.");return;}
+await deleteDoc(ref);
+showMessage("farmerMessage","✅ Product deleted.");
+await loadProducts();await loadMyProducts();
+}catch(error){alert("❌ Delete failed:\n"+friendlyError(error));}
+};
+
+async function loadFarmerStats(){
+try{
+const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));
+const snap=await getDocs(q);let total=0,pending=0,delivered=0,sales=0;
+snap.forEach(d=>{const o=d.data();total++;const s=o.status||"pending";if(s==="pending")pending++;if(s==="delivered")delivered++;(o.items||[]).forEach(item=>{if(item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid)sales+=Number(item.price||0)*Number(item.quantity||0);});});
+const productSnap=await getDocs(query(collection(db,"products"),where("ownerUid","==",currentUser.uid)));
+let activeProducts=0;
+productSnap.forEach(d=>{if(Number(d.data().stock||0)>0)activeProducts++;});
+document.getElementById("statOrders").textContent=total;
+document.getElementById("statPending").textContent=pending;
+document.getElementById("statDelivered").textContent=delivered;
+document.getElementById("statSales").textContent="₹"+sales;
+document.getElementById("statProducts").textContent=activeProducts;
+}catch(error){console.error("Farmer stats:",error);}
+}
+
+async function loadFarmerOrders(){
+const box=document.getElementById("farmerOrders");
+try{
+const q=query(
+collection(db,"orders"),
+where("farmerUids","array-contains",currentUser.uid)
+);
+const snap=await getDocs(q);
+const orders=[];
+snap.forEach(item=>{
+orders.push({id:item.id,...item.data()});
+});
+if(orders.length===0){box.innerHTML='<div class="info">📥 No incoming orders.</div>';return;}
+orders.sort((a,b)=>timestampValue(b.createdAt)-timestampValue(a.createdAt));
+box.innerHTML=orders.map(renderFarmerOrder).join("");
+}catch(error){box.innerHTML='<div class="error">❌ Could not load farmer orders.</div>';}
+}
+
+function renderFarmerOrder(order){
+const status=order.status||"pending";
+const farmerItems=(order.items||[]).filter(item=>item.farmerId===currentUser.uid||item.farmerUid===currentUser.uid);
+if(farmerItems.length===0)return "";
+const itemHTML=farmerItems.map(item=>`<p>🌾 ${safeText(item.name)} — ₹${Number(item.price||0)} × ${Number(item.quantity||1)}</p>`).join("");
+let buttons="";
+if(status==="pending")buttons=`<button class="btn green" onclick="updateOrderStatus('${order.id}','confirmed')">✅ Confirm Order</button><button class="btn red" onclick="updateOrderStatus('${order.id}','rejected')">❌ Reject Order</button>`;
+if(status==="confirmed")buttons=`<button class="btn blue" onclick="updateOrderStatus('${order.id}','processing')">⚙️ Start Processing</button>`;
+if(status==="processing")buttons=`<button class="btn blue" onclick="updateOrderStatus('${order.id}','shipped')">🚚 Mark Shipped</button>`;
+if(status==="shipped")buttons=`<button class="btn green" onclick="updateOrderStatus('${order.id}','delivered')">🏠 Delivered</button>`;
+const mobile=order.customerMobile||"";
+const link=whatsappLink(mobile,`Hello ${order.customerName||"Customer"}, this is your KisanMandi farmer regarding order ${order.id}.`);
+const whatsapp=link?`<a class="btn green" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="${link}">💬 WhatsApp Customer</a>`:"";
+return `<div class="order"><h3>📦 Order ${safeText(order.id)}</h3><p>👤 Customer: ${safeText(order.customerName||"")}</p><p>📱 ${safeText(order.customerMobile||"")}</p><p>📅 ${formatTimestamp(order.createdAt)}</p>${order.deliveryAddress?`<p>📍 Delivery: ${safeText(order.deliveryAddress)}</p>`:""}${order.deliveryNotes?`<p>📝 Notes: ${safeText(order.deliveryNotes)}</p>`:""}<br><span class="status ${status}">${statusLabel(status)}</span><br><br>${itemHTML}<h3>Order Total: ₹${Number(order.total||0)}</h3><div class="action-row">${buttons}${whatsapp}</div></div>`;
+}
+
+window.updateOrderStatus=async function(orderId,newStatus){
+ if(!currentUser||currentProfile?.role!=="farmer"){alert("❌ Farmer login required.");return;}
+ try{
+ const orderRef=doc(db,"orders",orderId);const snap=await getDoc(orderRef);
+ if(!snap.exists()){alert("❌ Order not found.");return;}
+ const order=snap.data();
+ const farmerIds=Array.isArray(order.farmerUids)?order.farmerUids:[];
+ if(!farmerIds.includes(currentUser.uid)){alert("❌ You are not authorized for this order.");return;}
+
+ // Enforce one-step workflow:
+ // Pending → Confirmed → Processing → Shipped → Delivered.
+ // Rejection is allowed only from Pending.
+ const currentStatus=String(order.status||"pending").toLowerCase();
+ const allowedNext={
+   pending:["confirmed","rejected"],
+   confirmed:["processing"],
+   processing:["shipped"],
+   shipped:["delivered"],
+   delivered:[],
+   cancelled:[],
+   rejected:[]
+ };
+ const allowed=allowedNext[currentStatus]||[];
+ if(!allowed.includes(newStatus)){
+   const nextText=allowed.length?allowed.map(s=>statusLabel(s)).join(" or "):"No further changes";
+   alert("⚠️ Invalid order transition.
+
+Current: "+statusLabel(currentStatus)+"
+Allowed next step: "+nextText);
+   return;
+ }
+
+ await updateDoc(orderRef,{status:newStatus,updatedAt:serverTimestamp()});
+ alert("✅ Order status updated to "+statusLabel(newStatus));
+ await loadFarmerOrders();await loadFarmerStats();await loadOrders();
+ }catch(error){alert("❌ Update failed:
+"+friendlyError(error));}
+};
+
+
+/* =========================
+   KisanMandi V9.0 LANGUAGE
+   English + Hindi + Tamil
+   ========================= */
+const translations={
+en:{smartTools:"🧰 KisanMandi Smart Tools",darkMode:"🌙 Dark Mode",shareSite:"📤 Share KisanMandi",exportOrders:"📊 Export Orders",orderSearch:"🔎 Search order ID or product...",orderAll:"All statuses",orderPending:"Pending",orderConfirmed:"Confirmed",orderProcessing:"Processing",orderShipped:"Shipped",orderDelivered:"Delivered",orderCancelled:"Cancelled",
+tagline:"किसान मंडी • Direct Farmer Marketplace",home:"🏠 Home",products:"🌾 Products",cart:"🛒 Cart",orders:"📦 Orders",account:"👤 Account",
+welcome:"Welcome to KisanMandi",heroText:"Buy directly from farmers and sell your agricultural products.",browseProducts:"🌱 Browse Products",loginRegister:"👤 Login / Register",
+accountTitle:"👤 KisanMandi Account",accountSubtitle:"Login as a customer or farmer",email:"Email Address",password:"Password",loginButton:"🔐 Login",
+forgotPassword:"🔑 Forgot Password?",createAccount:"📝 Create New Account",fullName:"Full Name",createPassword:"Create Password (minimum 6 characters)",
+customer:"Customer",farmer:"Farmer",createAccountButton:"📋 Create Account",backLogin:"🔐 Back to Login",loggedIn:"✅ You are logged in.",
+myOrders:"📦 My Orders",editProfile:"👤 Edit Profile",saveProfile:"💾 Save Profile",refreshDashboard:"🔄 Refresh Dashboard",activeProducts:"Active Products",mobileNumber:"Mobile Number",orderLive:"🟢 Live order tracking",refreshOrders:"🔄 Refresh Orders",lastUpdated:"Last updated",statusChanged:"Order status changed",notifications:"Notifications",noNotifications:"No active notifications.",latestOrder:"Latest order",remove:"Remove",logout:"🚪 Logout",availableProducts:"🌾 Available Products",search:"🔍 Search products, farmers, locations...",
+all:"🌾 All",vegetables:"🥬 Vegetables",fruits:"🍎 Fruits",grains:"🌾 Grains",dairy:"🥛 Dairy",other:"🌱 Other",newest:"↕ Newest",
+priceLow:"₹ Price: Low to High",priceHigh:"₹ Price: High to Low",stockHigh:"📦 Stock: High to Low",nameAZ:"🔤 Name A–Z",saved:"❤️ Saved",viewSaved:"❤️ View Saved Products",save:"🤍 Save",removeSaved:"❤️ Remove Saved",defaultAddress:"Default Delivery Address",
+yourCart:"🛒 Your Cart",placeOrder:"📦 Place Order",ordersTitle:"📦 Orders",ordersSubtitle:"Customers can track orders and farmers can manage orders for their products.",
+farmerDashboard:"👨‍🌾 Farmer Dashboard",addProduct:"🌱 Add Product",productName:"Product / Crop Name",pricePerKg:"Price per kg",availableStock:"Available Stock",location:"Location",
+vegetable:"🥬 Vegetable",fruit:"🍎 Fruit",grain:"🌾 Grain",listProduct:"➕ List Product",myProducts:"📋 My Products",incomingOrders:"📥 Incoming Orders",totalOrders:"Total Orders",pendingOrders:"Pending",deliveredOrders:"Delivered",salesTotal:"My Sales",edit:"Edit",stock:"Stock",delete:"Delete",editProduct:"✏️ Edit Product",saveChanges:"💾 Save Changes",cancel:"Cancel"
+},
+hi:{smartTools:"🧰 किसान मंडी स्मार्ट टूल्स",darkMode:"🌙 डार्क मोड",shareSite:"📤 किसान मंडी शेयर करें",exportOrders:"📊 ऑर्डर एक्सपोर्ट करें",orderSearch:"🔎 ऑर्डर ID या उत्पाद खोजें...",orderAll:"सभी स्थिति",orderPending:"लंबित",orderConfirmed:"पुष्टि",orderProcessing:"प्रोसेसिंग",orderShipped:"भेजा गया",orderDelivered:"डिलीवर",orderCancelled:"रद्द",
+tagline:"किसान मंडी • सीधे किसान से बाज़ार",home:"🏠 होम",products:"🌾 उत्पाद",cart:"🛒 कार्ट",orders:"📦 ऑर्डर",account:"👤 खाता",
+welcome:"किसान मंडी में आपका स्वागत है",heroText:"किसानों से सीधे खरीदें और अपने कृषि उत्पाद बेचें।",browseProducts:"🌱 उत्पाद देखें",loginRegister:"👤 लॉगिन / रजिस्टर",
+accountTitle:"👤 किसान मंडी खाता",accountSubtitle:"ग्राहक या किसान के रूप में लॉगिन करें",email:"ईमेल पता",password:"पासवर्ड",loginButton:"🔐 लॉगिन",
+forgotPassword:"🔑 पासवर्ड भूल गए?",createAccount:"📝 नया खाता बनाएं",fullName:"पूरा नाम",createPassword:"पासवर्ड बनाएं (कम से कम 6 अक्षर)",
+customer:"ग्राहक",farmer:"किसान",createAccountButton:"📋 खाता बनाएं",backLogin:"🔐 लॉगिन पर वापस",loggedIn:"✅ आप लॉगिन हैं।",
+myOrders:"📦 मेरे ऑर्डर",editProfile:"👤 प्रोफ़ाइल संपादित करें",saveProfile:"💾 प्रोफ़ाइल सहेजें",refreshDashboard:"🔄 डैशबोर्ड रीफ्रेश करें",activeProducts:"सक्रिय उत्पाद",mobileNumber:"मोबाइल नंबर",orderLive:"🟢 ऑर्डर लाइव ट्रैकिंग",refreshOrders:"🔄 ऑर्डर रीफ्रेश करें",lastUpdated:"अंतिम अपडेट",statusChanged:"ऑर्डर स्थिति बदली",notifications:"सूचनाएं",noNotifications:"कोई सक्रिय सूचना नहीं है।",latestOrder:"नवीनतम ऑर्डर",remove:"हटाएं",logout:"🚪 लॉगआउट",availableProducts:"🌾 उपलब्ध उत्पाद",search:"🔍 उत्पाद, किसान या स्थान खोजें...",
+all:"🌾 सभी",vegetables:"🥬 सब्ज़ियां",fruits:"🍎 फल",grains:"🌾 अनाज",dairy:"🥛 डेयरी",other:"🌱 अन्य",newest:"↕ नवीनतम",
+priceLow:"₹ कीमत: कम से अधिक",priceHigh:"₹ कीमत: अधिक से कम",stockHigh:"📦 स्टॉक: अधिक से कम",nameAZ:"🔤 नाम A–Z",saved:"❤️ सहेजे गए",viewSaved:"❤️ सहेजे उत्पाद देखें",save:"🤍 सहेजें",removeSaved:"❤️ सहेजा हटाएं",defaultAddress:"डिफ़ॉल्ट डिलीवरी पता",
+yourCart:"🛒 आपका कार्ट",placeOrder:"📦 ऑर्डर करें",ordersTitle:"📦 ऑर्डर",ordersSubtitle:"ग्राहक ऑर्डर ट्रैक कर सकते हैं और किसान अपने उत्पादों के ऑर्डर संभाल सकते हैं।",
+farmerDashboard:"👨‍🌾 किसान डैशबोर्ड",addProduct:"🌱 उत्पाद जोड़ें",productName:"उत्पाद / फसल का नाम",pricePerKg:"प्रति किलो कीमत",availableStock:"उपलब्ध स्टॉक",location:"स्थान",
+vegetable:"🥬 सब्ज़ी",fruit:"🍎 फल",grain:"🌾 अनाज",listProduct:"➕ उत्पाद सूचीबद्ध करें",myProducts:"📋 मेरे उत्पाद",incomingOrders:"📥 आने वाले ऑर्डर",totalOrders:"कुल ऑर्डर",pendingOrders:"लंबित",deliveredOrders:"डिलीवर",salesTotal:"मेरी बिक्री",edit:"संपादित करें",stock:"स्टॉक",delete:"हटाएं",editProduct:"✏️ उत्पाद संपादित करें",saveChanges:"💾 बदलाव सहेजें",cancel:"रद्द करें"
+},
+ta:{smartTools:"🧰 கிசான்மண்டி ஸ்மார்ட் கருவிகள்",darkMode:"🌙 டார்க் மோடு",shareSite:"📤 கிசான்மண்டியை பகிரவும்",exportOrders:"📊 ஆர்டர்களை ஏற்றுமதி செய்யவும்",orderSearch:"🔎 ஆர்டர் ID அல்லது பொருளை தேடுங்கள்...",orderAll:"அனைத்து நிலைகள்",orderPending:"நிலுவையில்",orderConfirmed:"உறுதி",orderProcessing:"செயலாக்கம்",orderShipped:"அனுப்பப்பட்டது",orderDelivered:"வழங்கப்பட்டது",orderCancelled:"ரத்து",
+tagline:"கிசான் மண்டி • விவசாயியிடமிருந்து நேரடி சந்தை",home:"🏠 முகப்பு",products:"🌾 பொருட்கள்",cart:"🛒 கார்ட்",orders:"📦 ஆர்டர்கள்",account:"👤 கணக்கு",
+welcome:"கிசான் மண்டிக்கு வரவேற்கிறோம்",heroText:"விவசாயிகளிடமிருந்து நேரடியாக வாங்கி உங்கள் விவசாயப் பொருட்களை விற்கவும்.",browseProducts:"🌱 பொருட்களைப் பார்க்க",loginRegister:"👤 உள்நுழைவு / பதிவு",
+accountTitle:"👤 கிசான் மண்டி கணக்கு",accountSubtitle:"வாடிக்கையாளர் அல்லது விவசாயியாக உள்நுழையவும்",email:"மின்னஞ்சல் முகவரி",password:"கடவுச்சொல்",loginButton:"🔐 உள்நுழைவு",
+forgotPassword:"🔑 கடவுச்சொல் மறந்துவிட்டதா?",createAccount:"📝 புதிய கணக்கு உருவாக்கவும்",fullName:"முழுப் பெயர்",createPassword:"கடவுச்சொல் உருவாக்கவும் (குறைந்தது 6 எழுத்துகள்)",
+customer:"வாடிக்கையாளர்",farmer:"விவசாயி",createAccountButton:"📋 கணக்கு உருவாக்கவும்",backLogin:"🔐 உள்நுழைவுக்கு திரும்ப",loggedIn:"✅ நீங்கள் உள்நுழைந்துள்ளீர்கள்.",
+myOrders:"📦 என் ஆர்டர்கள்",editProfile:"👤 சுயவிவரத்தைத் திருத்து",saveProfile:"💾 சுயவிவரத்தைச் சேமி",refreshDashboard:"🔄 டாஷ்போர்டைப் புதுப்பி",activeProducts:"செயலில் உள்ள பொருட்கள்",mobileNumber:"மொபைல் எண்",orderLive:"🟢 நேரடி ஆர்டர் கண்காணிப்பு",refreshOrders:"🔄 ஆர்டர்களை புதுப்பிக்கவும்",lastUpdated:"கடைசியாக புதுப்பிக்கப்பட்டது",statusChanged:"ஆர்டர் நிலை மாற்றப்பட்டது",notifications:"அறிவிப்புகள்",noNotifications:"செயலில் உள்ள அறிவிப்புகள் இல்லை.",latestOrder:"சமீபத்திய ஆர்டர்",remove:"நீக்கு",logout:"🚪 வெளியேறு",availableProducts:"🌾 கிடைக்கும் பொருட்கள்",search:"🔍 பொருட்கள், விவசாயிகள், இடங்களைத் தேடுங்கள்...",
+all:"🌾 அனைத்தும்",vegetables:"🥬 காய்கறிகள்",fruits:"🍎 பழங்கள்",grains:"🌾 தானியங்கள்",dairy:"🥛 பால் பொருட்கள்",other:"🌱 மற்றவை",newest:"↕ புதியது",
+priceLow:"₹ விலை: குறைவிலிருந்து அதிகம்",priceHigh:"₹ விலை: அதிகத்திலிருந்து குறைவு",stockHigh:"📦 இருப்பு: அதிகத்திலிருந்து குறைவு",nameAZ:"🔤 பெயர் A–Z",saved:"❤️ சேமிக்கப்பட்டவை",viewSaved:"❤️ சேமித்த பொருட்களைப் பார்க்க",save:"🤍 சேமி",removeSaved:"❤️ சேமித்ததை நீக்கு",defaultAddress:"இயல்புநிலை விநியோக முகவரி",
+yourCart:"🛒 உங்கள் கார்ட்",placeOrder:"📦 ஆர்டர் செய்யவும்",ordersTitle:"📦 ஆர்டர்கள்",ordersSubtitle:"வாடிக்கையாளர்கள் ஆர்டர்களை கண்காணிக்கலாம்; விவசாயிகள் தங்கள் பொருட்களின் ஆர்டர்களை நிர்வகிக்கலாம்.",
+farmerDashboard:"👨‍🌾 விவசாயி டாஷ்போர்டு",addProduct:"🌱 பொருள் சேர்க்கவும்",productName:"பொருள் / பயிர் பெயர்",pricePerKg:"ஒரு கிலோ விலை",availableStock:"கிடைக்கும் இருப்பு",location:"இடம்",
+vegetable:"🥬 காய்கறி",fruit:"🍎 பழம்",grain:"🌾 தானியம்",listProduct:"➕ பொருளைப் பட்டியலிடவும்",myProducts:"📋 என் பொருட்கள்",incomingOrders:"📥 வரும் ஆர்டர்கள்",totalOrders:"மொத்த ஆர்டர்கள்",pendingOrders:"நிலுவை",deliveredOrders:"வழங்கப்பட்டது",salesTotal:"என் விற்பனை",edit:"திருத்து",stock:"இருப்பு",delete:"நீக்கு",editProduct:"✏️ பொருளைத் திருத்து",saveChanges:"💾 மாற்றங்களைச் சேமி",cancel:"ரத்து"
+}
+};
+
+let currentLanguage=localStorage.getItem("kisanMandiLanguage")||"en";
+
+function t(key){
+return (translations[currentLanguage]&&translations[currentLanguage][key])||translations.en[key]||key;
+}
+
+window.changeLanguage=function(lang){
+if(!translations[lang])lang="en";
+currentLanguage=lang;
+localStorage.setItem("kisanMandiLanguage",lang);
+applyLanguage();
+renderProducts();
+renderCart();
+if(currentUser){
+loadOrders();
+updateOrderNotifications();
+if(currentProfile?.role==="farmer")loadFarmerDashboard();
+}
+};
+
+function applyLanguage(){
+const addr=document.getElementById("profileAddress");if(addr)addr.placeholder=t("defaultAddress");
+document.documentElement.lang=currentLanguage==="hi"?"hi":currentLanguage==="ta"?"ta":"en";
+document.querySelectorAll("[data-i18n]").forEach(el=>{
+const key=el.getAttribute("data-i18n");
+if(t(key))el.textContent=t(key);
+});
+document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+const key=el.getAttribute("data-i18n-placeholder");
+if(t(key))el.placeholder=t(key);
+});
+const selector=document.getElementById("languageSelect");
+if(selector)selector.value=currentLanguage;
+}
+
+function showMessage(id,message,error=false){
+const element=document.getElementById(id);if(!element)return;
+element.innerHTML=`<div class="${error?"error":"success"}">${message}</div>`;
+}
+function statusLabel(status){
+const labels={
+en:{pending:"⏳ Pending",confirmed:"✅ Confirmed",processing:"⚙️ Processing",shipped:"🚚 Shipped",delivered:"🏠 Delivered",cancelled:"🛑 Cancelled",rejected:"❌ Rejected"},
+hi:{pending:"⏳ लंबित",confirmed:"✅ पुष्टि की गई",processing:"⚙️ प्रोसेसिंग",shipped:"🚚 भेजा गया",delivered:"🏠 डिलीवर हो गया",cancelled:"🛑 रद्द",rejected:"❌ अस्वीकार"},
+ta:{pending:"⏳ நிலுவையில்",confirmed:"✅ உறுதி செய்யப்பட்டது",processing:"⚙️ செயலாக்கம்",shipped:"🚚 அனுப்பப்பட்டது",delivered:"🏠 வழங்கப்பட்டது",cancelled:"🛑 ரத்து",rejected:"❌ நிராகரிக்கப்பட்டது"}
+};
+return (labels[currentLanguage]||labels.en)[status]||status;
+}
+function timestampValue(timestamp){return timestamp&&typeof timestamp.toMillis==="function"?timestamp.toMillis():0;}
+function formatTimestamp(timestamp){try{return timestamp?timestamp.toDate().toLocaleString():"Just now";}catch(e){return "Recent";}}
+function escapeHTML(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+function friendlyError(error){
+const code=error?.code||"";
+const messages={
+"auth/email-already-in-use":"This email is already registered.",
+"auth/invalid-email":"Invalid email address.",
+"auth/weak-password":"Password is too weak.",
+"auth/invalid-credential":"Incorrect email or password.",
+"auth/user-not-found":"User account not found.",
+"auth/wrong-password":"Incorrect password.",
+"auth/network-request-failed":"Network connection failed. Check your internet and try again.",
+"auth/too-many-requests":"Too many login attempts. Please wait a moment and try again.",
+"permission-denied":"Firebase security rules denied this action."
+};
+return messages[code]||error?.message||"Something went wrong.";
+}
+
+function whatsappNumber(raw){
+let digits=String(raw||"").replace(/\D/g,"");
+if(!digits)return "";
+if(digits.length===10)digits="91"+digits;
+if(digits.length===11&&digits.startsWith("0"))digits="91"+digits.slice(1);
+return digits;
+}
+function whatsappLink(number,message){
+const digits=whatsappNumber(number);
+return digits?"https://wa.me/"+digits+"?text="+encodeURIComponent(message):"";
+}
+function safeText(value){return escapeHTML(value??"");}
+
+applyLanguage();
+loadProducts();
+renderCart();
+
+window.toggleNotifications=function(){
+  const panel=document.getElementById("notificationPanel");
+  if(!panel)return;
+  panel.classList.toggle("hidden");
+  if(!panel.classList.contains("hidden")) renderNotifications();
+};
+
+window.renderNotifications=function(){
+  const list=document.getElementById("notificationList");
+  const badge=document.getElementById("notificationCount");
+  if(!list)return;
+  const notes=JSON.parse(localStorage.getItem("kisanMandiNotifications")||"[]");
+  if(badge){
+    badge.textContent=String(notes.length);
+    badge.classList.toggle("hidden",notes.length===0);
+  }
+  list.innerHTML=notes.length
+    ? notes.slice(0,20).map(n=>`<div class="review-item">🔔 <strong>${safeText(n.title||"KisanMandi")}</strong><br><small>${safeText(n.message||"")}</small></div>`).join("")
+    : `<div class="checkout-note">🎉 No new notifications.</div>`;
+};
+
+window.addKisanNotification=function(title,message){
+  const notes=JSON.parse(localStorage.getItem("kisanMandiNotifications")||"[]");
+  notes.unshift({title,message,at:Date.now()});
+  localStorage.setItem("kisanMandiNotifications",JSON.stringify(notes.slice(0,50)));
+  renderNotifications();
+};
+
+
+window.getProductReviews=function(productId){
+  const all=JSON.parse(localStorage.getItem("kisanMandiReviews")||"{}");
+  return Array.isArray(all[productId])?all[productId]:[];
+};
+
+window.submitProductReview=function(productId){
+  if(!currentUser){alert("🔒 Please login to leave a review.");showSection("accountSection");return;}
+  const ratingEl=document.getElementById("reviewRating-"+productId);
+  const textEl=document.getElementById("reviewText-"+productId);
+  const rating=Number(ratingEl?.value||0);
+  const text=(textEl?.value||"").trim();
+  if(rating<1||rating>5){alert("⭐ Please select a rating from 1 to 5.");return;}
+  if(!text){alert("✍️ Please write a short review.");return;}
+  const all=JSON.parse(localStorage.getItem("kisanMandiReviews")||"{}");
+  all[productId]=Array.isArray(all[productId])?all[productId]:[];
+  all[productId].unshift({
+    uid:currentUser.uid,
+    name:currentProfile?.name||currentUser.displayName||"KisanMandi Customer",
+    rating,
+    text,
+    at:Date.now()
+  });
+  localStorage.setItem("kisanMandiReviews",JSON.stringify(all));
+  if(typeof addKisanNotification==="function") addKisanNotification("Review saved","Your product review was saved on this device.");
+  alert("⭐ Review saved successfully.");
+  if(typeof loadProducts==="function")loadProducts();
+};
+
+window.reviewHtml=function(productId){
+  const reviews=getProductReviews(productId);
+  const avg=reviews.length?(reviews.reduce((s,r)=>s+Number(r.rating||0),0)/reviews.length).toFixed(1):"0.0";
+  const stars="★★★★★";
+  const list=reviews.slice(0,3).map(r=>`<div class="review-item">⭐ ${Number(r.rating||0)}/5 — <strong>${safeText(r.name||"Customer")}</strong><br>${safeText(r.text||"")}</div>`).join("");
+  return `<div class="review-box"><h4>⭐ Ratings & Reviews</h4><div class="rating-summary">${stars} ${avg}/5 · ${reviews.length} review${reviews.length===1?"":"s"}</div>${list}<div style="margin-top:10px"><select id="reviewRating-${productId}"><option value="0">Choose rating</option><option value="5">⭐⭐⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="3">⭐⭐⭐</option><option value="2">⭐⭐</option><option value="1">⭐</option></select><textarea id="reviewText-${productId}" rows="2" placeholder="Write your review..."></textarea><button class="btn green" onclick="submitProductReview('${productId}')">⭐ Submit Review</button></div></div>`;
+};
+
+try{if(typeof renderNotifications==="function")renderNotifications();}catch(e){console.warn(e);}
+
+/* =========================================================
+   KisanMandi V12.3 SMART TOOLS
+   ========================================================= */
+
+window.setKM10Status=function(message){
+  const el=document.getElementById("km10ToolStatus");
+  if(el)el.textContent=message;
+};
+
+window.toggleKM10DarkMode=function(){
+  const on=!document.body.classList.contains("km-dark");
+  document.body.classList.toggle("km-dark",on);
+  localStorage.setItem("kisanMandiDarkMode",on?"1":"0");
+  setKM10Status(on?"🌙 Dark Mode enabled.":"☀️ Light Mode enabled.");
+};
+
+window.restoreKM10Theme=function(){
+  if(localStorage.getItem("kisanMandiDarkMode")==="1"){
+    document.body.classList.add("km-dark");
+  }
+};
+
+window.shareKisanMandi=async function(){
+  const url=window.location.href;
+  const data={
+    title:"KisanMandi",
+    text:"🌾 KisanMandi — Direct Farmer Marketplace",
+    url
+  };
+  try{
+    if(navigator.share){
+      await navigator.share(data);
+      setKM10Status("✅ KisanMandi shared successfully.");
+    }else if(navigator.clipboard){
+      await navigator.clipboard.writeText(url);
+      setKM10Status("🔗 Website link copied. You can paste it anywhere.");
+    }else{
+      prompt("Copy KisanMandi link:",url);
+    }
+  }catch(e){
+    if(e?.name!=="AbortError")setKM10Status("ℹ️ Sharing was cancelled or unavailable.");
+  }
+};
+
+window.shareKisanMandiProduct=async function(productId){
+  const product=(typeof products!=="undefined"?products:[]).find(p=>p.id===productId);
+  if(!product){alert("Product not found.");return;}
+  const url=window.location.href.split("#")[0]+"#product-"+encodeURIComponent(productId);
+  const data={
+    title:`${product.name||"Product"} — KisanMandi`,
+    text:`🌾 ${product.name||"Product"} | ₹${Number(product.price||0)}/kg | Farmer: ${product.farmerName||"Farmer"}`,
+    url
+  };
+  try{
+    if(navigator.share)await navigator.share(data);
+    else if(navigator.clipboard){
+      await navigator.clipboard.writeText(url);
+      setKM10Status("🔗 Product link copied.");
+    }else{
+      prompt("Copy product link:",url);
+    }
+  }catch(e){
+    if(e?.name!=="AbortError")setKM10Status("ℹ️ Product sharing was cancelled.");
+  }
+};
+
+window.exportVisibleOrdersCSV=function(){
+  const root=document.getElementById("ordersList");
+  const cards=[...(root?.querySelectorAll(".order")||[])].filter(c=>c.style.display!=="none");
+  if(!cards.length){
+    alert("📦 No visible orders to export. Open Orders and load your orders first.");
+    return;
+  }
+
+  const rows=[["Order","Date","Status","Details","Total"]];
+  cards.forEach(card=>{
+    const lines=(card.innerText||"").split("\n").map(x=>x.trim()).filter(Boolean);
+    const order=lines.find(x=>/^📦\s*Order\s+/i.test(x))||"";
+    const date=lines.find(x=>/^📅/.test(x))||"";
+    const status=lines.find(x=>/pending|confirmed|processing|shipped|delivered|cancelled/i.test(x))||"";
+    const total=lines.find(x=>/Total:\s*₹/i.test(x))||"";
+    const details=lines.filter(x=>x!==order&&x!==date&&x!==status&&x!==total&&x.length>0).slice(0,3).join(" | ");
+    rows.push([order,date,status,details,total]);
+  });
+
+  const csv=rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`KisanMandi_Orders_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  setKM10Status("📊 Orders exported successfully.");
+};
+
+window.km10CheckLowStock=function(){
+  try{
+    if(!currentUser || !currentProfile || currentProfile.role!=="farmer")return;
+    const mine=(typeof products!=="undefined"?products:[]).filter(p=>
+      p.ownerUid===currentUser.uid || p.farmerUid===currentUser.uid
+    );
+    const low=mine.filter(p=>Number(p.stock||0)>0&&Number(p.stock||0)<=10);
+    if(low.length){
+      const names=low.slice(0,5).map(p=>`${p.name||"Product"} (${p.stock})`).join(", ");
+      addKisanNotification("⚠️ Low stock alert",`Low-stock products: ${names}${low.length>5?"…":""}`);
+    }
+    const out=mine.filter(p=>Number(p.stock||0)<=0);
+    if(out.length){
+      addKisanNotification("❌ Out of stock",`${out.length} of your listed products are out of stock.`);
+    }
+  }catch(e){
+    console.warn("Low-stock check:",e);
+  }
+};
+
+window.km10Init=function(){
+  restoreKM10Theme();
+  try{
+    const saved=localStorage.getItem("kisanMandiLanguage");
+    if(saved&&document.getElementById("languageSelect"))document.getElementById("languageSelect").value=saved;
+  }catch(e){}
+};
+
+/* Restore the theme as soon as the page script is ready. */
+try{km10Init();}catch(e){console.warn(e);}
+
+
+/* =========================================================
+   KisanMandi V12.3 OPERATIONAL TOOLS
+   ========================================================= */
+window.exportMyOrdersCSV=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+    const snap=await getDocs(q);
+    if(snap.empty){alert("📦 You have no orders to export.");return;}
+    const rows=[["Order ID","Date","Status","Total","Delivery Address","Payment"]];
+    snap.forEach(d=>{
+      const o=d.data();
+      rows.push([
+        d.id,
+        formatTimestamp(o.createdAt),
+        o.status||"pending",
+        Number(o.total||0),
+        o.deliveryAddress||"",
+        "Cash on Delivery"
+      ]);
+    });
+    const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=`KisanMandi_MyOrders_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    if(typeof setKM10Status==="function")setKM10Status("📊 Your order report was downloaded.");
+  }catch(e){alert("❌ Could not export orders:\n"+friendlyError(e));}
+};
+
+window.printLatestOrderReceipt=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const q=query(collection(db,"orders"),where("customerUid","==",currentUser.uid));
+    const snap=await getDocs(q);
+    if(snap.empty){alert("📦 You have no orders yet.");return;}
+    let latest=null;
+    snap.forEach(d=>{
+      const o={id:d.id,...d.data()};
+      if(!latest || timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;
+    });
+    if(latest && typeof printOrderReceipt==="function")await printOrderReceipt(latest.id);
+  }catch(e){alert("❌ Could not open the latest receipt:\n"+friendlyError(e));}
+};
+
+window.km101StockReport=async function(){
+  if(!currentUser || currentProfile?.role!=="farmer"){alert("👨‍🌾 Farmer login required.");return;}
+  try{
+    const q=query(collection(db,"products"),where("ownerUid","==",currentUser.uid));
+    const snap=await getDocs(q);
+    const products=[];
+    snap.forEach(d=>products.push({id:d.id,...d.data()}));
+    if(!products.length){alert("🌾 You have no products listed.");return;}
+    const low=products.filter(p=>Number(p.stock||0)>0&&Number(p.stock||0)<=10);
+    const out=products.filter(p=>Number(p.stock||0)<=0);
+    const healthy=products.length-low.length-out.length;
+    alert(`📊 Stock Report\n\n🌾 Total products: ${products.length}\n✅ Healthy stock: ${healthy}\n⚠️ Low stock: ${low.length}\n❌ Out of stock: ${out.length}`);
+  }catch(e){alert("❌ Could not load stock report:\n"+friendlyError(e));}
+};
+
+window.km101DeliverySummary=async function(){
+  if(!currentUser || currentProfile?.role!=="farmer"){alert("👨‍🌾 Farmer login required.");return;}
+  try{
+    const q=query(collection(db,"orders"),where("farmerUids","array-contains",currentUser.uid));
+    const snap=await getDocs(q);
+    const c={pending:0,confirmed:0,processing:0,shipped:0,delivered:0,rejected:0,cancelled:0};
+    snap.forEach(d=>{const s=d.data().status||"pending";c[s]=(c[s]||0)+1;});
+    alert(`🚚 Delivery Summary\n\n⏳ Pending: ${c.pending}\n✅ Confirmed: ${c.confirmed}\n⚙️ Processing: ${c.processing}\n🚚 Shipped: ${c.shipped}\n🏠 Delivered: ${c.delivered}\n❌ Rejected: ${c.rejected}\n🛑 Cancelled: ${c.cancelled}`);
+  }catch(e){alert("❌ Could not load delivery summary:\n"+friendlyError(e));}
+};
+
+
+/* ===== KisanMandi V12.0 ===== */
+window.addToCartByProduct=function(product,qty){
+  if(!product||!product.id)return;
+  const quantity=Math.max(1,Number(qty||1));
+  const existing=cart.find(x=>x.productId===product.id);
+  const stock=Number(product.stock||0);
+  if(existing){
+    existing.quantity=Math.min(existing.quantity+quantity,stock>0?stock:existing.quantity+quantity);
+  }else{
+    cart.push({productId:product.id,name:product.name||"Product",price:Number(product.price||0),
+      quantity:Math.min(quantity,stock>0?stock:quantity),
+      farmerId:product.ownerUid||product.farmerUid||"",farmerName:product.farmerName||"Farmer",
+      farmerMobile:product.farmerMobile||""});
+  }
+};
+
+window.km11CancelOrder=async function(orderId){
+  if(!currentUser)return alert("🔒 Please login first.");
+  if(!confirm("Cancel this order?"))return;
+  try{
+    const ref=doc(db,"orders",orderId),snap=await getDoc(ref);
+    if(!snap.exists())return alert("❌ Order not found.");
+    const o=snap.data();
+    if(o.customerUid!==currentUser.uid)return alert("❌ Not authorized.");
+    const status=o.status||"pending";
+    if(status!=="pending"&&status!=="confirmed")return alert("ℹ️ This order can no longer be cancelled.");
+    // Secure-rule compatible update: only status and updatedAt are changed.
+    await updateDoc(ref,{status:"cancelled",updatedAt:serverTimestamp()});
+    if(typeof addKisanNotification==="function")addKisanNotification("🛑 Order cancelled","Order "+orderId+" was cancelled.");
+    await loadOrders();
+    await updateOrderNotifications();
+    alert("✅ Order cancelled.");
+  }catch(e){alert("❌ "+friendlyError(e));}
+};
+
+window.km11Reorder=async function(orderId){
+  if(!currentUser)return alert("🔒 Please login first.");
+  try{
+    const snap=await getDoc(doc(db,"orders",orderId));
+    if(!snap.exists())return alert("❌ Order not found.");
+    const o=snap.data();
+    if(o.customerUid!==currentUser.uid)return alert("❌ Not authorized.");
+    let added=0;
+    for(const item of (o.items||[])){
+      const ps=await getDoc(doc(db,"products",item.productId));
+      if(!ps.exists())continue;
+      const p=ps.data();
+      if(Number(p.stock||0)<=0)continue;
+      addToCartByProduct({...p,id:item.productId},item.quantity);
+      added++;
+    }
+    if(added){
+      saveCart(); renderCart();
+      alert("🔁 "+added+" product(s) added to your cart.");
+      if(typeof showSection==="function")showSection("cartSection");
+    }else alert("ℹ️ None of those products are currently available.");
+  }catch(e){alert("❌ Reorder failed:\n"+friendlyError(e));}
+};
+
+window.km11ReorderLast=async function(){
+  if(!currentUser)return alert("🔒 Please login first.");
+  try{
+    const snap=await getDocs(query(collection(db,"orders"),where("customerUid","==",currentUser.uid)));
+    if(snap.empty)return alert("📦 No previous orders.");
+    let latest=null;
+    snap.forEach(d=>{const o={id:d.id,...d.data()};if(!latest||timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;});
+    if(latest)await km11Reorder(latest.id);
+  }catch(e){alert("❌ "+friendlyError(e));}
+};
+
+window.km11MarketplaceSummary=async function(){
+  if(!currentUser)return alert("🔒 Please login first.");
+  try{
+    const snap=await getDocs(query(collection(db,"orders"),where("customerUid","==",currentUser.uid)));
+    let count=0,total=0,delivered=0,active=0,cancelled=0;
+    snap.forEach(d=>{const o=d.data(),s=o.status||"pending";count++;total+=Number(o.total||0);
+      if(s==="delivered")delivered++;else if(s==="cancelled"||s==="rejected")cancelled++;else active++;});
+    alert(`📊 My Marketplace Summary\n\n📦 Orders: ${count}\n💰 Total value: ₹${total}\n🚚 Active: ${active}\n🏠 Delivered: ${delivered}\n🛑 Cancelled/Rejected: ${cancelled}`);
+  }catch(e){alert("❌ "+friendlyError(e));}
+};
+
+window.km11ClearLocalAlerts=function(){
+  localStorage.removeItem("kisanMandiNotifications");
+  localStorage.removeItem("kisanMandiOrderStatuses");
+  if(typeof renderNotifications==="function")renderNotifications();
+  if(typeof setKM10Status==="function")setKM10Status("🧹 Local alerts cleared.");
+  else alert("🧹 Local alerts cleared.");
+};
+
+
+/* =========================================================
+   KisanMandi V12.3
+   ========================================================= */
+
+window.km12OrderTimeline=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const snap=await getDocs(query(collection(db,"orders"),where("customerUid","==",currentUser.uid)));
+    if(snap.empty){alert("📦 You have no orders yet.");return;}
+    let latest=null;
+    snap.forEach(d=>{
+      const o={id:d.id,...d.data()};
+      if(!latest||timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;
+    });
+    if(!latest){alert("📦 No order found.");return;}
+    const status=latest.status||"pending";
+    const steps=[
+      ["pending","⏳ Order placed"],
+      ["confirmed","✅ Order confirmed"],
+      ["processing","⚙️ Processing"],
+      ["shipped","🚚 Shipped"],
+      ["delivered","🏠 Delivered"]
+    ];
+    const current=steps.findIndex(x=>x[0]===status);
+    let text=`🕒 Order Timeline\n\nOrder: ${latest.id}\nStatus: ${status.toUpperCase()}\n\n`;
+    steps.forEach((s,i)=>{text+=(i<=current?"✅ ":"○ ")+s[1]+"\n";});
+    if(status==="cancelled")text+="\n🛑 This order was cancelled.";
+    if(status==="rejected")text+="\n❌ This order was rejected.";
+    alert(text);
+  }catch(e){alert("❌ Could not load timeline:\n"+friendlyError(e));}
+};
+
+window.km12LatestOrder=async function(){
+  if(!currentUser){alert("🔒 Please login first.");return;}
+  try{
+    const snap=await getDocs(query(collection(db,"orders"),where("customerUid","==",currentUser.uid)));
+    if(snap.empty){alert("📦 You have no orders yet.");return;}
+    let latest=null;
+    snap.forEach(d=>{const o={id:d.id,...d.data()};if(!latest||timestampValue(o.createdAt)>timestampValue(latest.createdAt))latest=o;});
+    if(!latest)return;
+    alert(`📦 Latest Order\n\nOrder: ${latest.id}\nStatus: ${statusLabel(latest.status||"pending")}\nTotal: ₹${Number(latest.total||0)}\nUpdated: ${formatTimestamp(latest.updatedAt||latest.createdAt)}`);
+  }catch(e){alert("❌ Could not load latest order:\n"+friendlyError(e));}
+};
+
+window.km12SavedData=function(){
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+  const km=keys.filter(k=>k&&/kisan|cart|language|theme|notification/i.test(k));
+  alert("💾 KisanMandi local data\n\n"+(km.length?km.map(k=>"• "+k).join("\n"):"No KisanMandi local data found."));
+};
+
+window.km12Support=function(){
+  alert("💬 KisanMandi Help\n\n1. Login/Register from Account.\n2. Browse Products and add items to Cart.\n3. Place your order and track it from Orders.\n4. Farmers can manage products and order status from Farmer Dashboard.\n\nFor an account or order problem, keep your Order ID ready.");
+};
+
+window.km12StatusBadge=function(status){
+  const s=String(status||"pending").toLowerCase();
+  const labels={
+    pending:"⏳ Pending",
+    confirmed:"✅ Confirmed",
+    processing:"⚙️ Processing",
+    shipped:"🚚 Shipped",
+    delivered:"🏠 Delivered",
+    cancelled:"🛑 Cancelled",
+    rejected:"❌ Rejected"
+  };
+  const cls=(s==="cancelled"||s==="rejected")?"danger":(s==="pending"?"warn":"");
+  return `<span class="km12-badge ${cls}">${labels[s]||s}</span>`;
+};
+
+
+/* ===== KisanMandi V13.2 functions ===== */
+function km124FormatAlertTime(ms){
+  try{return new Date(Number(ms||Date.now())).toLocaleString();}
+  catch(e){return "";}
+}
+
+window.km124RenderSummary=function(){
+  const box=document.getElementById("km124Summary");
+  if(!box)return;
+
+  const cards=[...document.querySelectorAll("#ordersList .order")]
+    .filter(c=>c.style.display!=="none");
+
+  const counts={
+    total:cards.length,
+    active:0,
+    delivered:0,
+    cancelled:0
+  };
+
+  cards.forEach(card=>{
+    const text=(card.innerText||"").toLowerCase();
+    if(text.includes("pending")||text.includes("confirmed")||text.includes("processing")||text.includes("shipped")){
+      counts.active++;
+    }
+    if(text.includes("delivered"))counts.delivered++;
+    if(text.includes("cancelled"))counts.cancelled++;
+  });
+
+  box.innerHTML=`
+    <div class="km124-stat"><strong>${counts.total}</strong><span>📦 Shown</span></div>
+    <div class="km124-stat"><strong>${counts.active}</strong><span>🔄 Active</span></div>
+    <div class="km124-stat"><strong>${counts.delivered}</strong><span>🏠 Delivered</span></div>
+    <div class="km124-stat"><strong>${counts.cancelled}</strong><span>🛑 Cancelled</span></div>
+  `;
+};
+
+window.km124RenderAlerts=function(){
+  const box=document.getElementById("km124Alerts");
+  if(!box)return;
+
+  let notes=[];
+  try{notes=JSON.parse(localStorage.getItem("kisanMandiNotifications")||"[]");}
+  catch(e){notes=[];}
+
+  if(!Array.isArray(notes)||!notes.length){
+    box.innerHTML='<div class="km124-empty">🎉 No local notifications.</div>';
+    return;
+  }
+
+  box.innerHTML=notes.slice(0,8).map(n=>`
+    <div class="km124-alert">
+      <div>🔔</div>
+      <div>
+        <strong>${safeText(n.title||"KisanMandi")}</strong>
+        <div>${safeText(n.message||"")}</div>
+        <div class="km124-alert-time">${km124FormatAlertTime(n.at)}</div>
+      </div>
+    </div>
+  `).join("");
+};
+
+window.km124OrderOverview=function(){
+  showSection("ordersSection");
+  setTimeout(()=>{
+    km124RenderSummary();
+    const panel=document.getElementById("km124Dashboard");
+    if(panel)panel.classList.remove("km124-focus");
+  },250);
+};
+
+window.km124OpenNotifications=function(){
+  const panel=document.getElementById("notificationPanel");
+  if(panel){
+    panel.classList.remove("hidden");
+    if(typeof renderNotifications==="function")renderNotifications();
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  km124RenderAlerts();
+};
+
+window.km124ClearNotifications=function(){
+  if(!confirm("Clear KisanMandi notifications saved on this device?"))return;
+  localStorage.removeItem("kisanMandiNotifications");
+  if(typeof renderNotifications==="function")renderNotifications();
+  km124RenderAlerts();
+  alert("✅ Notifications cleared.");
+};
+
+window.km124RefreshAll=async function(){
+  try{
+    if(typeof loadProducts==="function")await loadProducts();
+    if(typeof renderCart==="function")renderCart();
+    if(currentUser && typeof loadOrders==="function"){
+      await loadOrders();
+      if(typeof filterOrdersUI==="function")filterOrdersUI();
+    }
+    if(typeof km124RenderSummary==="function")km124RenderSummary();
+    if(typeof km124RenderAlerts==="function")km124RenderAlerts();
+    alert("✅ KisanMandi refreshed successfully.");
+  }catch(e){
+    alert("❌ Refresh failed. Please try again.");
+  }
+};
+
+window.km124UpdateAfterOrder=function(){
+  setTimeout(()=>{
+    km124RenderSummary();
+    km124RenderAlerts();
+  },300);
+};
+
+document.addEventListener("DOMContentLoaded",()=>{
+  setTimeout(()=>{
+    km124RenderSummary();
+    km124RenderAlerts();
+  },500);
+});
+
+
+/* ===== KisanMandi V13.2 ===== */
+window.km13RunHealthCheck=function(){
+  const checks=[
+    ["Firebase", typeof db!=="undefined"],
+    ["Authentication", typeof auth!=="undefined"],
+    ["Products", typeof loadProducts==="function"],
+    ["Cart", typeof renderCart==="function"],
+    ["Orders", typeof loadOrders==="function"],
+    ["Notifications", typeof renderNotifications==="function"]
+  ];
+  const failed=checks.filter(x=>!x[1]);
+  if(!failed.length){
+    alert("✅ KisanMandi V13.2 health check passed.\n\nCore modules are loaded.");
+  }else{
+    alert("⚠️ Modules not detected by the health check:\n\n"+failed.map(x=>"• "+x[0]).join("\n"));
+  }
+};
+
+window.km13BackupReminder=function(){
+  alert("💾 FINAL VERSION BACKUP\n\nKeep this working V13.0 index.html as your master backup before future changes.");
+};
+
+window.km13About=function(){
+  alert("🌾 KisanMandi V13.2\n\nDirect Farmer → Customer Marketplace\n\nYour working V13.2 features are retained in this final release.");
+};
+
+</script>
+</body>
+</html>
